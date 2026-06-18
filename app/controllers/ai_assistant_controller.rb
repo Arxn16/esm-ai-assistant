@@ -51,7 +51,7 @@ class AiAssistantController < EsmController
     opts[:model]   = params[:model].to_s.strip[0, 120] unless params[:model].to_s.strip == ''
 
     # Telemetry (metadata only - no message/prompt contents, no PHI).
-    Rails.logger.info("[AI] mode=#{mode} engine=#{engine} project=#{params[:project_id]} user=#{@current_user.id}")
+    Ai::Provider.log("[AI] mode=#{mode} engine=#{engine} project=#{params[:project_id]} user=#{@current_user.id}")
     reply = Ai::Provider.for(engine).chat(messages, opts)
     render_reply(reply[:content].to_s)
 
@@ -69,6 +69,32 @@ class AiAssistantController < EsmController
     render :json => { :engine => engine, :models => Array(Ai::Provider.for(engine).models) }
   rescue => e
     render :json => { :models => [] }
+  end
+
+  # Recent AI telemetry (metadata-only ring buffer). DEVELOPER role only.
+  def logs
+    return render(:json => { :lines => [] }, :status => :unauthorized) unless @current_user
+    return render(:json => { :lines => [], :error => 'Developer role only.' }, :status => :forbidden) unless @current_role.to_s == 'developer'
+    render :json => { :lines => ($esmai_log || []).last(60) }
+  rescue => e
+    render :json => { :lines => [] }
+  end
+
+  # Current user's own rate-limit usage (everyone may see their own).
+  def limit
+    return render(:json => {}, :status => :unauthorized) unless @current_user
+    now    = Time.now.to_i
+    bucket = (($esmai_rate ||= {})[@current_user.id] || []).select { |t| t >= now - RATE_WINDOW }
+    oldest = bucket.min
+    render :json => {
+      :used      => bucket.size,
+      :limit     => RATE_LIMIT,
+      :remaining => [RATE_LIMIT - bucket.size, 0].max,
+      :window    => RATE_WINDOW,
+      :resets_in => (oldest ? (RATE_WINDOW - (now - oldest)) : 0)
+    }
+  rescue => e
+    render :json => {}
   end
 
   private

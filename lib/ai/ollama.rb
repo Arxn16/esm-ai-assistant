@@ -125,11 +125,7 @@ module Ai
     end
 
     def log_info(msg)
-      if defined?(Rails) && Rails.respond_to?(:logger) && Rails.logger
-        Rails.logger.info(msg)
-      else
-        $stdout.puts(msg)
-      end
+      Ai::Provider.log(msg)
     end
   end
 end

@@ -12,6 +12,8 @@ Esmx::Application.routes.draw do
          # POST would be hijacked to AiAssistantController#show (id='message').
          match 'ai_assistant/message'=>'ai_assistant#message' ,via: [:post]
          match 'ai_assistant/models'=>'ai_assistant#models' ,via: [:get]
+         match 'ai_assistant/logs'=>'ai_assistant#logs' ,via: [:get]
+         match 'ai_assistant/limit'=>'ai_assistant#limit' ,via: [:get]
 
          match 'home/:action'=>'home', via: [:get, :post]
 

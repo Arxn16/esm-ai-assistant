@@ -127,7 +127,7 @@ module Ai
       else
         line += " timeout=#{timeout} prompt=#{prompt_chars} elapsed=#{elapsed}s status=#{status}"
       end
-      Rails.logger.info(line) if defined?(Rails) && Rails.respond_to?(:logger) && Rails.logger
+      Ai::Provider.log(line)
     end
   end
 end

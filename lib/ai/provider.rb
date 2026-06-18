@@ -14,6 +14,18 @@ module Ai
   class Provider
     DEFAULT = 'ollama'.freeze
 
+    # Append a telemetry line to an in-memory ring buffer (last ~100) AND Rails.logger.
+    # Metadata only - callers pass "[AI] ..." lines with no message contents / PHI.
+    # A class method on Provider (not module Ai) so referencing it autoloads this file.
+    def self.log(line)
+      buf = ($esmai_log ||= [])
+      buf << line.to_s
+      buf.shift while buf.size > 100
+      Rails.logger.info(line) if defined?(Rails) && Rails.respond_to?(:logger) && Rails.logger
+    rescue
+      nil
+    end
+
     def chat(messages, opts = {})
       raise NotImplementedError, "#{self.class} must implement #chat"
     end

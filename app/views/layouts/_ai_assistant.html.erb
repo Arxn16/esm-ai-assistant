@@ -79,6 +79,14 @@
       </div>
     </div>
 
+    <div class="esmai-tools">
+      <button type="button" id="esmai-limit-btn" class="esmai-tool">Limit</button>
+      <% if @current_role.to_s == 'developer' %>
+      <button type="button" id="esmai-log-btn" class="esmai-tool">Log</button>
+      <% end %>
+      <button type="button" id="esmai-clear-btn" class="esmai-tool">Clear</button>
+    </div>
+
     <div class="esmai-footer">
       <textarea id="esmai-input" class="esmai-input" rows="1" placeholder="Type a message..." autocomplete="off"></textarea>
       <button type="button" id="esmai-send" class="esmai-send">Send</button>
@@ -149,6 +157,10 @@
     padding:0 14px; margin-left:6px; cursor:pointer; font-size:13px;
   }
   .esmai-send[disabled]{ opacity:.6; cursor:default; }
+  .esmai-tools{ flex:0 0 auto; display:flex; padding:4px 8px; background:#f3f3f4; border-top:1px solid #e5e5e5; }
+  .esmai-tool{ border:1px solid #ccc; background:#fff; color:#555; font-size:11px; padding:2px 8px; margin-right:4px; border-radius:3px; cursor:pointer; }
+  .esmai-tool:hover{ border-color:#1ab394; color:#1ab394; }
+  .esmai-infobubble{ background:#eef3f7 !important; border:1px dashed #b8c6d0 !important; color:#456 !important; font-family:monospace; font-size:11px; }
 </style>
 
 <script type="text/javascript">
@@ -179,7 +191,9 @@
 
     var mode = 'chat';
     var engine = 'local';
-    var history = []; // client-side conversation memory (not persisted server-side)
+    var STORE = 'esmai_history';
+    var history = []; // client-side conversation memory (persisted in sessionStorage)
+    try { history = JSON.parse(sessionStorage.getItem(STORE) || '[]') || []; } catch(e){ history = []; }
 
     function token(){ return $('meta[name="csrf-token"]').attr('content') || ''; }
     function scrollBottom(){ $body.scrollTop($body[0].scrollHeight); }
@@ -189,6 +203,27 @@
       var cls = (role === 'user') ? 'esmai-user' : 'esmai-assistant';
       $body.append('<div class="esmai-msg ' + cls + '"><div class="esmai-bubble">' + esc(text) + '</div></div>');
       scrollBottom();
+    }
+    function addInfo(text){
+      $body.append('<div class="esmai-msg esmai-assistant"><div class="esmai-bubble esmai-infobubble">' + esc(text) + '</div></div>');
+      scrollBottom();
+    }
+    function saveHistory(){ try { sessionStorage.setItem(STORE, JSON.stringify(history.slice(-50))); } catch(e){} }
+    function restoreHistory(){ for (var i = 0; i < history.length; i++){ addMessage(history[i].role, history[i].content); } }
+    function clearChat(){
+      history = [];
+      try { sessionStorage.removeItem(STORE); } catch(e){}
+      $body.empty().append('<div class="esmai-msg esmai-assistant"><div class="esmai-bubble">Chat cleared.</div></div>');
+    }
+    function showLimit(){
+      $.ajax({ url: '/ai_assistant/limit', type: 'GET', dataType: 'json' })
+        .done(function(r){ addInfo('Quota: used ' + r.used + '/' + r.limit + '  remaining ' + r.remaining + '  resets in ' + r.resets_in + 's'); })
+        .fail(function(){ addInfo('Could not load quota.'); });
+    }
+    function showLog(){
+      $.ajax({ url: '/ai_assistant/logs', type: 'GET', dataType: 'json' })
+        .done(function(r){ var l = (r && r.lines) ? r.lines : []; addInfo(l.length ? ('Recent AI log:\n' + l.join('\n')) : 'No log entries yet.'); })
+        .fail(function(xhr){ var m = (xhr && xhr.responseJSON && xhr.responseJSON.error) ? xhr.responseJSON.error : 'Log unavailable.'; addInfo(m); });
     }
 
     function selectMode(m){
@@ -238,6 +273,7 @@
       var prior = history.slice(-20); // prior turns only; server re-caps
       addMessage('user', text);
       history.push({ role: 'user', content: text });
+      saveHistory();
       $input.val('');
       $send.prop('disabled', true);
 
@@ -259,6 +295,7 @@
         var c = (resp && resp.content) ? resp.content : '(no response)';
         addMessage('assistant', c);
         history.push({ role: 'assistant', content: c });
+        saveHistory();
       }).fail(function(xhr){
         var msg = (xhr && xhr.responseJSON && xhr.responseJSON.content)
                 ? xhr.responseJSON.content
@@ -274,6 +311,9 @@
     $('#esmai-close').on('click', closePanel);
     $('.esmai-mode').on('click', function(){ selectMode($(this).data('mode')); });
     $('.esmai-eng').on('click', function(){ selectEngine($(this).data('engine')); });
+    $('#esmai-limit-btn').on('click', showLimit);
+    $('#esmai-log-btn').on('click', showLog);
+    $('#esmai-clear-btn').on('click', clearChat);
     $send.on('click', sendMessage);
     $input.on('keydown', function(e){
       if (e.which === 13 && !e.shiftKey) { e.preventDefault(); sendMessage(); }
@@ -284,6 +324,7 @@
 
     selectMode('chat');
     selectEngine('local');
+    restoreHistory();
   });
 })(window.jQuery);
 </script>
