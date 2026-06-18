@@ -1,0 +1,17 @@
+
+
+<div class="box" style="width:100%;">
+Container form edit
+<%= form_for(:container,:url=>{:action=>"container_edit",:id=>@document,:index=>params[:index],:update=>"#{@document.id}-con-#{params[:index]}"},:remote=>true) do |f| %>
+<br/>
+<%= hidden_field_tag :id, @document.id %>
+<%= render :partial=> 'container', :locals=>{:f=>f} %>
+<span style='float:left'>
+<%= f.submit 'Update' %> | <%= link_to 'Cancel', {:action=>'refresh_layout',:id=>@document},:remote=>true%> 
+</span>
+<% end %>
+
+</div>
+<div class="clear">
+	
+</div>

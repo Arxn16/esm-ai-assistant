@@ -1,0 +1,12 @@
+<div id="workspace"  style="border:0px solid blue;">
+	<% if params[:path] %>
+	<center>Loading...<br/><br/><%=image_tag '/starlight/images/loaders/loader6.gif'%></center>
+	<%= remote_function params[:path]%>
+	<% else %>
+	<%= render :partial=>'workspace'%>
+	<% end %>
+<div class="clear">
+	
+</div>
+
+</div>

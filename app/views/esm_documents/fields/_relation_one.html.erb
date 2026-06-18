@@ -1,0 +1,345 @@
+<% begin %>
+<% 
+
+
+if fparams[:relation] 
+	
+	
+	# @document = @current_project.get_document @document.name
+	
+	has_one_model = Fields::RelationOne.get_instance @document,@field,@record
+    # puts "XXX #{@field.column_name}"
+	table  = has_one_model.related_table
+	fields = has_one_model.related_fields
+	
+	# path = fparams[:relation][:document].to_s.split('#')
+	# doc_tag = path.split('.')
+	# 
+	# 
+	# if path.size==1 # local document   ex : patient
+	# 	doc_name = path[-1]
+	# 	doc =@document.project.get_document doc_name
+	# 	table = @document.project.schema.load_model[doc.table.name.to_sym]
+	# elsif doc_tag.size==1 # other project document  ex : ehr#patient
+	# 	doc_name = path[-1]
+	# 	project = @document.project.esm.get_project doc_tag[0]
+	# 	doc = project.get_document doc_name
+	# 	table = project.load_model[doc.table.name.to_sym]
+	# end
+	# 
+	# fields = doc.list_fields_column_name
+	# fields = fparams[:relation][:fields] if fparams[:relation][:fields]
+	unless @show
+%>
+<% if fparams[:relation][:type] == nil 
+	
+	values=[]
+
+	unless fparams[:relation][:where]
+	values = table.all 
+	else
+	values = table.all fparams[:relation][:where]
+	end
+	
+	if fparams[:relation][:sort]
+	
+	values.sort! do |a,b|
+		k = 0 
+		fparams[:relation][:sort].each do |i|
+		
+		  k = a[i]<=>b[i] if a[i]!=nil and b[i]!=nil
+		 
+		  k = -1 if b[i]==nil
+		  k = 1 if a[i]==nil  
+		
+		  k = 0 if a[i]==nil and b[i]==nil
+		  		   
+		  break if k!=0  
+		
+		end
+		k
+		end 	
+	end
+	
+	if fparams[:relation][:fields]
+	   fields = fparams[:relation][:fields]	
+	end
+	
+	
+	options = values.collect{|i| 
+		[fields.collect{|j| i[j]}.join(' ')  ,i.id]
+	}
+	
+%>
+<%= select_tag name, options_for_select(options,value),:include_blank=>true,:style=>'width:100%;height:2.0em;background:#eee;border:1px solid #bbb',:class=>'',:id=>fid ,:required=>(!@edit and @field.mandatory=='1'),:validationMessage=>"Please select one"%>
+
+<% elsif fparams[:relation][:type] == :belongs_to %>
+<%=hidden_field_tag name, value, :id=>fid ,:class=>tb_class,:style=>'width:100%'%>
+<% elsif fparams[:relation][:type] == :inline %>
+
+<%
+
+unless @edit
+if @current_project
+	
+	    @stack = [] unless @stack
+	
+		values = []
+		
+		@document = @current_project.get_document @document.name
+		
+		has_one_model = Fields::RelationOne.get_instance @document,@field,@record
+		
+		table  = has_one_model.related_table
+		fields = has_one_model.related_fields
+		doc = has_one_model.related_document
+		
+		doc_name = doc.name
+		
+		if value 
+			# values = value.collect{|i| table.find(i)}.compact
+			values = [table.find(value.to_s)]
+		end
+		
+
+
+
+	# 	application mode
+
+			
+					tmpdoc = @document
+					tmprec = @record
+					
+					# puts "TEMP rec = #{@record.class} #{@document.name}"
+					tmpedit = @edit
+					tmpprefix = @prefix
+					tmpprefix2 = @prefix2
+					tmpfield = @field
+					tmpshow=@show
+					
+					
+					tmp = {:doc=>tmpdoc, :record=>tmprec, :show=>tmpshow, :edit=>tmpedit, :prefix=>tmpprefix,:prefix2=>tmpprefix2, :field=>tmpfield}
+					
+					@stack<<tmp
+					
+					@link_field = tmpfield
+					
+					@fid = @field.id
+					@document = doc	
+					@document.project_id = tmpdoc.project_id
+					
+					if fparams[:relation][:selector]
+					@selector = fparams[:relation][:selector]
+					end
+
+   					
+					# puts "TEMP2 rec = #{@record.class} #{@document.name}"
+
+%><%#value.inspect%>
+<%= hidden_field_tag name, value.to_s,:id=>fid %>
+
+<%#fparams.inspect%>
+<%
+  values.inspect
+	@selector_options = nil
+  if values.size > 0   
+%>
+<%#values.inspect %>
+<% values.each_with_index do |i,index|
+	@selector_value = nil
+
+
+	# i[@selector] = '*sampling' if @document.name == 'intervention'
+	
+	
+	
+	if @selector
+		
+		v = i[@selector]
+		@selector_value = nil
+		if v
+			if v[0]!='*'
+			
+				@selector_value = v
+			else
+				@selector_options = v
+				i[@selector]  = nil
+			end
+		end
+		
+	end
+
+	@selector_options = fparams[:relation][:options]
+	
+
+
+	@record = i
+	@i = "#{index+1}. "
+	
+	@prefix = "#{tmpdoc.name}-#{tmpfield.column_name}-#{i.id}-"
+	@prefix2 = "#{tmpfield.id}-#{i.id}-" 
+	%>
+	
+	<%# @record.inspect %>
+	<%= render :partial=>'/esm_documents/has_one_record' %>
+
+<% end %>
+
+<% else 
+
+	@record = table.new
+	i = @record
+	@i = '...'
+	
+	%>
+	<%#fparams.inspect %> <%#@record.id%>
+	<%
+	@selector_options = fparams[:relation][:options]
+	
+	@prefix = "#{tmpdoc.name}-#{tmpfield.column_name}-#{i.id}-"
+	@prefix2 = "#{tmpfield.id}-#{i.id}-" 
+	
+	
+%>
+
+
+<%= render :partial=>'/esm_documents/has_one_record' %>
+
+<% end %>
+
+<%
+
+				tmp = {:doc=>tmpdoc,:record=>tmprec,:edit=>tmpedit,:prefix=>tmpprefix,:prefix2=>tmpprefix,:field=>tmpfield}
+				tmp = @stack[-1]
+				@stack[-1]=nil
+				@stack.compact!
+	
+				tmpdoc = tmp[:doc]
+				tmpshow = tmp[:show]
+				tmpedit = tmp[:edit]
+				tmpprefix = tmp[:prefix]
+				tmpprefix2 = tmp[:prefix2]
+				tmpfield = tmp[:field]
+				tmprec = tmp[:record]
+	
+				
+			
+				@show = tmpshow
+				@document  = tmpdoc 
+				@edit = tmpedit
+				@record = tmprec
+				@prefix = tmpprefix
+				@prefix2 = tmpprefix2
+				@field = tmpfield 
+				@edit = false 
+				@partial = false
+				# puts "TEMP3 rec = #{@record.class} #{@document.name}"
+				
+				
+else
+%>
+Inline preview for <%=fparams[:relation][:document]%>
+<%		
+end		
+
+else
+%>
+Inline editing.. 
+<% end %>
+<% elsif fparams[:relation][:type] == :search %>
+<table id="search-panel"><tr>
+<td><%= text_field_tag '','',:id=>"search-#{fid}-inline",:class=>tb_class ,:placeholder=>'Search.. + Enter' %><%! link_to "Search", 'javascript:openSearchWindow()',:class=>bt_class %>
+<%= text_field_tag name, value, :id=>fid ,:class=>tb_class,:style=>'width:100%',:placeholder=>"#{@field.name} ID" %></td>
+<td></td>
+</tr></table>
+<div id="search-result" style="display:none">
+	Loading..
+</div>
+<div id="search-<%=fid%>" style="display:none">
+Search : <%= text_field_tag :query,'',:id=>"search-#{fid}-query",:class=>tb_class %> 
+<%= link_to "Search", 'javascript:doSearch()',:class =>bt_class %><br/>
+</div>
+<script type="text/javascript" charset="utf-8">
+	function doSearch(){
+		$('#search-result').css("display", "block");
+		url = '<%="#{url_for(:controller=>'esm_document',:action=>'relation_has_one_search',:id=>@document.name,:p_id=>@current_project.id,:f_id=>field.id,:r_id=>@record)}"%>'
+		url += '&q='+$('#search-<%=fid%>-inline').val();
+		$.ajax({
+		  url: url,
+		 success: function(data){
+				eval(data);
+		  }
+		});
+	}
+	function doSelect(value){
+		$('#<%=fid%>').val(value);
+		
+		$('#search-result').css("display", "none");
+		
+		// closeSearchWindow();
+	}
+	function closeSearchWindow(){
+		
+		// var window = $("#search-<%=fid%>").data("kendoWindow");
+	    // window.close()
+	}
+
+	function openSearchWindow(){
+		// $(document).ready(function(){
+		//     var window = $("#search-<%=fid%>").kendoWindow({
+		//         height: "400px",
+		//         title: "<%=field.name%> Search",
+		//         visible: true,
+		//         width: "600px"
+		//     }).data("kendoWindow");
+		// 
+		// 		var window = $("#search-<%=fid%>").data("kendoWindow");
+		// 	    window.center();
+		// 	    window.open();
+		// 		$("#search-<%=fid%>").css("display", "block");
+		// 		$("#search-<%=fid%>-query").val($("#search-<%=fid%>-inline").val());
+		// 
+		// });
+		
+	doSearch();
+		
+	}
+	
+	$("#search-<%=fid%>-inline").keydown(function(event){
+    if(event.keyCode == 13) {
+	
+		doSearch();
+      event.preventDefault();
+      return false;
+    }else{
+	
+	$('#search-result').html('Loading..')
+}
+  });
+	
+	
+</script>
+<% end %>
+<% else 
+	out = 'NA'
+	if value
+	obj  = table.find(value)
+	if obj
+	out = fields.collect{|j| obj[j] }.join(' ')
+	end
+	# out = obj.inspect
+	end
+%>
+<value>
+<%= out %>	
+</value>
+<% end %>
+<% else %>
+Not configured
+<% end %>
+<% rescue Exception=>e %>
+<pre><%=e.message%>
+
+<%=e.backtrace%>
+</pre>
+<% end %>

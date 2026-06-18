@@ -1,0 +1,53 @@
+
+<div class="field">
+  <%= f.label :name %><br />
+  <%= f.text_field :name %>
+</div>
+
+<div class="span9">
+<div class="field">
+  <%= f.label :command %>
+</div>
+<div id="editor-command" style="display:block;position:relative;min-height:800px;border:1px solid #aaa"><%=@table.command%></div>
+<%= f.text_area :command ,:style=>"display:none"%>
+
+	<script>
+	    var editor = ace.edit("editor-command");
+		var editor_input = 	document.getElementById('table_command');
+	  		editor.setShowPrintMargin(false);
+			editor.setShowInvisibles(false);
+			editor.setDisplayIndentGuides(true);
+		    editor.setTheme("ace/theme/twilight");
+		 editor.getSession().setMode("ace/mode/ruby");
+		editor.getSession().on('change', function(){
+		  editor_input.value=editor.getSession().getValue();
+		});
+	</script>
+	
+	
+</div>
+
+
+<div class="span3">
+<div class="field">
+  <%= f.label :data %>
+</div>
+<%= f.text_area :data ,:style=>"display:none"%>
+
+<div id="editor-data" class="span3" style="display:block;position:relative;min-height:800px;border:1px solid #aaa;width:300px"><%=@table.data%></div>
+	
+	<script>
+	    var editor2 = ace.edit("editor-data");
+		var editor_input2 = 	document.getElementById('table_data');
+	  		editor2.setShowPrintMargin(false);
+			editor2.setShowInvisibles(false);
+			editor2.setDisplayIndentGuides(true);
+		    editor2.setTheme("ace/theme/twilight");
+		 editor2.getSession().setMode("ace/mode/ruby");
+		editor2.getSession().on('change', function(){
+		  editor_input2.value=editor2.getSession().getValue();
+		});
+	</script>
+	
+	</div>
+<div class="clear"></div>

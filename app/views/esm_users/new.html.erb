@@ -1,0 +1,8 @@
+<h1>New User</h1>
+<br/>
+<%= form_for(:user) do |f| %>
+
+<%= render :partial=> 'user', :locals=>{:f=>f} %>
+<br/>
+<%= f.submit 'Create' , :class=>bt_class%> | <%= link_to 'Cancel', :action=>'index'%>
+<% end %>

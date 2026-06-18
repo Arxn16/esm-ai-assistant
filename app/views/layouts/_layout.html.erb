@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+
+			<!-- Content -->
+			<%
+				p = {}
+				project_params = @current_project.get_params if @current_project 
+				p = project_params if project_params
+				title = (p['app_title']and p['app_title']!='')?p['app_title']:"EMR-LIFE : Medical Records Service Provider"
+				bg = (p['app_bg_style']and p['app_bg_style']!='')?p['app_bg_style']:"#fff"
+				logo = (p['app_logo_url']and p['app_logo_url']!='')?p['app_logo_url']:'/esm_core/banner1.png'
+				theme = (p['app_theme']and p['app_theme']!='')?p['app_theme']:'default'
+
+			%>
+		
+		<script src="/ace/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+
+        <!--<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>-->
+
+	
+        <!-- Favicon -->
+            <link rel="shortcut icon" href="/favicon.ico" />
+		
+        <!--[if lte IE 8]>
+            <link rel="stylesheet" href="css/ie.css" />
+            <script src="/gebo/js/ie/html5.js"></script>
+			<script src="/gebo/js/ie/respond.min.js"></script>
+        <![endif]-->
+		
+		
+		
+		
+			<%= javascript_include_tag "application"  %>
+			
+			<%= stylesheet_link_tag    "application"  %>
+			<%= csrf_meta_tag %>
+            
+			<%= render :partial=>'/layouts/kendoui'%>
+			<link href="/kendoui/source/styles/kendo.<%=theme%>.css" rel="stylesheet"/>
+
+			<link rel="stylesheet" href="/gebo/css/dark.css" />
+			
+
+
+	
+		    <title><%=title%></title>
+
+				<script>
+					$(document).ready(function() {
+						//* show all elements & remove preloader
+						// setTimeout('$("html").removeClass("js")',1000);
+						 // $("html").removeClass("js");
+					});
+				</script>
+		
+				 <style type="text/css" media="screen">
+					.form-data-content{
+						width:730px;
+					}
+				</style>
+		
+		
+    </head>
+    <body class="">
+	
+
+	  <!--<div id="loading_layer" style="display:none"><img src="/gebo/img/ajax_loader.gif" alt="" /></div>-->
+		<div id="maincontainer" class="clearfix">
+			<!-- header -->
+            <header>
+                <div class="navbar navbar-fixed-top">
+                    <div class="navbar-inner">
+                        <div class="container-fluid" >
+                            <a class="brand" href="/" style="border:0px solid;padding:0px;width:250px"><%=image_tag logo,:height=>36,:width=>250 %></a>
+                           <span id="search-pos-partial" class="left" ></span>
+							<ul class="nav user_menu pull-right" >
+	
+				
+												<% if @current_user %>
+												
+												
+													
+													<!--	
+						                                <li class="hidden-phone hidden-tablet">
+						                                    <div class="nb_boxes clearfix">
+						                                        <a data-toggle="modal" data-backdrop="static" href="#myMail" class="label ttip_b" title="New messages">25 <i class="splashy-mail_light"></i></a>
+						                                        <a data-toggle="modal" data-backdrop="static" href="#myTasks" class="label ttip_b" title="New tasks">10 <i class="splashy-calendar_week"></i></a>
+						                                    </div>
+						                                </li>
+						
+											
+														<li class="divider-vertical hidden-phone hidden-tablet"></li>
+						                                <li class="dropdown">
+						                                    <a href="#" class="dropdown-toggle nav_condensed" data-toggle="dropdown"><i class="flag-gb"></i> <b class="caret"></b></a>
+						                                    <ul class="dropdown-menu">
+															<li><a href="javascript:void(0)"><i class="flag-de"></i> Deutsch</a></li>
+																<li><a href="javascript:void(0)"><i class="flag-fr"></i> Français</a></li>
+																<li><a href="javascript:void(0)"><i class="flag-es"></i> Español</a></li>
+																<li><a href="javascript:void(0)"><i class="flag-ru"></i> Pусский</a></li>
+						                                    </ul>
+						                                </li>
+						
+													-->
+						                                <li class="divider-vertical hidden-phone hidden-tablet"></li>
+						                                <li class="dropdown">
+														
+						                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+<%
+	login = @current_user.get_name @current_solution
+	if session[:solution_user]
+		user_name = "#{session[:solution_user].name} (#{login})"
+		user_name = login unless session[:solution_user].name 
+		login = user_name
+	end
+%>
+<%= login %>
+<b class="caret"></b></a>
+						                                    <ul class="dropdown-menu" id="esm-user-menu">
+																
+																<li style=""><a href="">Account Settings</a></li>
+																	<li class="divider"></li>
+										        				<li style=""><a href="/esm_home">My Solutions</a></li>
+																	<% 
+																	   if @context
+																	   @context.projects.each do |j| %>
+																		<li style=""><a href="<%=j.get_home_url(request)%>" class="elements"><span><i>- <%=j.title%></i></span></a></li>
+																	<% end 
+																	end 
+																	%>
+																
+																<li class="divider"></li>
+											                 <li><a href="/user/logout">Logout</a></li>
+						                                    </ul>
+											            </li>
+						
+												<% else %>
+												<li class="divider-vertical hidden-phone hidden-tablet"></li>
+				                                <li class="dropdown">
+												 <a href="#" class="dropdown-toggle" data-toggle="dropdown">User Login<b class="caret"></b></a>
+												 <ul class="dropdown-menu">
+												 <li><a href="/user/login">Login</a></li>
+												 <li><a href="/user/forgot_password">Forgot password</a></li>
+												 <li><a href="/user/signup">Register</a></li>
+				                                 </ul>
+				   								</li>
+												<% end %>
+						</ul>
+							<a data-target=".nav-collapse" data-toggle="collapse" class="btn_menu">
+								<span class="icon-align-justify icon-white"></span>
+							</a>
+                            <nav>
+                                <div class="nav-collapse">
+                                    <ul class="nav">
+	
+											<%=render :partial=>'/layouts/application_menu' %>
+
+												
+			                                  </ul>
+                                </div>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+
+
+                                     
+          
+
+            </header>
+            
+            <!-- main content -->
+            <div id="contentwrapper">
+                <div id = 'main_content' class="main_content" style="border:0px solid;margin-top:50px;padding:10px;background:<%=bg%>" >
+                    
+				   <%= yield %><%= yield :content%>
+                	<span id="browser-agent"></span>
+			    </div>
+            </div>
+            
+			<!-- sidebar -->
+<a href="javascript:void(0)" id='sidebar_bt' class="sidebar_switch on_switch ttip_r" title="Hide Sidebar" style=""> Sidebar switch</a>
+
+
+	<div class="sidebar">
+		<div class="antiScroll">
+			<div class="antiscroll-inner" style="width:260px">
+				<div class="antiscroll-content" >
+					<div class="sidebar_inner"><span id="search-pos-side">
+						<form id="search-form-layout" action="../Home/search" class="input-append" method="post" >
+							<input autocomplete="off" id="search-field" name="query" class="search_query input-medium" style="height:20px" size="16" type="text" placeholder="Search..." />
+							<button type="submit" class="btn" style="height:30px"><i class="icon-search"></i></button>
+						</form>
+						</span>
+     		<div id="context-menu" class="accordion">
+             <%= render :partial=>'/layouts/context_menu'%>
+			</div>
+		</div>
+	</div>
+	</div>
+	</div>
+	</div>            
+		
+
+		
+		</div>
+
+		<script type="text/javascript" charset="utf-8">
+			refresh_remote();
+			$('#search-field').focus()
+		</script>		
+		
+<%= include_essential %>
+
+<script>
+
+
+// Get IE or Edge browser version
+var version = detectIE();
+
+if (version === false) {
+  // document.getElementById('browser-agent').innerHTML = '<s>IE/Edge</s>';
+  document.cookie = "ie=false";
+} else if (version >= 12) {
+  document.getElementById('browser-agent').innerHTML = 'Edge ' + version;
+  document.cookie = "ie=edge";
+} else {
+  document.getElementById('browser-agent').innerHTML = 'IE ' + version;
+  document.cookie = "ie=true";
+} 
+
+// add details to debug result
+// document.getElementById('browser-agent').innerHTML = window.navigator.userAgent;
+
+/**
+ * detect IE
+ * returns version of IE or false, if browser is not Internet Explorer
+ */
+function detectIE() {
+  var ua = window.navigator.userAgent;
+
+  // Test values; Uncomment to check result …
+
+  // IE 10
+  // ua = 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0)';
+
+  // IE 11
+  // ua = 'Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko';
+
+  // Edge 12 (Spartan)
+  // ua = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36 Edge/12.0';
+
+  // Edge 13
+  // ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2486.0 Safari/537.36 Edge/13.10586';
+
+  var msie = ua.indexOf('MSIE ');
+  if (msie > 0) {
+    // IE 10 or older => return version number
+    return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
+  }
+
+  var trident = ua.indexOf('Trident/');
+  if (trident > 0) {
+    // IE 11 => return version number
+    var rv = ua.indexOf('rv:');
+    return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
+  }
+
+  var edge = ua.indexOf('Edge/');
+  if (edge > 0) {
+    // Edge (IE 12+) => return version number
+    return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
+  }
+  
+
+
+  // other browser
+  return false;
+}
+
+
+</script>
+
+<%= render :partial=>'/layouts/ai_assistant' %>
+</body>
+</html>

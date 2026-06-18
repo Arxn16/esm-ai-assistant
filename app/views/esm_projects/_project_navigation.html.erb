@@ -1,0 +1,88 @@
+<div id="nav-div" style="border:0px solid;height:400px">
+
+</div>
+
+<script type="text/javascript" charset="utf-8">
+	Ext.require([
+	    'Ext.tree.*',
+	    'Ext.data.*',
+	    'Ext.window.MessageBox'
+	]);
+	
+	Ext.onReady(function() {
+		
+		
+	    var store = Ext.create('Ext.data.TreeStore', {
+	        proxy: {
+	            type: 'ajax',
+				nodeParam: 'id',
+	            url: 'project.json?id=<%=@project.id%>'
+	        }//,
+	        // 	        sorters: [{
+	        // 	            property: 'leaf',
+	        // 	            direction: 'ASC'
+	        // 	        }, {
+	        // 	            property: 'text',
+	        // 	            direction: 'ASC'
+	        // 	        }]
+	    });
+
+	
+	    var tree = Ext.create('Ext.tree.Panel', {
+	        store: store,
+	        rootVisible: false,
+	        useArrows: true,
+	        frame: false,
+	        title: '<%=@project%> Project (<%=@project.esm%>)',
+	        renderTo: 'nav-div',
+			autoScroll:true,
+			height:500,
+		    listeners: {
+		        itemclick: function(view,rec,item,index,eventObj) {       
+		            var record = rec;
+				
+		            // alert(record.raw['op_id']);
+					jQuery.ajax({
+						url:record.raw['action'],
+						script:true,
+						success: function(script){
+							$('#workspace').fadeIn(200);
+							eval(script);
+							
+						},
+						beforeSend: function( xhr ) {
+						$('#workspace').fadeOut(200);
+						}
+						
+					});
+		            // alert(record.data['text']);
+		            
+		        }
+		    },
+	        dockedItems: [{
+	            xtype: 'toolbar',
+	            items: {
+	                text: 'Controls',
+	                handler: function(){
+	                    var records = tree.getView().getChecked(),
+	                        names = [];
+	
+	                    Ext.Array.each(records, function(rec){
+	                        names.push(rec.get('text'));
+	                    });
+	
+	                    Ext.MessageBox.show({
+	                        title: 'Selected Nodes',
+	                        msg: names.join('<br />'),
+	                        icon: Ext.MessageBox.INFO
+	                    });
+	                }
+	            }
+	        }]
+	    });
+	
+	
+	
+	
+	});
+</script>

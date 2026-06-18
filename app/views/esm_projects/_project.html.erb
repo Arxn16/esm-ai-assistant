@@ -1,0 +1,64 @@
+<div class="grid_6">
+<h3>Application Settings</h3>
+<br/>	
+<div class="field">
+  <%= f.label :project_title %>
+  <%= f.text_field :title, :onkeyup=>methodize("project_name"),:class=> tb_class %>
+</div>
+
+<div class="field">
+  <%= f.label :namespace %>
+  <%= f.text_field :name,:class=> tb_class %>
+</div>
+
+<div class="field">
+  <%= f.label :extended %>
+  <%= f.text_field :extended,:class=> tb_class %>
+</div>
+
+<div class="field">
+  <%= f.label :domain %>
+  <%= f.text_field :domain ,:class=> tb_class%>
+</div>
+
+<div class="field">
+  <%= f.label :acl %>
+  <%= f.text_field :acl,:class=>tb_class %>
+</div>
+
+<% 
+	p =  @project.get_params
+%>
+<%# JSON.parse(@project.params).inspect %>
+<%#p.inspect %> <%#Project.params_list%>
+<%	
+for i in Project.params_list %>
+<% if i != 'app_theme'%>
+<div class="field">
+  <%= label_tag i[4..-1] %>
+  <%= text_field_tag "project[params][#{i}]", p[i]  ,:class=> tb_class,:size=>30 %>
+</div>
+<% else %>
+<div class="field">
+  <%= label_tag i[4..-1] %>
+  <%= select_tag "project[params][#{i}]", options_for_select(%w{default blueopal metro silver black}.collect{|i| [i.humanize,i]},p[i]) %>
+</div>
+<% end %>
+<% end %>
+</div>
+<div class="grid_6">
+	<h3>Application Configuration</h3><br/>
+	<% @settings = @project.get_instance[:settings]%>
+	<div id="settings">
+	<%= render :partial=>'settings'%>
+	</div>
+	<div id="setting">
+		
+	</div>
+	<%= link_to "Add Configration", "/esm_projects/#{@project.id}/add_setting?update=setting",:remote=>true %>
+	
+</div>
+<div class="clear">
+	
+</div>
+

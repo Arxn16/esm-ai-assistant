@@ -1,0 +1,41 @@
+<%
+	r = [
+		{:text=>@service.name,:type=>'service',:cls=>'folder',:expanded=>true
+		:children=>@service.operations.all.collect|	
+			
+		},
+		{}
+		];
+	
+
+
+%>
+
+
+
+
+
+
+[
+{
+    "text": "Services", 
+    "cls": "folder",
+    "expanded": true,
+    "children": <%= @project.services.collect{|i| 
+	   {
+	        "text"=>"#{i}",
+	        "leaf"=> false,
+			"expanded"=> true,
+	        "checked"=> false,
+			"children"=>i.operations.all.collect{|j|
+				{
+					:text=>"#{j.name} (#{j.script_template})",:leaf=>true,"checked"=> false,
+				    'op_id'=>j.id.to_s
+				}
+			}
+	    }
+	}.to_json.html_safe
+	
+	%>
+
+}]

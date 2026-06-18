@@ -1,0 +1,14 @@
+		<%
+		fields = @document.list_fields
+		labels = fields.collect{|i| i.column_name }
+		%>
+		<%= tabular :model=>labels, :data=>@records do |i,out|
+				fields.each_with_index do |f,index|
+					out[index] = render(:partial=>'/esm_documents/show_value',:locals=>{:field=>f,:record=>i}).html_safe
+				end
+				out<<link_to("Edit" ,{:controller=>'esm_document',:action=>'partial_update',:id=>@document.id,:p_id=>i.id,:ref_tag=>@ref_tag,:update=>"partial-form-#{@fid}"},:disable_with=>'Loading..',:remote=>true)
+				out<<link_to("Delete" ,{:controller=>'esm_document',:action=>'partial_delete',:id=>@document.id,:p_id=>i.id,:ref_tag=>@ref_tag},:disable_with=>'Loading..',:remote=>true)
+				out
+			end
+		%><%= link_to "Add #{@document.name}" ,{:controller=>'esm_document',:action=>'partial_create',:id=>@document.id,:ref_tag=>@ref_tag,:update=>"partial-form-#{@fid}"},:class=>'btn btn-small',:disable_with=>'Loading..',:remote=>true%>
+<div id="partial-form-<%=@fid%>" style="margin-left:-10px"></div>

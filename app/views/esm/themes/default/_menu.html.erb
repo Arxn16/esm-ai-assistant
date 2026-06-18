@@ -1,0 +1,75 @@
+
+<%
+	
+	@home = "/"
+	# @home = @current_user.default_home if @current_user	
+	@home = @current_project.get_home_url(request) if @current_project
+%>
+
+<div id="toolbar" style="float:left;margin:0px;width:100%">
+
+</div>
+<script type="text/javascript" charset="utf-8">
+Ext.onReady(function(){
+    Ext.QuickTips.init();
+
+	var tb = new Ext.Toolbar({
+		defaults: {
+	                scale: 'large'
+	    }
+		
+	});
+	tb.render('toolbar');
+	
+	
+	tb.add(<%=menu_link_to 'Home', @home %>)	
+
+	<% if @current_user and @current_user.role %>
+    <% if @current_user.role.name=='admin' 
+		unless @mode==:app
+		menus = @context.menu_actions.root
+		else
+		menus = @current_project.menu_actions.root
+		end
+		menus.each do |i| 
+	%>
+	tb.add({text:'<%=i.name.humanize%>',width:100
+	<% if i.menu_actions.published.size>0 %>
+	,
+	menu:{items:[<%=i.menu_actions.published.collect{|i| "#{menu_link_to(i.name.humanize,i.url)}"}.join(',').html_safe %>]}
+	<% else %>
+	,
+	handler:function(){window.location='<%=i.url%>';}
+	<% end %>
+	});
+ 	<% end %>
+	<% else 
+	menus = @current_user.role.get_menu_actions
+	%>	
+	tb.add({text:'Dashboard',width:100,menu:{items:[<%=menus.collect{|i| "#{menu_link_to(i.name.humanize,i.link)}"}.join(',').html_safe %>]}});
+	<% end %>
+	<% end %>
+	
+	tb.add('->')
+	<% if @current_user and @current_project %>
+	tb.add('-')
+	
+	<% if @mode!=:app %>
+	tb.add(<%=menu_link_to 'Application', @current_project.get_home_url(request) %>)
+	<% elsif @mode!=:admin %>
+	tb.add(<%=menu_link_to 'Admin', "/admin/show/#{@current_project.id}" %>)
+	tb.add(<%=menu_link_to 'Developer', "/esm_home/project?id=#{@current_project.id}" %>)
+	<% else %>
+	tb.add(<%=menu_link_to 'Application', @current_project.get_home_url(request) %>)
+	tb.add(<%=menu_link_to 'Admin', "/admin/#{@current_project.id}" %>)
+	<% end %>
+	
+	<% end %>
+	tb.add('-')
+	tb.add({text:'<%=Time.now.strftime("%H:%M")%>',id:'clock',width:80})
+	tb.doLayout();
+	
+
+
+});
+</script>

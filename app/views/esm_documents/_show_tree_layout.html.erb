@@ -1,0 +1,316 @@
+<script type="text/javascript" charset="utf-8">
+		function changeValue(fid,t,val,text){
+			
+		}
+		function updateReport(){
+			
+		}
+		
+</script>
+<%  @edit = false
+	@prefix = ''
+	
+%>
+
+<div id="name" style="border:0px solid blue">
+	
+
+                <div class="tabbable">
+				<ul class="nav nav-tabs" style="margin-bottom:5px">
+					<li class="active"><a href="#tab-chart" data-toggle="tab"><%=@document.title%> Form</a></li>
+					<li><a href="#tab-report" data-toggle="tab"><%=@document.title%> Report</a></li>
+			
+				</ul>
+				<div class="tab-content" style="padding:0px">
+					<div class="tab-pane active" id="tab-chart" style="border:0px solid;padding:0px">
+						<span style="display:block;background:#eee;padding:5px" class="">
+
+												<span style="float:left">
+												<%# link_to "Back",  "\#" , :id=>'back-section', :class=>'btn  btn-small' %>
+												<%# link_to "Next",  "\#" , :id=>'next-section', :class=>'btn  btn-small' %>
+												</span>
+
+												<div style=" text-align: center;margin-top:0px"><h3><%=@document.title%></h3></div>
+
+												<span style="float:left;margin-top:-25px">
+												<%= submit_tag "Save & Exit", :id=>'finish-section', :class=>'btn  btn-small btn-success',:confirm=>'Are you sure?' %>	
+												</span>
+												<div class="clear"></div>
+
+						</span>
+					
+						<div  style="border:0px solid;;display:inline-block;padding:0px;display:table;" class="tab-pane active " id="a-form">
+									
+							<table>
+								
+								<tr><td valign="top">
+
+
+									<div style="padding:0px;border:0px solid">
+								
+							
+									<div class="clear">	</div>
+										
+										<div style="width:728px;padding:5px;padding-top:10px;margin-bottom:5px" class=" alert alert-info">
+											<%= render :partial=>'/esm_documents/render_containers.html'%>
+										</div>  
+									
+									</div>
+									
+								
+										</div>
+										
+										
+									</td>
+									
+										<td id="report-site-2-td" valign="top">
+										<div id="report-site-2" style="border:0px solid;padding-left:20px;position:fixed;top:50px;overflow:scroll;bottom:100px">
+										</div>
+										</td>
+								</tr>
+							</table>
+							
+					 </div>
+				
+						<span style="display:block;background:#eee;padding:5px" class="">
+								<span style="float:left">
+								<%# link_to "Back",  "\#" , :id=>'back-section', :class=>'btn  btn-small' %>
+								<%# link_to "Next",  "\#" , :id=>'next-section', :class=>'btn  btn-small' %>
+								</span>
+
+								<div style=" text-align: center;margin-top:0px;height:25px" ><%=Time.now.strftime("%H : %M")%></div>
+							
+								<span style="float:left;margin-top:-25px">
+								<%# submit_tag "Save & Exit",   :id=>'finish-section', :class=>'btn  btn-small btn-success' ,:confirm=>'Are you sure?' %>	
+								</span>
+
+						</span>
+				</div>
+				
+					<div class="tab-pane" id="tab-report">
+					   <div id="report-site-1">
+							<div id="report" class="" style="background-color:#fff;width:720px;border:0px solid;;display:inline-block;padding:0px;display:table; margin: 0 auto;">
+								<%
+									s = @current_project.get_service(@document.name)
+									context = s.prepare(params,self,request)
+									ss = s.load context	
+								%>
+								<%=render :inline=> ss.display_script.html_safe,:locals=>{:document_name=>@document.name} %>
+							</div>
+						</div>
+			
+					</div>
+					
+					
+           </div>
+
+		   </div>
+		
+		
+			
+</div>
+	
+
+
+<div id="clear">
+</div>
+
+<%
+
+	# @prefix = ''
+	if @document.tree_data 
+
+	%>
+	<%	
+		
+	root_data_node, root_fields_node, map, fmap = @document.get_root_format_node @record
+	fields = @document.fields
+
+	  	subtree = []
+		for f in fields
+			fparams = {}
+			fparams.merge! eval("{#{f.params}}") if f.params!=''
+			if fparams[:subtree]
+				subtree << f
+			end
+		end
+
+	
+%>
+<script type="text/javascript" charset="utf-8">
+console.log('init')
+	var map = <%=map.to_json.html_safe%>
+	var fmap = <%=fmap.to_json.html_safe%>
+    var master = <%=@document.get_mapping_master().to_json.html_safe %>;
+	var model = '<%=@document.name%>'
+	tree = new ESMTree('<%=@document.name%>',model, map, fmap, master);
+
+	esm_helper.push('<%=@document.name%>',tree)
+	
+	
+	function init_document_func(){
+       console.log('init_document_func')
+		<%
+			for field in subtree
+			
+			if field.lov_type and field.lov_type!=''
+			options = nil
+
+			    if field.lov_type == 'plain'
+					options = field.lov.split("\n").collect{|i| i.strip}.compact
+					keys = options
+			    elsif field.lov_type == 'pair'
+					options = field.lov.split("\n").compact.collect{|i| i.strip.split('|').reverse }
+					keys = options.collect{|i| i[1]}
+		    	end
+			
+
+			
+			options.each_with_index do |i,index| 
+			if map["#{field.id}|#{i[1]}"] and map["#{field.id}|#{i[1]}"][:items] and map["#{field.id}|#{i[1]}"][:items].size>0
+		%>
+		
+		subtree = tree.map['<%=field.id%>|<%=i[1]%>']
+		if(typeof subtree['items']!='undefined' && subtree['items'].length>0){
+	  	
+			// alert('<%=field.column_name%> <%=i[0]%> <%=i[1]%> '+subtree['items'].length)
+			
+	    		obj = $("#update_<%=field.column_name%>_item_<%=index%>")
+				obj.parent().parent().append("<div  style='margin-left:20px;margin-top: 0px;border:0px solid;height:0px;'  id='panel_<%=field.column_name%>_item_<%=index%>'></div>")
+				
+				<% if index%2==0 %>
+				obj.parent().parent().addClass('rowx')
+				<% end %>
+				 	
+	
+				   
+				  target = $('#panel_<%=field.column_name%>_item_<%=index%>');
+				    for(var i in subtree['items']){
+						fid = subtree['items'][i]['id']
+						obj = $('#'+tree.fmap[fid])
+						$(obj).appendTo(target);
+						
+						
+					}
+					target.append("<div class='clear'></div>");
+			
+	
+		}
+		
+		<% end %>
+		<% end %>
+	
+		<% else %>
+		// when no lov true or false
+		
+		subtree = map['<%=field.id%>']
+		if(typeof subtree['items']!='undefined' && subtree['items'].length>0){
+	  			
+	
+				obj = $("#data-<%=field.column_name%>")
+				obj.parent().parent().append("<td  style='margin-left:20px;margin-top: 0px;padding:0px;border:0px solid;height:0px;' id='panel_<%=field.column_name%>'></td>")
+			    target = $('#panel_<%=field.column_name%>');
+	
+				for(var i in subtree['items']){
+					fid = subtree['items'][i]['id']
+					obj = $('#'+tree.fmap[fid])
+					
+					$(obj).appendTo(target);
+					
+				}
+				target.append("<div class='clear'></div>");
+				
+				
+				
+			
+	
+	
+		}
+		
+		<% end %>
+	
+		<% end %>
+	
+
+	  tree = esm_helper.get('<%=@document.name%>')
+	
+	  <% for i in @document.fields 
+	
+	    if i.column_name and i.column_name!='' and !Document.visual_types.index(i.field_type)
+
+	  %>
+	
+	  v  = $('#data-<%=i.column_name%>').val()
+	  tree.changeValue('<%=i.id%>',$('#<%=i.column_name%>'),v,'')
+
+	  <% end %>
+	  <% end %>
+	
+	 // tree.initReport();
+	 // tree.updateReport();
+	
+		
+		
+	}
+	
+	
+	$(document).ready(function() {
+	   $('.k-sprite').removeClass("k-sprite");
+		init_document_func();
+		// alert('load')
+	});
+
+	var mode = 0
+	function unify_size(){
+		
+			if($( window ).width()>=1024){
+				if(mode==0){
+					mode=1
+					$('#report').appendTo($('#report-site-2'));
+					$('#report-site-2-td').css('width','600px')
+					// alert('change mode '+mode)
+				}
+			}else{
+			    if(mode==1){
+					mode=0
+					$('#report').appendTo($('#report-site-1'));
+					//alert('change mode '+mode)
+				}
+			}
+		
+		
+		
+				// console.log('w'+$(this).scrollTop())
+				// console.log('a'+$('#report-site-2-td').offset().top)
+				var a = parseInt(''+$('#report-site-2-td').offset().top);
+				w = $(window).scrollTop()
+				if(a-80>w)
+					y=a-w;
+				else
+					y=80;
+
+				// alert(t)
+				$('#report-site-2').css('top',''+(y)+'px')
+	}
+	
+	
+	$(document).ready(function() {
+	   $('.k-sprite').removeClass("k-sprite");
+	 
+		$('#javascript-spinner').hide();
+		window.setInterval(unify_size, 100);
+		// unify_size();
+	});
+	
+	$( window ).resize(function() {
+		unify_size()  	
+	});
+	
+    $( window ).scroll(function() {
+	      unify_size()
+	})
+</script>
+
+<%
+	end
+%>

@@ -1,0 +1,165 @@
+<style type="text/css">
+		icon{
+			display:inline-block;width:16px;height:16px;margin-right:5px;border:0px solid;;
+			padding:0px;
+			vertical-align:text-bottom;
+		}
+		.icon-home {
+            background-image:url(/esm/icon/house.png) !important;
+        }
+        .icon-table {
+            background-image:url(/esm/icon/database_table.png) !important;
+        }
+        .icon-document {
+            background-image:url(/esm/icon/application_form.png) !important;
+        }
+	    .icon-report {
+            background-image:url(/esm/icon/chart_bar.png) !important;
+        }
+	    .icon-page {
+            background-image:url(/esm/icon/page.png) !important;
+        }
+	    .icon-user {
+            background-image:url(/esm/icon/group.png) !important;
+        }
+	    .icon-menu {
+            background-image:url(/esm/icon/application_link.png) !important;
+        }
+	    .icon-setting {
+            background-image:url(/esm/icon/brick.png) !important;
+        }
+		.icon-application {
+            background-image:url(/esm/icon/application_home.png) !important;
+        }
+	    .icon-admin {
+            background-image:url(/esm/icon/monitor.png) !important;
+        }
+	    .icon-developer {
+            background-image:url(/esm/icon/brick.png) !important;
+        }
+		   .icon-content {
+	            background-image:url(/esm/icon/images.png) !important;
+	        }
+	
+		#menu2{
+			width:140px;
+		}
+		#menu2 li{
+			border:0px solid;
+
+			border-bottom:1px solid #ccc;
+			float:none;
+			
+		}
+    </style>
+
+	<%
+		@home = "/"
+		@home = @current_project.get_home_url(request) if @current_project
+		@home = "/admin/show/#{@current_project.id}" if @current_project and params[:controller]=='admin'
+	%>
+
+<ul id="menu2">
+					<li href="<%=@home%>" >
+						<icon class="icon-home"></icon>Home
+					</li>
+					<% if @current_project %>
+					<% if params[:controller]=='esm_proxy' %>
+					
+					<%
+						# application tools bar
+						menus = @current_project.menu_actions.root	
+						menus.each do |i| 
+					%>
+					<li <%="href='#{i.url}' if i.url and i.url!=''"%>>
+						<icon class='icon-menu'></icon><%=i.name.humanize%>
+					<% if i.menu_actions.published.size>0 %>
+						<ul>
+							<%=i.menu_actions.published.collect{|j| "<li href='#{j.url}'><icon class='icon-menu'></icon>#{j.name.humanize}</li>"}.join().html_safe %>]}
+						</ul>
+					<% end %>
+					</li>
+					<% end %>
+					
+					
+					<% elsif params[:controller]=='esm_home' or params[:controller]=='admin' %>
+						
+					<li>
+						<icon class="icon-document"></icon>Models
+						<ul>
+							<li><icon class="icon-document"></icon>Documents
+								<ul>
+									<%= @current_project.documents.collect{|i|"<li remote=true href='#{"/esm_document/show?id=#{i.id}"}'><icon class='icon-document'></icon>#{i.name}</li>"}.join().html_safe %>
+								</ul>
+							</li>
+							<li><icon class="icon-report"></icon>Reports</li>
+							<li><icon class="icon-table"></icon>Tables
+								<ul>
+									<%= @current_project.get_schema.tables.collect{|i|"<li remote=true href='#{"/esm_home/table_edit?id=#{i.id}"}'><icon class='icon-table'></icon>#{i.name}</li>"}.join().html_safe %>
+								</ul>
+							</li>
+							
+						</ul>
+					</li>
+					<li>
+						<icon class="icon-page"></icon>CMS
+						<ul>
+							<li><icon class="icon-menu"></icon>Menus
+								<ul>
+									<%= @current_project.menu_actions.collect{|i|"<li remote=true href='#{"/esm_home/menu_edit?id=#{i.id}"}'><icon class='icon-menu'></icon>#{i.name.humanize}</li>"}.join().html_safe %>
+								</ul>
+							</li>
+							<li><icon class="icon-page"></icon>Pages
+								<ul>
+									
+								</ul>
+							</li>
+							<li href="<%="/esm_home/content?id=#{@current_project.id}"%>" remote=true ><icon class="icon-content"></icon>Content
+
+							</li>
+						</ul>
+					</li>
+					<li>
+						<icon class="icon-user"></icon>Users &amp; Roles
+						<ul>
+								<li><icon class="icon-user"></icon>Roles
+									<ul>
+										<%= @current_project.roles.collect{|i|"<li remote=true href='#{"/esm_home/role_view?id=#{i.id}"}'><icon class='icon-user'></icon>#{i.name.humanize}</li>"}.join().html_safe %>
+									</ul>
+								</li>
+						</ul>
+					</li>
+					<li>
+						<icon class="icon-setting"></icon>Setting
+					</li>
+					
+					<% end %>
+					
+					
+				
+					<% end %>
+					
+
+				</ul>
+
+<script>
+    $(document).ready(function() {
+	
+		function onSelect(e) {
+			e = $(e.item);
+			href = e.attr('href');
+			if(href!=null){
+				if(e.attr('remote')=='true'){
+					 $.ajax({url: href,success: function(data){eval(data);}});
+				}else{
+					window.location = href;
+				}
+			}
+		 };
+		
+        $("#menu2").kendoMenu({
+			select: onSelect
+		});
+    });
+</script>
+

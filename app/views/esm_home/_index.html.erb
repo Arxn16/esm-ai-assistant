@@ -1,0 +1,158 @@
+
+<style type="text/css" media="screen">
+	.app{
+		width:180px;
+		height:120px;
+		float:left;
+		margin:30px;
+		text-align:center;
+		
+	}
+	.logo{
+		padding:20px;
+		width:150px;
+		height:100px;
+		border:1px solid;
+	}
+</style>
+
+<div style="width:100%">
+<% if @current_solution %>
+<header class=" head">
+<h1> <%=@current_solution.title %> Solution <%= link_to('Create Solution', "/esm_home/esm_new",:style=>"font-size:0.5em") %> <%= link_to "Edit", "/esm_home/esm_edit/#{@current_solution.id}",:style=>"font-size:0.5em"%>
+<div class="right" style="font-size:0.7em">	Switch Solution : 
+<%= select_tag 'switch', options_for_select(@current_user.esms.collect{|i|["#{i.title} (#{i.name})",i.id]},@current_solution.id), :onchange=>"window.location='/esm_home/esm_switch/'+this.value",:style=>"width:180px;margin-right:50px"%>
+</div>
+</h1>
+</header>
+<hr/>
+<div class="">
+<% for app in @current_solution.projects.order(:created_at)%>
+
+<div class="app">
+	<a href ="<%="#{app.url(request.server_name)}"%>">
+	<div class="logo">
+		<%= app.title %>
+	</div>
+	</a>
+	<% if @current_user.authorize? @context %>
+	<%= link_to "Workspace",{ :controller=>'esm_projects',:action=>'show',:id=>app}%> | 
+	<%# link_to "Edit", :controller=>'esm_projects',:action=>'edit',:id=>app %>
+	<%= link_to "Uninstall",{ :controller=>'esm_projects',:action=>'destroy',:id=>app },:data=>{:confirm=>'Are you sure?'}%>
+	<% end %>
+</div>
+<% end %>
+<div class="clear">
+</div><br/>
+<hr/>
+<% if @current_user.authorize? @context %>
+<%= link_to 'Create Application', "/esm_projects/new",:class=>bt_class%>
+<div class="right">
+<%= form_for :import, :url=>'/esm_home/import',:html=>{:multipart=>true} do |f| %>
+Import Project File : <%= f.file_field :file %>
+<%= f.submit 'Import', :data=>{ :confirm=>'Are you sure?',:class=>bt_class }%>
+<% end %>
+</div>
+</div>
+
+<br/>
+
+<hr/>
+<div class="user">
+<%= tabular(:model=>%w{User created_at last_accessed role},
+	:title=>"Solution's Users",
+    :data=> User.where('login like ?', "%@#{@current_solution.name}.#{DOMAIN}%").all(),
+    :id=>'projects' ) do |row,out| 
+	
+	out[0]="#{row.login.split('@')[0]}"
+	out[1]= time_ago_in_words(row.created_at)+' ago'
+	out[2]= time_ago_in_words(row.last_accessed)+' ago' if row.last_accessed
+	# out[1]=row.created_at.strftime("%d-%m-%Y")
+	
+	# out<<link_to('Visit',"#{row.url(request.server_name)}")
+	# # out<<link_to('Admin',"/admin/show/#{row.id}")
+	# out<<link_to('Workspace',{:controller=>'esm_projects',:action=>'show',:id=>row})
+	out<<link_to('Edit',{:controller=>'esm_users',:action=>'edit',:id=>row})
+	out<<link_to('Delete',{:controller=>'esm_users',:action=>'destroy',:id=>row},:data=>{:confirm=>'Are you sure?'})
+	out
+end
+%>
+<% if @current_user.authorize? @context %>
+<%= link_to 'Create User', "/esm_users/new",:class=>bt_class%>
+<% end %>
+</div>
+
+<hr/>
+
+<div class="user">
+<%= tabular(:model=>%w{project role_name created_at role},
+	:title=>"Solution's Roles",
+    :data=> Role.where('esm_id=?', @current_solution.id).all,
+    :id=>'projects' ) do |row,out| 
+	
+
+	out[0]= "#{row.project.title}"
+	out[1]= "#{row.name}"
+	out[2]= time_ago_in_words(row.created_at)+' ago'
+	# out[1]=row.created_at.strftime("%d-%m-%Y")
+	
+	# out<<link_to('Visit',"#{row.url(request.server_name)}")
+	# # out<<link_to('Admin',"/admin/show/#{row.id}")
+	# out<<link_to('Workspace',{:controller=>'esm_projects',:action=>'show',:id=>row})
+	out<<link_to('Edit',{:controller=>'esm_users',:action=>'edit',:id=>row})
+	out<<link_to('Delete',{:controller=>'esm_users',:action=>'destroy',:id=>row},:data=>{:confirm=>'Are you sure?'})
+	out
+end
+%>
+<% if @current_user.authorize? @context %>
+<%# link_to 'Create User', "/esm_users/new",:class=>bt_class%>
+<% end %>
+</div>
+
+<% end %>
+
+<% end %>
+<%# @current_user.my_solutions.inspect %>
+<%# @current_user.esm %>
+<% if @current_user.developer? @context %>
+<div class="">
+<%= tabular :model=>%w{Solution created_at},
+    :title=>'My Solutions',
+	:data=> @current_user.esms,
+	:links=>[link_to('Create Solution', "/esm_home/esm_new")],
+    :id=>'esms' do |row,out| 
+	out[0]="#{row.title} (#{row.name})"
+	out[1]=row.created_at.strftime("%d-%m-%Y")
+	out<<link_to('[ Switch ]',{:controller=>'esm_home',:action=>'esm_switch',:id=>row})
+	out<<link_to('[ Edit ]',{:controller=>'esm_home',:action=>'esm_edit',:id=>row})
+	out<<link_to('[ x ]',{:controller=>'esm_home',:action=>'esm_delete',:id=>row},:data=>{:confirm=>'Are you sure?'})
+	out
+end
+%>
+<%= link_to  'Create Solution', "/esm_home/esm_new",:class=>bt_class%>
+</div>
+<% end %>
+
+<% if @current_user.role and @current_user.role.name=='admin'%>
+<br/>
+<div class="">
+<%= tabular :model=>%w{name owner created_at},
+	:title=>'All Solutions',
+	:data=> Esm.all,
+	:rows=> 0,
+	:id=>'esms',
+	:extjs=>true do |row,out| 
+
+	out[1]="#{row.user.login if row.user}"
+	out[2]=row.created_at.strftime("%d-%m-%Y")
+	out<<link_to('Switch',{:controller=>'esm_home',:action=>'esm_switch',:id=>row})
+	out<<link_to('Edit',{:controller=>'esm_home',:action=>'esm_edit',:id=>row})
+	out<<link_to('Delete',{:controller=>'esm_home',:action=>'esm_delete',:id=>row},:data=>{:confirm=>'Are you sure?'})
+	out
+end
+%>
+</div>
+
+<% end %>
+
+</div>

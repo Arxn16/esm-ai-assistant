@@ -1,0 +1,29 @@
+
+<div style="width:100%;border:0px solid">
+	
+<%= form_for(:operation,:url=>"/esm_operations/#{@operation.id}/edit",:remote=>true) do |f| %>
+
+<span style='float:right'><%= link_to "Invoke", @operation.url(request.server_name),:target=>'_blank' %><br/>
+	<%# f.submit 'Update',:class=>'bt blue btsize' %> </span>
+
+<%# hidden_field_tag :id, @operation.id %>
+<%= render :partial=> 'operation', :locals=>{:f=>f} %>
+
+<% end %>
+
+<div class="clear">
+	
+</div>
+<br/>
+
+<div id="test-operation" style="background:#ddd;padding:10px;display:none <%='display:block' if request.post? and params[:commit]=='Test' %>">
+	<% if request.post? and params[:commit]=='Test' 
+		s = Service.get(@service.package).load
+    	out = s.send @operation.name,params
+	%>
+	<%= out %>
+	<% end %>
+</div>
+
+</div>
+

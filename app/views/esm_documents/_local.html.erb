@@ -1,0 +1,23 @@
+<%
+
+
+%>
+	<h1><%= @document.title %> Document</h1>
+	<span style="float:right;">
+	<%= link_to "Preview", {:controller=>'esm_projects',:action=>'show',:id=>@document.project,:path=>"/esm_documents/#{@document.id}"},:remote=>true %> | 
+	<%= link_to "Edit Layout", {:action => "edit_layout",:id=>@document},:remote=>true %> |
+	<%= link_to "Tree Structure", {:action => "edit_tree",:id=>@document},:remote=>true %> |
+	<%= link_to "Submission", @document.service.url(request.domain)+"/../create"  if @document.service %> |
+	<%= link_to "Table", @document.service.url(request.domain)+"/../index"  if @document.service %> |
+	<%= link_to "Analysis", {:controller=>'esm_report',:action => "analysis",:id=>@document} ,:remote=>true %> |
+	<%= link_to "Edit", {:action => "edit",:id=>@document,:update=>'layout'},:remote=>true %> |
+
+
+	</span>
+ <div class="clear">
+ 	
+ </div>
+<hr/>
+<div id="layout" style="border:0px solid;">
+<%= yield %>
+</div>

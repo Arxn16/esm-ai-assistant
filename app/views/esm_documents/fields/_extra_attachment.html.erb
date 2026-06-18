@@ -1,0 +1,44 @@
+
+<%
+	p = {:width=>320,:height=>160}.merge(fparams)
+	att = @document.project.load_model[:attachment].find(value)
+	path = ''
+	path = att.path if att
+%>
+<div style="border:0px dotted;width:<%=p[:width]%>px;">
+<div style="width:100%">
+<%=link_to image_tag(path,:width=>160,:id=>"img_#{fid}",:class=>'',:alt=>'File upload' ,:style=>"border:0px solid blue"), path ,:id=>"a_#{fid}",:target=>'_blank' %>
+<% unless @show %>
+<input name="upload[file]" id="_<%=fid%>" type="file" />
+<% end %>
+</div>
+<%= hidden_field_tag name, value,:id=>fid  unless @show%>
+</div>
+<% content_for :script do %>
+<% unless @show%>
+function onSuccess(e) {
+ 	alert("Status: " + e.response.status);
+}
+ $(document).ready(function() {
+     $("#_<%=fid%>").kendoUpload({
+         async: {
+             saveUrl: "/esm_attachments/<%=@document.id%>/upload.json?p_id=<%= @document.project.id %>&field_id=<%=@field.id%>",
+             removeUrl: "/esm_attachments/<%=@document.id%>/remove.json?field_id=<%=@field.id%>&value=<%=value%>",
+             autoUpload: true
+         },
+		success: function(e){
+			$.map(e.files, function(file) {
+			        var info = file.name;
+			});
+			
+
+			
+			$("#<%=fid%>").val(e.response.id)
+			$("#img_<%=fid%>").attr('src',e.response.path)
+			$("#a_<%=fid%>").attr('href',e.response.path)
+		}
+});
+});
+<% end %>
+
+<% end %>

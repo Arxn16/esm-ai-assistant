@@ -1,0 +1,22 @@
+<%
+
+	has_one_model = Fields::RelationOne.new @document, @field, @record
+	
+	query = params[:q]
+	list = []
+	keys = []
+	
+    has_one_model.related_fields.each_with_index do |f,index|
+		keys <<{f.to_sym=>Regexp.new(query)}
+    end
+
+	list = has_one_model.related_table.all('$or'=>keys)
+	
+	if list 
+%>
+<%= tabular :model=>has_one_model.related_fields,:data=>list do |row,out| 
+	out<< link_to("Select", "javascript:doSelect('#{row.id}')")
+out
+end%>
+<% end %>
+<%= link_to "Close", 'javascript:closeSearchWindow()' %>

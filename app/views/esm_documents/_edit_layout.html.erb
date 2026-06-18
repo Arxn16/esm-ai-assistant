@@ -1,0 +1,87 @@
+<% @edit = true%>
+<style type="text/css" media="screen">
+	.control-item{
+		width:65px;
+		margin:2px;
+		padding:2px;
+		font-size:0.8em;
+		text-align:center;
+		float:left;
+		-moz-border-radius: 5px;
+	    -webkit-border-radius: 5px;
+	    -khtml-border-radius: 5px;
+	    border-radius: 5px;
+	}
+</style>
+<% 
+list = {'visual'=>[]}
+order = ['visual']
+for i in Field.field_types 
+	s = i.split('_')
+	if s.size==2
+	unless list[s[0]]
+		list[s[0]]=[] 	
+		order<<s[0]
+	end
+		list[s[0]]<<{:name=>s[1],:type=>i}
+	else
+		list['visual']<<{:name=>i,:type=>i}
+	end
+end 
+
+%>
+
+<%= form_for :document, :url=>{:action=>'edit_layout',:id=>@document},:html=>{:id=>'document_form'},:remote=>true do |f| %>
+<div class=" left" style="border:0px solid;display:inline-block;float:left">
+	<%= render :partial=>'/esm_documents/render_containers.html'%>
+</div>
+
+<% end %>
+<div id="side-menu" class="side-menu" style="position:fixed;width:270px;float:right;margin-right:0px;right:0px;background:#fff;padding:5px;top:140px;border:0px solid #ddd">
+
+<div id="main-control" style="float:left;width:250px;border:0px solid;overflow:scorll;">
+	<div id="components" class="connectedSortable">
+
+		<% for i in order %>
+		<%= i.humanize %>
+			<div class="clear">
+			</div>
+		<%
+		   for j in list[i]
+		%>
+			<div  class="control-item k-button">
+				<%= j[:name].humanize  %>
+				<%= hidden_field_tag "field[]", j[:type] %>
+			</div>
+		<% end %>
+			<div class="clear">
+			</div>
+		<% end %>
+		<div class="clear">
+		</div>
+	</div>
+	<div id="control" style="float:left">
+	</div>
+</div>
+
+</div>
+
+<div class="clear">
+	
+</div>
+
+<%# link_to "+Field", {:action => "field_new",:id=>@document,:index=>0,:update=>"control"},:remote=>true %>
+
+
+
+
+
+<% if @new_field and @new_field.field_type!='clear' %>
+<script type="text/javascript" charset="utf-8">
+	$.ajax('<%= "/esm_documents/#{@document.id}/field_edit?field_id=#{@new_field.id}&update=control".html_safe %>',{
+		success:function(data){
+			$(document).append(data)
+		}
+	});
+</script>
+<% end %>

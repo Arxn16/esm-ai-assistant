@@ -1,0 +1,230 @@
+<%
+	@home = "/"
+	
+	if @current_project
+		@home = @current_project.get_home_url(request) 
+	elsif @context and www = @context.projects.find_by_name('www')
+		@home = www.get_home_url(request)
+	end
+	@home = "/admin/show/#{@current_project.id}" if @current_project and params[:controller]=='admin'
+%>
+  	<%= view :fitwidth if params[:controller]=='home'  %>
+
+<ul class="k-content">
+	<!--
+	<li class="current"><a href="/starlight/dashboard.html" class="dashboard"><span>Dashboard</span></a></li>
+    <li><a href="/starlight/widgets.html" class="widgets"><span>Widgets</span></a></li>
+    <li><a href="/starlight/tables.html" class="tables"><span>Tables</span></a></li>
+    <li><a href="/starlight/elements.html" class="elements"><span>Elements</span></a></li>
+    <li><a href="/starlight/charts.html" class="charts"><span>Graphs &amp; Charts</span></a></li>
+    <li><a href="/starlight/media.html" class="media"><span>Media</span></a></li>
+    <li><a href="/starlight/form.html" class="editor menudrop"><span>Forms</span></a>
+    	<ul>
+        	<li><a href="/starlight/form.html"><span>Form Styling</span></a></li>
+        	<li><a href="/starlight/editor.html"><span>WYSIWYG Editor</span></a></li>
+            <li><a href="/starlight/wizard.html"><span>Wizard</span></a></li>
+        </ul>
+    </li>
+    <li><a href="/starlight/grid.html" class="grid"><span>Grid</span></a></li>
+    <li><a href="/starlight/calendar.html" class="calendar"><span>Calendar</span></a></li>
+    <li><a href="/starlight/buttons.html" class="buttons"><span>Buttons &amp; Icons</span></a></li>
+    <li><a href="/starlight/chat.html" class="chat"><span>Chat Support</span></a></li>
+    <li><a href="/starlight/404.html" class="error"><span>Error Pages</span></a></li>
+-->
+
+<% if @current_service %>
+
+<li  <%= 'class="current"'.html_safe  if  params[:controller]=='esm_proxy'%>><a href="index" class='home'><span><%= @current_service.name.humanize %></span></a></li>
+
+<% if false %>
+    <% if @current_object and menus = @current_object.context_menu %>
+	<% for i in menus%>
+	<li> <a href="<%=i[1]%>" class='links'><span><%=i[0]%></span></a></li>
+	<% end %>	
+	<% end %>
+<% end %>
+	<!--  Project Menus	 -->
+	<% 
+		if @current_project
+		if params[:controller]=='esm_proxy' 
+	%>
+	<!--
+	<%
+		menus = @current_project.menu_actions.root	
+		menus.each do |i| 
+	%>
+		<li>
+			<a href = "<%=i.url if i.menu_actions.size==0 %>" class="links" ><span ><%=i.name%></span></a>
+			<% if i.menu_actions.published.size>0 %>
+				<ul>
+					<% i.menu_actions.published.each do |j| %>
+						<li><a href="<%=j.url%>" class="links"><span><%=j.name%></span></a></li>
+					<% end %>
+				</ul>
+			<% end %>
+		</li>
+	<% end %>
+	-->	
+	<% end %>	
+	
+
+	<% end %>					
+
+</ul>    
+<%= yield :context_menu %>
+
+
+<br/>
+<% end %>
+<% if  params[:controller]!='esm_proxy' and  @current_user and @context and (@context.developer?(@current_user)) %>
+	<%= view :fullwidth if params[:controller]=='esm_projects'  %>
+	
+	<ul>
+		
+	<% if @current_project %>
+
+		<!--<li <%= 'class="current"'.html_safe  if params[:controller]=='esm_home' %> ><a href="<%="/esm_home"%>" class="dashboard"><span>Solutions</span></a></li>-->
+		
+	<li <%= 'class="current"'.html_safe  if params[:controller]=='esm_projects' %> ><a href="<%="/esm_projects/#{@current_project.id}"%>" class="settings"><span><%=@current_project.title%> Workspace</span></a></li>
+
+	<% if  params[:controller]!='esm_proxy' and  params[:controller]!='esm_home'%>
+		<div id="side-menu" class="side-menu" style="width:100%;margin-right:10px;border:0px solid;">
+		<div id="nav-div" style="width:100%;border:0px solid;margin-right:10px;height:100%">
+	
+		</div>
+		</div>   
+	<% end %>		
+
+	<li>
+		<a href="#" class="widgets menudrop"><span>Projects </span></a>
+		<ul>
+			<% @current_solution.projects.each do |j| %>
+				<li><a href="<%=j.get_home_url(request)%>" class="elements"><span><%=j.title%> (<%=j.package%>)</span></a></li>
+			<% end %>
+		</ul>
+	</li>
+	<li><a href="/esm_home" class="widgets menudrop"><span>Switch Solutions</span></a>
+		<ul>
+			<% @current_user.my_solutions.each do |j| %>
+				<li><a href="<%=url_for :controller=>'esm_home',:action=>'esm_switch',:id=>j %>" class="elements"><span><%=j.title%> (<%=j.name%>)</span></a></li>
+			<% end %>
+		</ul>	
+	</li>
+
+<% end %>
+
+
+    </ul>
+
+<% end %>
+
+<% if @current_project and params[:controller]=='esm_projects' %>
+
+<script type="text/javascript" charset="utf-8">
+	Ext.require([
+	    'Ext.tree.*',
+	    'Ext.data.*',
+	    'Ext.window.MessageBox'
+	]);
+	
+	var store
+	
+	
+	function reload_workspace(){
+		store.reload
+	}
+	
+	Ext.onReady(function() {
+		
+		
+		
+		
+	    store = Ext.create('Ext.data.TreeStore', {
+	        proxy: {
+	            type: 'ajax',
+				nodeParam: 'id',
+	            url: '/esm_projects/<%=@current_project.id%>.json'
+	        }
+	    });
+
+	
+	    var tree = Ext.create('Ext.tree.Panel', {
+	        store: store,
+	        rootVisible: false,
+	        useArrows: true,
+	        frame: false,
+			title: '',
+			autoScroll:true,
+			height:600,
+		    listeners: {
+		        itemclick: function(view,rec,item,index,eventObj) {       
+		            var record = rec;
+				
+		            // alert(record.raw['op_id']);
+					jQuery.ajax({
+						url:record.raw['action'],
+						script:true,
+						success: function(script){
+							$('#workspace').fadeIn(200);
+							eval(script);
+							
+						},
+						beforeSend: function( xhr ) {
+						$('#workspace').fadeOut(200);
+						}
+						
+					});
+		            // alert(record.data['text']);
+		            
+		        }
+		    },
+	        dockedItems: [{
+	            xtype: 'toolbar',
+	            items: [
+						{ text: 'Edit',
+			                handler: function(){
+								window.location="/esm_projects/<%=@current_project.id%>/edit";
+						}},
+						
+						{
+	                text: 'Refresh',
+	                handler: function(){
+				        store.load();
+						// window.location.reload();
+	                    // var records = tree.getView().getChecked()
+	                    //     names = [];
+	                    // 	
+	                    // Ext.Array.each(records, function(rec){
+	                    //     names.push(rec.get('text'));
+	                    // });
+	                    // 	
+	                    // Ext.MessageBox.show({
+	                    //     title: 'Selected Nodes',
+	                    //     msg: names.join('<br />'),
+	                    //     icon: Ext.MessageBox.INFO
+	                    // });
+	                }
+	            }]
+	        }]
+	    });
+	
+	new Ext.Panel(
+	 {
+	        layout: 'fit',
+	        items: [tree],
+			renderTo: 'nav-div'
+	});
+	
+	});
+</script>
+
+<% end %>
+
+
+<!-- Cloud Button -->
+
+<div class="clear">
+	
+</div>
+
+

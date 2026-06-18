@@ -1,0 +1,18 @@
+
+<%  id = "#{field.id}-#{record.id}" %>
+<div class="<%=id%>" style="display:inline-block;vertical-align:text-top;width:100%">
+   <div class="sig sigWrapper" style="width:100%;border:0px solid gray">
+     <div class="typed"></div>
+     <canvas class="pad" height="120" style="border:0px dotted;"></canvas>
+   </div>
+</div>
+ <script src="/signature/jquery.signaturepad.min.js"></script>
+ <script>
+   $(document).ready(function() {
+     $('.<%=id%>').signaturePad({displayOnly:true}).regenerate(eval('<%=value.html_safe if value%>'));
+   });
+ </script>
+
+
+
+

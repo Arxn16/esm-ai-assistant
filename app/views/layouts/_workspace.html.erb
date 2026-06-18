@@ -1,0 +1,220 @@
+<ul id="treeview" class="menu" style="background:#fff;outline:none">
+                    <li data-expanded="true">
+                        <span class="k-sprite folder"></span>&nbsp;&nbsp;
+						<%= link_to "#{@current_project.title} (#{@current_project.package})" , "/esm_projects/#{@current_project.id}/edit",:remote=>true ,:disable_with=>'loading..'%>
+                        <ul>
+                            <li data-expanded="true">
+                                <span class="k-sprite folder"></span><%= link_to 'Services' , "/esm_services?id=#{@current_project.id}",:remote=>true,:disable_with=>'loading..' %>
+                                <ul>
+										<% @current_project.services.sort{|a,b| a.name<=>b.name}.each do |i| 
+										    name = i.to_s
+										     # name += " (#{i.extended})" if i.extended and i.extended!=''
+											%>
+										<li><span class="k-sprite html"></span><%= link_to name , "/esm_services/#{i.id}",:remote=>true ,:disable_with=>'loading..' ,:style=>'text-align:center' %>
+											<ul>
+												<% for o in i.operations%>
+												<li><span class="k-sprite html"></span><%= link_to o.name , "/esm_services/#{i.id}?op_id=#{o.id}",:remote=>true ,:disable_with=>'loading..' ,:style=>'text-align:center' %></li>
+					                            <% end%>
+											</ul>
+										</li>
+										<% end %>
+                          
+                                </ul>
+                            </li>
+                            <li data-expanded="true">
+                                <span class="k-sprite folder"></span><%= link_to 'Documents' , "/esm_documents?id=#{@current_project.id}",:remote=>true,:disable_with=>'loading..' %>
+                                <ul>
+											<% @current_project.documents.to_a.compact.sort{|a,b| a.name.to_s <=>b.name.to_s}.each do |i| %>
+											<li><span class="k-sprite rootfolder"></span><%= link_to i.name.humanize , "/esm_documents/#{i.id}",:remote=>true,:disable_with=>'loading..' if i.name %></li>
+											<% end %>
+									
+
+                                 
+                                </ul>
+                            </li>
+
+
+							<li data-expanded="true">
+                               <span class="k-sprite folder"></span><%= link_to 'Models' , "/esm_tables?id=#{@current_project.id}",:remote=>true ,:disable_with=>'loading..'%>
+                               <ul>
+	
+									<% @current_project.get_schema.tables.sort{|a,b| a.name<=>b.name}.each do |i|  %>
+									<li><span class="k-sprite rootfolder"></span><%= link_to i.name.humanize , "/esm_tables/#{i.id}",:remote=>true,:disable_with=>'loading..' %></li>
+									<% end %>
+                               </ul>
+                           </li>
+
+
+							<li data-expanded="true">
+                               <span class="k-sprite folder"></span><%= link_to 'Menus' , "/esm_menus?id=#{@current_project.id}",:remote=>true ,:disable_with=>'loading..'%>
+                               <ul>
+	
+								<% @current_project.menu_actions.sort{|a,b| a.name<=>b.name}.each do |i|  %>
+									<li><span class="k-sprite html"></span><%= link_to i.name , "/esm_menus/#{i.id}/edit",:remote=>true ,:disable_with=>'loading..'%></li>
+									<% end %>
+                               </ul>
+                           </li>
+
+                        </ul>
+                    </li>
+</ul>
+   
+
+
+
+<script>
+$(document).ready(function() {
+$("#treeview").kendoTreeView();
+});
+</script>
+
+
+<style >
+
+* :focus{
+	outline:0;
+	border:px solid;
+}
+
+
+
+.menu a{
+color:#000;	
+	
+}
+
+
+
+#treeview .k-sprite {
+background-image: url("/kendoui/examples/content/web/treeview/coloricons-sprite.png");
+}
+
+.rootfolder { background-position: 0 0; }
+.folder { background-position: 0 -16px; }
+.pdf { background-position: 0 -32px; }
+.html { background-position: 0 -48px; }
+.image { background-position: 0 -64px; }
+
+</style>
+
+		
+		
+		
+					<!--
+							<div class="accordion-group">
+								<div class="accordion-heading">
+									<a href="#collapseSix" data-parent="#side_accordion" data-toggle="collapse" class="accordion-toggle">
+										<u><%=@current_project.title%></u> (<%=@current_project.package%>)
+									</a>
+								</div>
+								<div class="accordion-body collapse" id="collapseSix">
+									<div class="accordion-inner">
+										<ul class="nav nav-list">
+										<li><%= link_to 'Settings' , "/esm_projects/#{@current_project.id}/edit",:remote=>true ,:disable_with=>'loading..'%></li>	
+										<li><%= link_to 'Content' , "/esm_content/#{@current_project.id}",:remote=>true ,:disable_with=>'loading..'%></li>
+
+										</ul>
+									</div>
+								</div>
+							</div>
+
+												<div class="accordion-group">
+													<div class="accordion-heading">
+														<a href="#collapseOne" data-parent="#side_accordion" data-toggle="collapse" class="accordion-toggle">
+														<i class="icon-th"></i> Service 
+														</a>
+													</div>
+													<div class="accordion-body collapse in" id="collapseOne">
+														<div class="accordion-inner">
+															<ul class="nav nav-list">
+																<% @current_project.services.sort{|a,b| a.name<=>b.name}.each do |i| 
+																    name = i.to_s
+																    # name += " (#{i.extended})" if i.extended and i.extended!=''
+																	%>
+																<li><%= link_to name , "/esm_services/#{i.id}",:remote=>true ,:disable_with=>'loading..',:class=>bt_class ,:style=>'text-align:center'%></li>
+																<% end %>
+																<li class="divider"></li>
+																<li><%= link_to 'Manage ..' , "/esm_services?id=#{@current_project.id}",:remote=>true,:disable_with=>'loading..',:class=>bt_class %></li>
+															</ul>
+														</div>
+													</div>
+												</div>
+												<div class="accordion-group">
+													<div class="accordion-heading">
+														<a href="#collapseTwo" data-parent="#side_accordion" data-toggle="collapse" class="accordion-toggle">
+															<i class="icon-th"></i> Document
+														</a>
+													</div>
+													<div class="accordion-body collapse" id="collapseTwo">
+														<div class="accordion-inner">
+															<ul class="nav nav-list">
+																<% @current_project.documents.each do |i| %>
+																<li><%= link_to i.name , "/esm_documents/#{i.id}",:remote=>true,:disable_with=>'loading..',:class=>bt_class %></li>
+																<% end %>
+																<li class="divider"></li>
+																<li><%= link_to 'Manage ..' , "/esm_documents?id=#{@current_project.id}",:remote=>true,:disable_with=>'loading..' ,:class=>bt_class%></li>
+
+															</ul>
+														</div>
+													</div>
+												</div>
+												<div class="accordion-group">
+													<div class="accordion-heading">
+														<a href="#collapseThree" data-parent="#side_accordion" data-toggle="collapse" class="accordion-toggle">
+															<i class="icon-th"></i> Table
+														</a>
+													</div>
+													<div class="accordion-body collapse" id="collapseThree">
+														<div class="accordion-inner">
+															<ul class="nav nav-list">
+																<% @current_project.get_schema.tables.each do |i|  %>
+																<li><%= link_to i.name , "/esm_tables/#{i.id}",:remote=>true,:disable_with=>'loading..',:class=>bt_class %></li>
+																<% end %>
+																<li class="divider"></li>
+																<li><%= link_to 'Manage ..' , "/esm_tables?id=#{@current_project.id}",:remote=>true ,:disable_with=>'loading..',:class=>bt_class%></li>
+
+															</ul>
+														</div>
+													</div>
+												</div>
+												<div class="accordion-group">
+													<div class="accordion-heading">
+														<a href="#collapseFour" data-parent="#side_accordion" data-toggle="collapse" class="accordion-toggle">
+															<i class="icon-th"></i> Menu
+														</a>
+													</div>
+													<div class="accordion-body collapse" id="collapseFour">
+														<div class="accordion-inner">
+															<ul class="nav nav-list">
+																	<% @current_project.menu_actions.each do |i|  %>
+																	<li><%= link_to i.name , "/esm_menus/#{i.id}/edit",:remote=>true ,:disable_with=>'loading..',:class=>bt_class%></li>
+																	<% end %>
+																	<li class="divider"></li>
+																	<li><%= link_to 'Manage ..' , "/esm_menus?id=#{@current_project.id}",:remote=>true ,:disable_with=>'loading..',:class=>bt_class%></li>
+
+															</ul>
+														</div>
+													</div>
+												</div>
+
+														<div class="accordion-group">
+															<div class="accordion-heading">
+																<a href="#collapseFive" data-parent="#side_accordion" data-toggle="collapse" class="accordion-toggle">
+																<i class="icon-th"></i>	Users &amp; Roles
+																</a>
+															</div>
+															<div class="accordion-body collapse" id="collapseFive">
+																<div class="accordion-inner">
+																	<ul class="nav nav-list">
+																	<% @current_project.roles.each do |i|  %>
+																	<li><%= link_to i.name , "/esm_roles/#{i.id}",:remote=>true ,:disable_with=>'loading..',:class=>bt_class%></li>
+																	<% end %>
+																	<li class="divider"></li>
+																	<li><%= link_to 'Manage ..' , "/esm_roles?id=#{@current_project.id}",:remote=>true ,:disable_with=>'loading..',:class=>bt_class%></li>
+
+																	</ul>
+																</div>
+															</div>
+														</div>
+
+						-->

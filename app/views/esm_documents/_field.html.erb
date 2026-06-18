@@ -1,0 +1,160 @@
+
+
+<div id="example" class="k-content" style="width:270px">
+
+				<div id="tabstrip">
+					<ul>
+						<li class="k-state-active">
+							Properties
+						</li>
+						<li>
+							Styles
+						</li>
+
+					</ul>
+					<div>
+
+
+
+	
+
+<%
+	
+	id = @field.id
+	id = 'new' unless id
+	
+	vtype = true if Document.visual_types.index @field.field_type
+	html = true if @field.field_type=='html'
+%>
+<script type="text/javascript" charset="utf-8">
+	function typing_func(t){
+		if(<%= (!@field.column_name)?true:false %>){
+			$("#field_label").val(t.value)
+			$("#field_column_name").data('kendoComboBox').value(t.value.toLowerCase().replace(/ /gi,"_"))
+		}
+	}
+</script>
+
+<%= f.hidden_field :field_type,:value=>'text_string' %>  
+
+<div id="field-<%=id%>" class="property" style="padding:0px" >
+
+<div class="field">
+	  <%= f.label :field_type %>
+	  <%= f.select :field_type, Field.field_types.collect{|i| [i,i]} ,:id=>'field_type' ,:style=>'width:200px'%>
+	 
+</div>			
+<div class="field">
+  <%= f.label :field_name %>
+  <%= f.text_field :name, :onkeyup=>'typing_func(this)',:class=>tb_class %>
+</div>
+
+<% unless vtype %>
+<div class="field">
+  <%= f.label :field_label, :style=>'display:inline-block' %>
+  <span><%#f.check_box :hide_label %></span>
+  <%= f.text_field :label ,:class=>tb_class %>  
+</div>
+<% end %>
+
+<%
+
+@field.column_name = nil if @field.column_name=='[object Object]'
+	
+%>
+
+<% unless vtype %>
+<div class="field">
+  <%= f.label :column_name %>
+  <%= f.text_field :column_name , :class=>tb_class,:id=>'field_column_name',:style=>"width:200px"%>
+
+	<script type="text/javascript" charset="utf-8">
+		 $("#field_column_name").kendoComboBox({
+		        dataTextField: "text",
+		        dataValueField: "<%=@field.column_name %>",
+		        dataSource: <%=@document.table.data_columns.collect{|k,v| {'text'=>k,'value'=>k}}.to_json.html_safe%>
+		    });
+	</script>
+  
+</div>
+
+
+	
+	<div id="name" style="padding-left:10px" class="property">
+
+	<table border="0" cellspacing="5" cellpadding="5">
+		<tr><td><%= f.check_box :mandatory, :style=>"display:inline-block" %> <%= f.label :mandatory,:style=>'display:inline-block'%> </td>
+		<td><%= f.check_box :search, :style=>"display:inline-block" %> <%= f.label :search,:style=>'display:inline-block'%> </td>
+		<td><%= f.check_box :list_show, :style=>"display:inline-block" %> <%= f.label :list_show,:style=>'display:inline-block'%></td></tr>
+	</table>
+
+	</div>
+
+<% end %>
+	
+	<% if html %>
+	<div class="field">
+	  <%= f.label :display %>
+	  <%= f.text_area :display,:cols=>30,:rows=>20 ,:style=>'vertical-align:text-top;height:300px'%>
+	</div>
+	<% end %>
+	
+	
+	<div class="field">
+	  <%= f.label :field_params %>
+	  <%= f.text_area :params,:cols=>30,:rows=>3 ,:style=>'vertical-align:text-top;'%>
+	</div>
+
+<% unless vtype%>	
+	
+	<div class="field">
+	  <label><%= 'LOV type' %></label>
+	  <%= f.select :lov_type, %w{plain pair collection },{:include_blank=>true} %>
+	</div>
+
+	<div class="field">
+	  <label><%= f.label 'LOV params'%></label>
+	  <%= f.text_area :lov,:cols=>30,:rows=>3 ,:style=>'vertical-align:text-top'%>
+	</div>
+<% end %>
+
+</div>
+
+					</div>
+					
+					
+					<div>
+
+				
+<div id="style-<%=id%>" class="x-hidden" style="margin:0px;padding:0px;">
+	
+	<% unless html %>
+	<div class="field">
+	  <%= f.label :description %>
+	  <%= f.text_area :description,:cols=>30,:rows=>3 ,:style=>'vertical-align:text-top'%>
+	</div>
+	
+	<div class="field">
+	  <%= f.label :display %>
+	  <%= f.text_area :display,:cols=>30,:rows=>3 ,:style=>'vertical-align:text-top'%>
+	</div>
+	
+	<% end %>
+	<div class="field">
+	  <%= f.label :css %>
+	  <%= f.text_field :css ,:class=>tb_class %>
+	</div>
+	
+	<div class="field">
+	  <%= f.label :style %>
+	  <%= f.text_area :style,:cols=>30,:rows=>3 ,:style=>'vertical-align:text-top'%>
+	</div>
+
+</div>
+
+
+
+
+	</div>
+<div>
+</div>

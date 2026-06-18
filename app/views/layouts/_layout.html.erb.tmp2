@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+		<%
+			p = {}
+			tp = @current_project.get_params if @current_project 
+			p = tp if tp
+			title = (p['app_title']and p['app_title']!='')?p['app_title']:"ESM:Innovation as a Service"
+			bg = (p['app_bg_style']and p['app_bg_style']!='')?p['app_bg_style']:"#eee"
+			logo = (p['app_logo_url']and p['app_logo_url']!='')?p['app_logo_url']:'/esm/banner.png'
+
+		%>
+		
+			
+	
+		<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+		<link rel="stylesheet" type="text/css" href="/extjs/resources/css/ext-all.css"/>
+
+		<script type="text/javascript" src="/extjs/ext-all.js"></script>
+		
+		<script src="/ace/src/ace.js" type="text/javascript" charset="utf-8"></script>
+		<script src="/ace/src/theme-clouds.js" type="text/javascript" charset="utf-8"></script>
+		<script src="/ace/src/mode-html.js" type="text/javascript" charset="utf-8"></script>
+
+		<!--
+		<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+		-->
+		<%= stylesheet_link_tag "/stylesheets/esm_home" %>
+
+		<%= javascript_include_tag "application" %>
+		<%= csrf_meta_tag %>
+		
+		<meta name="viewport" content="width=768px, minimum-scale=1.0, maximum-scale=1.0" />
+
+		<link type="text/css" href="/jquery/css/cupertino/jquery-ui-1.8.17.custom.css" rel="stylesheet" />	
+		<script type="text/javascript" src="/jquery/js/jquery-1.7.1.min.js"></script>
+		<script type="text/javascript" src="/jquery/js/jquery-ui-1.8.17.custom.min.js"></script>
+
+
+		<script type="text/javascript" charset="utf-8">
+
+				Ext.Loader.setConfig({
+				    enabled: true
+				});
+				Ext.Loader.setPath('Ext.ux', '/extjs/examples/ux');
+				Ext.require([
+					'Ext.tab.*',
+				    'Ext.grid.*',
+				    'Ext.data.*',
+				    'Ext.util.*',
+				    'Ext.state.*'
+				]);
+
+		</script>
+
+		<%# render :partial=>'/layouts/kendoui'%>
+
+	
+        <meta charset="UTF-8" />
+		<title><%= title %></title>
+        
+        <!-- CSSs -->
+        <link rel="stylesheet" href="/admantium/css/reset.css">
+        <link rel="stylesheet" href="/admantium/css/960.css" />
+        <link rel="stylesheet" href="/admantium/css/icons.css">
+        <link rel="stylesheet" href="/admantium/css/tipsy.css">
+        <link rel="stylesheet" href="/admantium/css/formalize.css">
+        <link rel="stylesheet" href="/admantium/css/prettyPhoto.css">
+        <link rel="stylesheet" href="/admantium/css/jquery-ui-1.8.18.custom.css">
+        <link rel="stylesheet" href="/admantium/css/chosen.css">
+        <link rel="stylesheet" href="/admantium/css/ui.spinner.css">
+        <link rel="stylesheet" href="/admantium/css/jquery.jqplot.min.css" />
+        <link rel="stylesheet" href="/admantium/css/fullcalendar.css" />
+        <link rel="stylesheet" href="/admantium/css/jquery.miniColors.css" />
+        <link rel="stylesheet" href="/admantium/css/elrte.min.css" />
+        <link rel="stylesheet" href="/admantium/css/main.css" />
+
+        <!-- JAVASCRIPTs -->
+        <!--[if lt IE 9]>
+            <script language="javascript" type="text/javascript" src="/admantium/js/jqPlot/excanvas.min.js"></script>
+            <script language="javascript" type="text/javascript" src="/admantium/js/html5shiv.js"></script>
+        <![endif]-->
+        <script src="/admantium/js/jquery.js"></script>
+        <script src="/admantium/js/jquery-ui-1.8.18.custom.min.js"></script>
+        <script src="/admantium/js/jquery.tipsy.js"></script>
+        <script src="/admantium/js/jquery.formalize.min.js"></script>
+        <script src="/admantium/js/jquery.modal.js"></script>
+        <script src="/admantium/js/prefixfree.min.js"></script>
+        <script src="/admantium/js/datables/js/jquery.dataTables.min.js"></script>
+        <script src="/admantium/js/jquery.prettyPhoto.js"></script>
+        <script src="/admantium/js/jquery.autogrowtextarea.js"></script>
+        <script src="/admantium/js/jquery.easing.1.3.js"></script>
+        <script src="/admantium/js/jquery.fileinput.js"></script>
+        <script src="/admantium/js/chosen.jquery.min.js"></script>
+        <script src="/admantium/js/ui.checkBox.js"></script>
+        <script src="/admantium/js/ui.spinner.min.js"></script>
+        <script src="/admantium/js/jquery.loading.js"></script>
+        <script src="/admantium/js/jquery.path.js"></script>
+        <script src="/admantium/js/jqPlot/jquery.jqplot.min.js"></script>
+        <script src="/admantium/js/jqPlot/plugins/jqplot.pieRenderer.min.js"></script>
+        <script src="/admantium/js/jqPlot/plugins/jqplot.cursor.min.js"></script>
+        <!-- # -->
+        <script src="/admantium/js/jqPlot/plugins/jqplot.highlighter.min.js"></script>
+        <script src="/admantium/js/jqPlot/plugins/jqplot.dragable.min.js"></script>
+        <script src="/admantium/js/jqPlot/plugins/jqplot.dateAxisRenderer.min.js"></script>
+        <script src="/admantium/js/jqPlot/plugins/jqplot.ohlcRenderer.min.js"></script>
+        <script src="/admantium/js/jqPlot/plugins/jqplot.trendline.min.js"></script>
+        <script src="/admantium/js/jqPlot/plugins/jqplot.barRenderer.min.js"></script>
+        <script src="/admantium/js/jqPlot/plugins/jqplot.categoryAxisRenderer.min.js"></script>
+        <script src="/admantium/js/jqPlot/plugins/jqplot.pointLabels.min.js"></script>
+        <!-- /# -->
+        <script src="/admantium/js/fullcalendar.min.js"></script>
+        <script src="/admantium/js/jquery.miniColors.min.js"></script>
+        <script src="/admantium/js/jquery.maskedinput-1.3.min.js"></script>
+        <script src="/admantium/js/jquery-ui-timepicker-addon.js"></script>
+        <script src="/admantium/js/jquery.validate.min.js"></script>
+        <script src="/admantium/js/jquery.metadata.js"></script>
+        <script src="/admantium/js/main.js"></script>
+        <script src="/admantium/js/demo.js"></script>
+
+
+		<%= stylesheet_link_tag    "application" %>	
+
+    </head>
+    <body>
+        <!-- show loading until the all page scripts are fully loaded and cached (use this only on login page) -->
+        <div id="loading">
+            <div class="inner">
+                <div>
+                    <div class="ajax-loader"></div>
+                    <p>Loading<span>...</span></p>
+                </div>
+            </div>
+        </div>
+     <script>document.getElementById('loading').style.display = 'block';</script> 
+
+        <!-- wrapper -->
+        <div id="wrapper">
+			<header>
+                <div class="container_12">
+                    <div class="grid_12">
+                        <!-- navigation menu -->
+                        <nav class="main-nav">
+                 
+							<%= render :partial=>'/layouts/navigation_bar.html'%>
+								
+                        </nav>
+                        <!-- /navigation menu -->
+
+                        <!-- bar -->
+					
+                        <ul class="bar">
+							
+							<% if @current_user %>
+							<!--
+                            <li class="search">
+                                <div>
+                                    <form>
+                                        <input type="submit" value="L" title="Click to search" class="tooltip glyph" />
+                                        <input type="text" placeholder="What you want to search?" name="s" />
+                                    </form>
+                                </div>
+                            </li>-->
+
+                            <li>
+                                <a href="#">
+                                    <span class="glyph opened-chat"></span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <span class="glyph comment"></span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    <span class="glyph settings"></span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/user/profile" title="edit profile" class="tooltip">
+                                    <span class="glyph user"></span>
+                                    <span class="text"><%=@current_user.get_name @context %></span>
+                                </a>
+                            </li>
+							<% else %>
+							    <li>
+	                                <a href="/user/login">
+	                                    <span class="glyph user"></span>
+	                                    <span class="text">Login</span>
+	                                </a>
+	                            </li>
+							<% end %>
+                        </ul>
+						
+	              		
+	
+                    </div>  
+                </div>
+            </header>
+             <section id="main">
+	                <div class="container_12">
+	                    <div class="grid_12" id="content-top">
+							
+						
+							
+	                        <div id="logo">
+		
+	                           	<%=image_tag logo,:height=>65,:style=>'vertical-align:middle;float:left;margin:20px'%>
+							
+	                        </div>
+								
+							<% if @current_project and  @current_user and @context.user == @current_user %>
+	
+	                        <nav class="links">
+	                            <ul>
+											
+	                                <li><a href="<%=@current_project.get_home_url(request)%>">
+                                    
+	                                        <span class="glyph close"></span>
+	                                        App
+	                                    </a>
+	                                </li>
+	                                <li>
+	                                    <a href="<%="/admin/#{@current_project.id}" %>" class="modal">
+	                                        <span class="glyph open-in-new-window"></span>
+	                                        Admin
+	                                    </a>
+	                                </li>
+	                                <li>
+		                                <a href="<%="/esm_projects/#{@current_project.id}"%>">
+	    
+	                                        <span class="glyph zoom-in"></span>
+	                                        Dev
+	                                    </a>
+	                                </li>
+	                         
+	                            </ul>
+	                        </nav>
+							<% end %>
+	
+	
+	                    </div>
+
+	                    <div id="content">
+							<% if @context %>
+	                        <div class="extension top inleft breadcrumbs">
+	                            <nav>
+								<%= yield :navigation %>
+					            </nav>
+	                        </div>
+							<% end %>
+
+	                    <!-- The modal -->
+	                    <div class="box grid_8" id="myModal" hidden>
+	                        <header>
+	                            <div class="inner">
+	                                <div class="left title">
+	                                    <h1>Modal</h1>
+	                                </div>
+	                                <div class="right">
+	                                    <a href="#" class="close">close</a>
+	                                </div>
+	                            </div>
+	                        </header>
+
+	                        <div class="box-content">
+	                            <p>Lorem ipsum dolor sit amet, <a href="#">consectetuer</a> adipiscing elit, sed diam nonummy nibh euismod <em>tincidunt</em> ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation <strong>ullamcorper suscipit</strong> lobortis nisl ut aliquip ex ea commodo consequat.</p>
+	                            <footer class="pane">
+	                                <a href="#" class="close bt red">Close modal</a>
+	                                <a href="#" class="bt blue">Custom button</a>
+	                            </footer>
+	                        </div>
+	                    </div>
+
+	                        <div class="main-box"  style="padding:5px;padding-bottom:20px">
+						
+									
+									<% if @current_project and (params[:controller]=='admin' or params[:controller]=='esm_projects' )%>
+									
+										<header class="grid_12 head">
+										    <h1>Project <%=@current_project.title%>  (<%=@current_project.package%>)</h1>
+										    <%=link_to('Edit',{:action=>'edit',:id=>@current_project,:update=>'workspace'},:remote=>false)%>
+											<%# link_to('New Service',{:controller=>'esm_services',:action=>'new',:id=>@current_project,:update=>'workspace'},:remote=>true) %>
+											<%#link_to('Show Index',@current_project.url(request.server_name),:remote=>false,:target=>'_blank')%>
+										    <span class="divider"></span>
+										</header>
+								
+									<% end %>
+									
+								
+									<div id="content_panel" style="float:left;border:0px solid red;margin:0px;width:100%;padding:0px" >
+							        <div class="<%= 'grid_12' if params[:controller]=='esm_proxy'%>">
+									<%= yield %><%= yield :content%>
+									</div>
+									</div>
+									
+									<div class="clear">
+										
+									</div>
+
+	                        </div>
+	                    </div>
+	                </div>
+	            </section>
+        </div>
+<div class="clear">
+	
+</div>
+        <!-- /wrapper -->
+		<footer>
+            <div class="container_12">
+                <p>&copy; Copyright 2012 - E.S.M.Solution Co., Ltd. | Lead Developer - <a href="mailto:ksupasak@esm-solution.com" target="_blank">Supasak</a></p>
+            </div>
+        </footer>
+        
+    </body>
+</html>

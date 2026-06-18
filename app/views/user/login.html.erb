@@ -1,0 +1,224 @@
+<script src="/gebo/js/jquery.min.js"></script>
+<script src="/gebo/js/jquery.actual.min.js"></script>
+<script src="/gebo/lib/validation/jquery.validate.min.js"></script>
+<script src="/gebo/bootstrap/js/bootstrap.min.js"></script>
+<%
+	p = {}
+	if @current_project 
+	tp = @current_project.get_params if @current_project 
+	p = tp if tp
+	end
+	title = (p['app_title']and p['app_title']!='')?p['app_title']:"ESM:Innovation as a Service"
+	bg = (p['app_bg_style']and p['app_bg_style']!='')?p['app_bg_style']:"#eee"
+	logo = (p['app_logo_url']and p['app_logo_url']!='')?p['app_logo_url']:'/esm_core/banner1.png'
+%>
+
+<%
+    user = ''
+	user = params[:user][:login] if params[:user]
+%>
+<%= form_for :user, :action=>'login' do|form|%>
+
+	<div class="login_box" style="">
+		
+		<!--<form action="dashboard.html" method="post" id="login_form"> -->
+			<div class=" navbar-inner " style="text-align:center;padding-top:5px"><a href="/"><%= image_tag logo, :height=>36,:width=>250 %></a>
+			</div>    
+			<% if flash[:error] %>
+			<div class="alert alert-info alert-login">
+				<%= flash[:error] %>
+			</div>
+			<% else %>
+			<div class="alert alert-info alert-login">
+				Please login to continue
+			</div>
+			<% end %>
+			
+			
+	   	
+
+			
+			<div class="cnt_b">
+				
+				<!--
+					<div id="fb-root"></div>
+					      <script>
+					        window.fbAsyncInit = function() {
+					          FB.init({
+					            appId      : '492870950731120', // App ID
+					           // channelUrl : '//emr-life.COM/channel.html', // Channel File
+					            status     : true, // check login status
+					            cookie     : true, // enable cookies to allow the server to access the session
+					            xfbml      : true  // parse XFBML
+					          });
+
+
+							   FB.getLoginStatus(function(response) {
+								  if (response.status === 'connected') {
+								    // the user is logged in and has authenticated your
+								    // app, and response.authResponse supplies
+								    // the user's ID, a valid access token, a signed
+								    // request, and the time the access token 
+								    // and signed request each expire
+									// alert("hello1")
+								    var uid = response.authResponse.userID;
+								    var accessToken = response.authResponse.accessToken;
+
+
+
+
+								  } else if (response.status === 'not_authorized') {
+								    // the user is logged in to Facebook, 
+								    // but has not authenticated your app
+									// alert("hello2")
+								  } else {
+								    // the user isn't logged in to Facebook.
+									// alert("hello3")
+								  }
+								 });
+
+
+					        };
+					        // Load the SDK Asynchronously
+					        (function(d){
+					           var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+					           if (d.getElementById(id)) {return;}
+					           js = d.createElement('script'); js.id = id; js.async = true;
+					           js.src = "//connect.facebook.net/en_US/all.js";
+					           ref.parentNode.insertBefore(js, ref);
+					         }(document));
+
+
+					      </script>
+			    <div class="fb-login-button">Login with Facebook</div><br/><br/>
+				Or 
+				<br/><br/>-->
+					
+				<div class="formRow">
+					<div class="input-prepend">
+						<span class="add-on"><i class="icon-user"></i></span>
+						<%= form.text_field "login", :size => 20,:id=>'user_login',:placeholder=>"Email or Login ID",'data-icon'=>"user",:value=>user%>
+					   
+					</div>
+				</div>
+				<div class="formRow">
+					<div class="input-prepend">
+						<span class="add-on"><i class="icon-lock"></i></span>
+						<%= form.password_field "password", :size => 20,:id=>'user_password',:placeholder=>"Password",'data-icon'=>"closed-lock"%>
+						
+					</div>
+				</div>
+					<%  unless @current_solution %>
+				<span id="solution_id_toggle"><center><a href="#">...</a></center></span>	
+				<div class="formRow" id="solution_id" style="display:none">
+					<div class="input-prepend">
+						<span class="add-on"><i class="icon-book"></i></span>
+						<%= text_field_tag "user[esm]",cookies[:esm], :size => 20,:id=>'esm',:placeholder=>"Solution ID",'data-icon'=>"settings"%>
+					</div>
+				</div>
+				<script>
+			  $(document).ready(function(){
+					
+				<% if cookies[:esm] or request.host.split(".").size==4 %>
+				  // alert('<%=cookies[:esm]%>')
+				
+					$('#solution_id').show();$('#solution_id_toggle').hide();
+				<%  end  %>
+			  });
+				</script>
+				
+					<% else %>
+						<%= form.hidden_field "esm", :value=> @current_solution.name %>
+						<%= form.hidden_field "project_id", :value=> @current_project.id if @current_project%>
+					<% end %>
+					
+					
+				<div class="formRow clearfix">
+					<label class="checkbox"><input id="ck" name='remember' type="checkbox" /> Remember me</label>
+				</div>
+			</div>
+			<div class="btm_b clearfix">
+				<button class="btn btn-inverse pull-right" type="submit">Sign In</button>
+				<% unless @solution_mode  %>
+				<span class="link_reg"><a href="/user/signup">Not registered? Sign up here</a></span>
+				<% end %>
+			</div>  
+	
+	</div>
+	
+	<div class="links_b links_btm clearfix" >
+		<span class="linkform"><a href="/user/forgot_password">Forgot password?</a></span> |
+		
+		 <% if @current_project or @current_solution %>
+	    <span class="linkform">login to <%= @current_project.name if @current_project %> <%= @current_solution.name if @current_solution %> <%= link_to "Cancel", :action => "logout",:solution=>'true' %>  </span>
+	<% end %>
+	</div>
+		
+   <% end %>
+
+    <script>
+        $(document).ready(function(){
+            
+			//* boxes animation
+			form_wrapper = $('.login_box');
+            $('.linkform a,.link_reg a').on('click',function(e){
+				var target	= $(this).attr('href'),
+					target_height = $(target).actual('height');
+				$(form_wrapper).css({
+					'height'		: form_wrapper.height()
+				});	
+				$(form_wrapper.find('form:visible')).fadeOut(400,function(){
+					form_wrapper.stop().animate({
+                        height	: target_height
+                    },500,function(){
+                        $(target).fadeIn(400);
+                        $('.links_btm .linkform').toggle();
+						$(form_wrapper).css({
+							'height'		: ''
+						});	
+                    });
+				});
+				e.preventDefault();
+			});
+			
+			//* validation
+			$('#login_form').validate({
+				onkeyup: false,
+				errorClass: 'error',
+				validClass: 'valid',
+				rules: {
+					username: { required: true, minlength: 3 },
+					password: { required: true, minlength: 3 }
+				},
+				highlight: function(element) {
+					$(element).closest('div').addClass("f_error");
+				},
+				unhighlight: function(element) {
+					$(element).closest('div').removeClass("f_error");
+				},
+				errorPlacement: function(error, element) {
+					$(element).closest('div').append(error);
+				}
+			});
+
+	
+			$('#solution_id_toggle').click(function(){
+				$('#solution_id').show();$('#solution_id_toggle').hide();
+				
+			})
+
+        });
+    </script>
+
+
+		<script type="text/javascript">
+		try{document.getElementById('user_login').focus();}catch(e){}
+		</script>
+
+
+
+
+
+
+    
+

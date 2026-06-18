@@ -1,0 +1,88 @@
+<% 
+  @url = "/esm_image/#{@document.id}/snap?field_id=#{params[:field_id]}&ssid=#{params[:ssid]}&p_id=#{params[:p_id]}"
+%>
+<%= view :fitwidth %>
+<script type="text/javascript" src="/jpegcam/webcam.js"></script>	
+<script language="JavaScript">
+	function setup(){
+	
+		url='<%=@url%>&snapcount='+($('#snapcount').val()-1);
+		webcam.set_api_url(url);
+	}
+	function attach(){
+		 $.ajax({
+                url: '/esm_image/<%=@document.id%>/attach_to_gallery?p_id=<%=params[:p_id]%>&field_id=<%=params[:field_id]%>&ssid=<%=params[:ssid]%>',
+                data: [],
+                dataType: 'script',
+                type: 'GET',
+                error: function (xhr, status, error) {
+					alert(error)
+                    // this.trigger('ajax:failure', [xhr, status, error]);
+                }
+            }).done(function(data){
+		    	//alert("The attachments have been added");
+				window.close();
+			});
+		
+		// window.close();
+		
+	}
+</script>
+<style>
+input{
+	font-size:1.5em;
+}
+.imgbox{
+	margin:5px;
+}
+</style>
+<%
+	page = -1
+	page = params[:page].to_i if params[:page]
+	page = 0 if page<0
+	
+%>
+<%
+        @attachments =  @attachment_model.sort(:created_at.desc).all :offset=>page*20,:limit=>20
+%>
+
+<%= form_for :form,:url=>'attach_to_gallery',:remote=>true do |f| %>
+<%= hidden_field_tag :p_id, params[:p_id]%>
+<%= hidden_field_tag :field_id, params[:field_id]%>
+<%= hidden_field_tag :path, params[:path]%>
+<%= hidden_field_tag :response, true %>
+<br/>
+<%= f.submit 'Submit' ,:disable_with=>'Adding..'%> &nbsp; <%= link_to "Next page",  "recover?field_id=#{params[:field_id]}&p_id=#{params[:p_id]}&path=#{params[:path]}&page=#{page+1}" %> |
+<%= link_to "Back page",  "recover?field_id=#{params[:field_id]}&p_id=#{params[:p_id]}&path=#{params[:path]}&page=#{page-1}" %>
+
+<div class="clear">
+	
+</div>
+
+<%  @attachments.each_with_index do |i,index| %>
+<div id="name" style="float:left;margin:10px">
+<%= image_tag i.path,:width=>280,:height=>200,:class=>'imgbox' %><br/>
+<%= check_box_tag 'attachment[]', i.id %>&nbsp;	<%=i.created_at.strftime('%d-%m-%y %H:%M')  if i.created_at%> ; SSID=<%= i.ssid%> 
+</div>
+<% if index%5==0 %>
+<br/>
+<% end %>
+<% end  %>
+<div class='clear'>
+	
+</div>
+<%= f.submit 'Submit' ,:disable_with=>'Adding..'%> &nbsp; <%= link_to "Next page",  "recover?field_id=#{params[:field_id]}&p_id=#{params[:p_id]}&path=#{params[:path]}&page=#{page+1}" %> |
+<%= link_to "Back page",  "recover?field_id=#{params[:field_id]}&p_id=#{params[:p_id]}&path=#{params[:path]}&page=#{page-1}" %>
+
+
+
+<% end %>
+<div class="clear">
+	
+</div>
+
+<% if request.post? %>
+	<%=params.inspect %>
+<% end %>
+
+

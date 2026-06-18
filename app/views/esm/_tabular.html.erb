@@ -1,0 +1,156 @@
+<% 
+	id = "grid-#{rand(9999)}"
+%>
+<%#col_width.inspect%>
+<%
+	num_fields = model.size
+	num_fields = data[0].size if data.size>0
+	ec = 0
+	fs = []
+	extra = num_fields - model.size
+	if !defined?( labels)
+		labels = {}
+		for i in model
+			labels[i] = i.to_s.humanize
+		end
+	end	
+	
+	if !defined?( col_width)
+		col_width = {}
+	end
+
+	model.size.times do |i|
+		if model[i]
+			fs<<model[i]
+		else
+			fs<<"col#{ec}"
+			labels["col#{ec}"]=""
+			ec+=1
+		end
+	end
+	# 
+		if extra>0
+			fs<<'extra'
+			labels['extra'] ="Actions"
+		end
+		
+		
+	list = []
+
+	for i in data
+		t = {}
+		if extra>0 and  i[-extra..-1]!=nil
+			i[-extra]=i[-extra..-1].join('&nbsp;')
+		end
+		fs.each_with_index do |j,index|
+			t[j]= i[index]
+		end
+		list<<t
+	end
+	data = list
+	title = '' unless defined? title
+	rows = 0 unless rows
+	
+if !@esm_template and cookies[:ie]!='true'
+	
+%>
+<div style="border:0px solid;">
+	
+<div class="">
+<h3><%= title %></h3>
+</div>
+<div id="<%= id %>" style="margin-bottom:10px;margin-top:10px"></div>
+</div>
+<script>
+    $(document).ready(function() {
+        $("#<%= id %>").kendoGrid({
+            dataSource: {
+                data: eval('<%=escape_javascript(data.to_json).html_safe%>'),
+                schema: {
+                    model: {
+                        fields: {
+						 <% for col in fs %>
+						    '<%=col%>':{type: 'string'},
+				         <% end %>
+                        }
+                    }
+                },
+                pageSize: <%=rows%>
+            },
+            scrollable: true,
+            sortable: true,
+   			resizable: true,
+            pageable: <%= (rows!=0)?true:false %>,
+            columns: [
+				 <% for col in fs %>
+					{
+	                    field: "<%=col%>",
+	                    title: "<%=labels[col]%>",
+						<%=	"width: #{col_width[col]}," if col_width[col]%>
+						encoded:false
+	                },
+		         <% end %> 
+            ]
+        });
+    });
+</script>
+<% else %>
+
+<div class="ibox float-e-margins">
+<% if title %>	
+    <div class="ibox-title">
+        <h5><%=title%></h5>
+        <div class="ibox-tools">
+            <a class="collapse-link">
+                <i class="fa fa-chevron-up"></i>
+            </a>
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                <i class="fa fa-wrench"></i>
+            </a>
+		
+            <ul class="dropdown-menu dropdown-user">
+                <li>
+                    <a href="#">Config option 1</a>
+                </li>
+                <li>
+                    <a href="#">Config option 2</a>
+                </li>
+            </ul>
+			
+            <a class="close-link">
+                <i class="fa fa-times"></i>
+            </a>
+
+        </div>
+    </div>
+<% end %>
+    <div class="ibox-content">
+
+        <table class="table table-bordered table-striped">
+            <thead>
+            <tr>
+   
+				<% for col in fs %>
+                <th><%=labels[col]%></th>
+				<% end %>
+            </tr>
+            </thead>
+            <tbody>
+			<% for row in data %>
+            <tr>
+                <% for col in fs 
+
+				v = row[col]
+				v = row[col].strftime("%d-%m-%Y") if row[col].instance_of? Date
+				
+				%>
+                <td><%=v.html_safe%></td>
+              	<% end %>
+            </tr>
+			<% end %>
+  
+            </tbody>
+        </table>
+    <br/>
+    </div></div>
+<% end %>

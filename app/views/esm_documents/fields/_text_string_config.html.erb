@@ -1,0 +1,107 @@
+<%
+	
+	id = @field.id
+	id = 'new' unless id
+%>
+<script type="text/javascript" charset="utf-8">
+	function typing_func(t){
+		if(<%= (!@field.column_name)?true:false %>){
+			$("#field_label").val(t.value)
+			$("#field_column_name").data('kendoComboBox').value(t.value.toLowerCase().replace(/ /gi,"_"))
+		}
+	}
+</script>
+<%= f.hidden_field :field_type,:value=>'text_string' %>  
+
+
+<div id="field-<%=id%>" class="" style="padding:0px" >
+
+		
+<div class="field">
+  <%= f.label :field_name %>
+  <%= f.text_field :name, :onkeyup=>'typing_func(this)',:style=>'width:100%',:class=>tb_class %>
+</div>
+
+<div class="field">
+  <%= f.label :field_label, :style=>'display:inline-block' %>
+  <span><%#f.check_box :hide_label %></span>
+  <%= f.text_field :label,:style=>'width:100%' ,:class=>tb_class %>  
+</div>
+<%
+
+@field.column_name = nil if @field.column_name=='[object Object]'
+	
+%>
+<div class="field">
+  <%= f.label :column_name %>
+  <%= f.text_field :column_name ,:style=>'width:100%', :class=>tb_class,:id=>'field_column_name'%>
+
+	<script type="text/javascript" charset="utf-8">
+		 $("#field_column_name").kendoComboBox({
+		        dataTextField: "text",
+		        dataValueField: "<%=@field.column_name if @field.column_name!='[object Object]'%>",
+		        dataSource: <%=@document.table.data_columns.collect{|k,v| {'text'=>k,'value'=>k}}.to_json.html_safe%>
+		    });
+	</script>
+  <%# select_tag :column_name, options_for_select(@document.table.data_columns.keys.sort,@field.column_name),:include_blank=>true ,:style=>'width:100%'  %>
+
+</div>
+
+	
+	<div id="name" style="padding:10px">
+
+	<table border="0" cellspacing="5" cellpadding="5">
+		<tr><td><%= f.check_box :mandatory, :style=>"display:inline-block" %> <%= f.label :mandatory,:style=>'display:inline-block'%></td></tr>
+		<tr><td><%= f.check_box :search, :style=>"display:inline-block" %> <%= f.label :search,:style=>'display:inline-block'%></td></tr>
+		<tr><td><%= f.check_box :list_show, :style=>"display:inline-block" %> <%= f.label :list_show,:style=>'display:inline-block'%></td></tr>
+	</table>
+
+	</div>
+
+
+
+</div>
+
+
+<div id="style-<%=id%>" class="x-hidden" style="margin:0px;padding:0px;">
+	
+	
+	<div class="field">
+	  <%= f.label :field_params %>
+	  <%= f.text_area :params,:cols=>30,:rows=>3 ,:style=>'vertical-align:text-top;'%>
+	</div>
+
+	<div class="field">
+	  <%= f.label 'LOV type' %>
+	  <%= f.select :lov_type, %w{plain pair collection },{:include_blank=>true},:style=>'width:100%' %>
+	</div>
+
+	<div class="field">
+	  <%= f.label :list_of_values %>
+	  <%= f.text_area :lov,:cols=>30,:rows=>3 ,:style=>'vertical-align:text-top'%>
+	</div>
+
+	
+	
+	<div class="field">
+	  <%= f.label :display %>
+	  <%= f.text_area :display,:cols=>30,:rows=>3 ,:style=>'vertical-align:text-top'%>
+	</div>
+
+	<div class="field">
+	  <%= f.label :css %>
+	  <%= f.text_field :css %>
+	</div>
+	
+	<div class="field">
+	  <%= f.label :style %>
+	  <%= f.text_area :style,:cols=>30,:rows=>3 ,:style=>'vertical-align:text-top'%>
+	</div>
+
+</div>
+
+
+
+<div id="field-tab-<%= id %>" style="padding:0px">
+	
+</div>

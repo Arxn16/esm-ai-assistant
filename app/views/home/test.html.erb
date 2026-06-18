@@ -1,0 +1,461 @@
+
+<%=image_tag "http://localhost:3000/content/esm/cusys/colorectal/content/colonoscopy/image/5f321b286906dedd7300000e.jpg?5f321b286906dedd7300000e",:style=>"display:block", :id=>'5f321b286906dedd7300000e', :class=>'eachpicimg' %>
+
+<a class="esm-img-editor" att_id="5f321b286906dedd7300000e" class="btn">Image Editor</a>
+
+
+
+
+<div class="modal hide fade" id="esm-img-editor" aria-hidden="true" style="display: none;z-index:2000">
+<div class="modal-header">
+	<button class="close" data-dismiss="modal">×</button>
+	<h3>Image Editor</h3>
+</div>
+<div class="modal-body">
+<div class="row-fluid">
+	<div class="span12">	
+			<div id="esm-image-editor" style="">
+	</div>
+</div>
+<div class="row-fluid">
+	<div class="span12">
+	<div id="sidebarx">
+		
+		<div class="colorButtons">
+		
+			<input type="color" id="colorpicker" value="#c81464" class="colorpicker">
+		</div>
+		
+		<div class="buttonSize">
+				<span>Size (<span id="showSize">3</span>)</span>
+			<input type="range" min="1" max="10" value="2" step="1" id="controlSize" style="margin:0px">
+		</div>
+		
+		
+		<div class="colorButtons" style="display:none" >
+			<input type="color" value="#ffffff" id="bgcolorpicker" class="colorpicker">
+		</div>
+		
+		<div class="toolsButtons">
+
+			<button id="eraser"   style="display:none" class="btn btn-default"><span class="glyphicon glyphicon-erase" aria-hidden="true"></span></button>
+		</div>
+
+	
+
+		<div class="canvasSize" style="display:none">
+
+			<div class="input-group">
+				<span class="input-group-addon">X</span>
+				<input type="number" id="sizeX" class="form-control" placeholder="sizeX" value="1920" class="size">
+			</div>
+			<div class="input-group">
+				<span class="input-group-addon">Y</span>
+				<input type="number" id="sizeY" class="form-control" placeholder="sizeY" value="1080" class="size">
+			</div>
+			<input type="button" class="updateSize btn btn-success" value="Update" id="canvasUpdate">
+		</div>
+		<div class="Storage" style="display:none">
+			<h3>Storage</h3>
+			<input type="button" value="Save" class="btn btn-warning" id="save">
+			<input type="button" value="Load" class="btn btn-warning" id="load">
+			<input type="button" value="Clear" class="btn btn-warning" id="clearCache">
+		</div>
+		<div class="extra">
+	
+		</div>
+		
+	</div>
+
+		</div>
+	
+</div></div>
+  
+
+	</div>
+	<div class="modal-footer">
+		<a id="emr-editor-save" class="btn btn-warning">Download</a>
+		<button id="clear" class="btn btn-danger" style="float:left"> <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>Reset</button>
+		
+		<a id="emr-editor-finish" class="btn btn-info">Finish</a>
+		
+		<a href="#" class="btn" style="float:left" data-dismiss="modal">Close</a>
+	</div>
+</div> 
+</div>
+
+  
+  <style>
+	  
+	  
+	  .colorButtons {
+			display: inline-block;
+		
+		}
+
+		canvas {
+			cursor: crosshair;
+		}
+
+		div#sidebarx {
+/*			position: absolute;*/
+		
+			width: 100%;
+			
+		
+		}
+		
+		 .sidebarx input{
+
+			height:40px;
+			width:50px;
+		}
+
+		canvas#canvas {
+			width:100%;
+			 background:transparent;
+		}
+		
+		canvas#canvas_bg {
+			width:100%;
+		}
+		canvas#canvas_final {
+			width:100%;
+		}
+			
+	   .buttonSize {
+	 	   		display: inline-block;
+				width:100px;
+				margin-right:10px;
+	   }
+	   
+	   .buttonSize input{
+	 	   	
+				width:100px;
+				
+	   }
+	   
+	   
+	   .toolsButtons {
+	   		display: inline-block;
+	   }
+		.toolsButtons .btn {
+			height:35px;
+			width:50px;
+		}
+
+		.sizeButtons .btn {
+			display: inline-block;
+		}
+
+		.colorpicker {
+			background: transparent;
+			width: 50px;
+			height:35px;
+			margin:0px;
+		}
+		
+		.extra{
+			display: inline-block;
+		}
+		
+		</style>
+		<script>
+			
+		// SETTING ALL VARIABLES
+
+			var isMouseDown=false;
+			
+			var canvas_final = document.createElement('canvas');
+			var canvas_bg = document.createElement('canvas');
+			var canvas = document.createElement('canvas');
+			
+			var body = document.getElementById("esm-image-editor");
+			// document.getElementById("demo");
+			
+			
+			
+			var ctx_final = canvas_final.getContext('2d');
+			var ctx_bg = canvas_bg.getContext('2d');
+			var ctx = canvas.getContext('2d');
+			
+			
+			var linesArray = [];
+			currentSize = 3;
+			var currentColor = "rgb(200,20,100)";
+			var currentBg = "white";
+
+			var editor_img_id = "";
+
+			// INITIAL LAUNCH
+
+			// createCanvas();
+
+			// BUTTON EVENT HANDLERS
+
+			document.getElementById('canvasUpdate').addEventListener('click', function() {
+				createCanvas();
+				redraw();
+			});
+			document.getElementById('colorpicker').addEventListener('change', function() {
+				currentColor = this.value;
+			});
+			document.getElementById('bgcolorpicker').addEventListener('change', function() {
+				ctx.fillStyle = this.value;
+				ctx.fillRect(0, 0, canvas.width, canvas.height);
+				redraw();
+				currentBg = ctx.fillStyle;
+			});
+			document.getElementById('controlSize').addEventListener('change', function() {
+				currentSize = this.value;
+				document.getElementById("showSize").innerHTML = this.value;
+			});
+			document.getElementById('emr-editor-save').addEventListener('click', function() {
+				downloadCanvas(this, 'canvas-final', 'edited.jpg');
+			}, false);
+			document.getElementById('eraser').addEventListener('click', eraser);
+			document.getElementById('clear').addEventListener('click', clear);
+			document.getElementById('save').addEventListener('click', save);
+			document.getElementById('load').addEventListener('click', load);
+			document.getElementById('clearCache').addEventListener('click', function() {
+				localStorage.removeItem("savedCanvas");
+				linesArray = [];
+				console.log("Cache cleared!");
+			});
+
+			// REDRAW 
+
+			function redraw() {
+					for (var i = 1; i < linesArray.length; i++) {
+						ctx.beginPath();
+						ctx.moveTo(linesArray[i-1].x, linesArray[i-1].y);
+						ctx.lineWidth  = linesArray[i].size;
+						ctx.lineCap = "round";
+						ctx.strokeStyle = linesArray[i].color;
+						ctx.lineTo(linesArray[i].x, linesArray[i].y);
+						ctx.stroke();
+					}
+			}
+
+			// DRAWING EVENT HANDLERS
+
+			canvas_final.addEventListener('mousedown', function() {mousedown(canvas_final, event);});
+			canvas_final.addEventListener('mousemove',function() {mousemove(canvas_final, event);});
+			canvas_final.addEventListener('mouseup',mouseup);
+
+			// CREATE CANVAS
+			// const image = document.getElementById('img');
+
+			function clear(){
+				// var img = document.getElementById("img");
+	
+				ctx.clearRect(0,0,1920,1080)	
+				ctx_final.drawImage(canvas_bg, 0, 0,532, 532/1920*1080);
+				
+			}
+
+			function createCanvas() {
+				
+				canvas_final.id = "canvas_final";
+				canvas_final.width = parseInt(document.getElementById("sizeX").value);
+				canvas_final.height = parseInt(document.getElementById("sizeY").value);
+				canvas_final.style.zIndex = 1;
+				ctx_final.scale(3.61, 3.61)
+				
+				canvas_bg.id = "canvas_bg";
+				canvas_bg.width = parseInt(document.getElementById("sizeX").value);
+				canvas_bg.height = parseInt(document.getElementById("sizeY").value);
+				canvas_bg.style.zIndex = 5;
+				ctx_bg.scale(3.61, 3.61)
+				
+				canvas.id = "canvas";
+				canvas.width = parseInt(document.getElementById("sizeX").value);
+				canvas.height = parseInt(document.getElementById("sizeY").value);
+				canvas.style.zIndex = 8;
+				canvas.style.position = "";
+				canvas.style.border = "0px solid";
+				
+				canvas_final.style.position = "";
+				canvas_final.style.border = "1px solid";
+				
+				// ctx.fillStyle = 'blue';
+				// ctx.fillRect(0, 0, canvas.width, canvas.height);
+				ctx_final.fillStyle = 'white';
+				ctx_final.fillRect(0, 0, canvas.width, canvas.height);
+				// ctx.globalAlpha = 0.1;
+				ctx.scale(3.61, 3.61)
+				
+				// ctx_final.drawImage(canvas_bg, 0, 0);
+  			  // ctx_final.drawImage(canvas, 0, 0,532, 532/1920*1080);
+				
+				body.appendChild(canvas_final);
+				
+				// body.appendChild(canvas);
+				
+				if(editor_img_id.length>0){
+					
+					w = 532
+					image = document.getElementById(editor_img_id);
+					 ctx_bg.drawImage(image,0,0,w,w/1920*1080);
+				}
+				
+				
+  			 
+  			    ctx_final.drawImage(canvas_bg, 0, 0,532, 532/1920*1080);
+				
+				
+				
+			}
+
+			// DOWNLOAD CANVAS
+
+			function downloadCanvas(link, canvas, filename) {
+				link.href = document.getElementById('canvas_final').toDataURL('image/jpeg', 0.8);
+				link.download = filename;
+			}
+
+			// SAVE FUNCTION
+
+			function save() {
+				localStorage.removeItem("savedCanvas");
+				localStorage.setItem("savedCanvas", JSON.stringify(linesArray));
+				console.log("Saved canvas!");
+			}
+
+			// LOAD FUNCTION
+
+			function load() {
+				if (localStorage.getItem("savedCanvas") != null) {
+					linesArray = JSON.parse(localStorage.savedCanvas);
+					var lines = JSON.parse(localStorage.getItem("savedCanvas"));
+					for (var i = 1; i < lines.length; i++) {
+						ctx.beginPath();
+						ctx.moveTo(linesArray[i-1].x, linesArray[i-1].y);
+						ctx.lineWidth  = linesArray[i].size;
+						ctx.lineCap = "round";
+						ctx.strokeStyle = linesArray[i].color;
+						ctx.lineTo(linesArray[i].x, linesArray[i].y);
+						ctx.stroke();
+					}
+					console.log("Canvas loaded.");
+				}
+				else {
+					console.log("No canvas in memory!");
+				}
+			}
+
+			// ERASER HANDLING
+
+			function eraser() {
+				currentSize = 50;
+				currentColor =  "blue";
+			}
+
+			// GET MOUSE POSITION
+
+			function getMousePos(canvas, evt) {
+				var rect = canvas.getBoundingClientRect();
+				return {
+					x: evt.clientX - rect.left,
+					y: evt.clientY - rect.top
+				};
+			}
+
+			// ON MOUSE DOWN
+
+			function mousedown(canvas, evt) {
+				var mousePos = getMousePos(canvas, evt);
+				isMouseDown=true
+				var currentPosition = getMousePos(canvas, evt);
+				ctx_final.moveTo(currentPosition.x, currentPosition.y)
+				ctx_final.beginPath();
+				ctx_final.lineWidth  = currentSize;
+				ctx_final.lineCap = "round";
+				ctx_final.strokeStyle = currentColor;
+
+			}
+
+			// ON MOUSE MOVE
+
+			function mousemove(canvas, evt) {
+				
+				if(isMouseDown){
+					var currentPosition = getMousePos(canvas, evt);
+					console.log('move '+currentPosition.x+", "+currentPosition.y)
+					ctx_final.lineTo(currentPosition.x, currentPosition.y)
+					ctx_final.stroke();
+					store(currentPosition.x, currentPosition.y, currentSize, currentColor);
+	
+					
+				}
+				
+			}
+
+			// STORE DATA
+
+			function store(x, y, s, c) {
+				var line = {
+					"x": x,
+					"y": y,
+					"size": s,
+					"color": c
+				}
+				linesArray.push(line);
+			}
+
+			// ON MOUSE UP
+
+			function mouseup() {
+				isMouseDown=false
+				store()
+			}
+			
+			<%
+			p_id = ""
+			doc_id = ""
+
+			%>
+	
+	function esm_editor_finish(){
+		
+	// Generate the image data
+		if(editor_img_id.length>0){
+			
+		    var Pic = document.getElementById("canvas_final").toDataURL("image/jpeg");
+		    Pic = Pic.replace(/^data:image\/(png|jpg);base64,/, "")
+		
+			att_id  = editor_img_id
+		    // Sending the image data to Server
+		    $.ajax({
+		        type: 'POST',
+		        url: '/snap_update?p_id=<%=p_id%>&id=#{doc_id}&att_id='+att_id,
+		        data: '{ "image" : "' + Pic + '" }',
+		        contentType: 'application/json; charset=utf-8',
+		        dataType: 'json',
+		        success: function (msg) {
+		            alert("Done, Picture Uploaded.");
+		        }
+		    });
+		}
+	    
+	}
+			
+			</script>
+	
+	
+	
+	<script>
+		$('#emr-editor-finish').click(esm_editor_finish)
+		$('.esm-img-editor').click(function(){
+			
+			att_id = $(this).attr('att_id')
+		
+			editor_img_id = att_id
+			$('#esm-img-editor').modal()
+			
+			createCanvas();
+			
+		})
+	
+	</script>
+		

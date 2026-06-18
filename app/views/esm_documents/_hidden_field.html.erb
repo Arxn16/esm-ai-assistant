@@ -1,0 +1,33 @@
+<script type="text/javascript" charset="utf-8">
+		function changeValue(fid,t,val,text){
+			
+		}
+		function updateReport(){
+			
+		}
+</script>
+<% fields = @document.list_fields
+for f in fields.collect
+ name = f.column_name
+ if f.field_type == 'relation_many' 
+	p = eval("{#{f.params}}")
+	relate_doc_name = p[:relation][:document]
+	relate_doc = @current_project.get_document relate_doc_name
+	model = get_model relate_doc_name
+	list  = model.find @record[name]
+	prefix = "data-#{@document.name}-#{name}"
+%>
+<%=hidden_field_tag name, @record[name].to_json, :id=>"data-#{name}" %>
+<%	
+	for i in list
+	 for fi in relate_doc.list_fields
+		iname = fi.column_name
+		
+%>
+<%=hidden_field_tag name, i[iname],:id=>"#{prefix}-#{i.id}-#{iname}" %>
+<% end %><% end %>
+
+<% else%>
+<%=hidden_field_tag name, @record[name],:id=>"data-#{name}" %>
+<% end %>
+<% end %>

@@ -1,0 +1,12 @@
+
+
+<% for i in @config[:columns] %>
+<p>
+  <b><%= i.to_s.humanize %></b>
+  <%= @record[i.to_s] %>
+</p>
+<% end %>
+
+<br/>
+<%= link_to 'Edit',:action=>'edit',:id=>@record %> |
+<%= link_to 'Back', @pathname %>

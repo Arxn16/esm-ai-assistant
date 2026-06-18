@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+   
+	<!-- Content -->
+			<%
+			
+			 @inspinia = true
+				p = {}
+				project_params = @current_project.get_params if @current_project 
+				p = project_params if project_params
+				title = (p['app_title']and p['app_title']!='')?p['app_title']:"EMR-LIFE : Medical Records Service Provider"
+				bg = (p['app_bg_style']and p['app_bg_style']!='')?p['app_bg_style']:"#fff"
+				logo = (p['app_logo_url']and p['app_logo_url']!='')?p['app_logo_url']:'/esm_core/banner1.png'
+				theme = (p['app_theme']and p['app_theme']!='')?p['app_theme']:'default'
+				@footer = (p['footer']and p['footer']!='')?p['footer']:'Copyright reserved EMR-LIFE &copy; 2015'
+			%>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%=title%></title>
+
+    <!-- Main css styles -->
+    <%= stylesheet_link_tag    'inspinia', media: 'all', 'data-turbolinks-track' => true %>
+
+    <!-- Main javascript files -->
+    <%= javascript_include_tag 'inspinia', 'data-turbolinks-track' => true %>
+    <%= csrf_meta_tags %>
+    
+    <%= render :partial=>'/layouts/kendoui'%>
+	<link href="/kendoui/source/styles/kendo.<%=theme%>.css" rel="stylesheet"/>
+
+
+</head>
+<body>
+
+    <!-- Wrapper-->
+    <div id="wrapper">
+
+        <!-- Navigation -->
+        <%= render 'layouts/inspinia_navigation' %>
+
+        <!-- Page wraper -->
+        <div id="page-wrapper" class="gray-bg">
+
+            <!-- Page wrapper -->
+            <%= render 'layouts/inspinia_topnavbar' %>
+
+            <!-- Main view  -->
+            <%= yield :content%>
+
+            <!-- Footer -->
+            <%= render 'layouts/inspinia_footer' %>
+
+        </div>
+        <!-- End page wrapper-->
+
+    </div>
+    <!-- End wrapper-->
+
+    <%= render :partial=>'/layouts/ai_assistant' %>
+
+</body>
+</html>
+

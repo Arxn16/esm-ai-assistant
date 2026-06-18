@@ -1,0 +1,69 @@
+<style type="text/css" media="screen">
+	#attribute{
+		padding:5px;
+		border:1px solid #ccc;
+		width:300px;
+		margin-bottom:5px;
+		margin-right:10px;
+	
+	}
+	#attribute span.name{
+		display:inline-block;
+		width:100px;
+		
+	}
+	#attribute span.type{
+		display:inline-block;
+		width:100px;
+		border:0px solid;
+	}
+	#attribute span.value{
+		display:inline-block;
+		width:120px;
+		border:0px solid;
+		overflow:hidden;
+	}
+	#attribute span.count{
+		display:inline-block;
+		width:30px;
+		border:0px solid;
+		text-align: center;
+	}
+</style>
+<div id="attributes" style="float:left">
+	
+<% list = @document.analysis_attributes 
+	for i in list
+%>
+<div id="attribute">
+	<span class="name"><%= i[:name] %></span>
+	<span class="value"><%= i[:value]%></span>
+	<span class="count"><%= i[:count]%></span>
+</div>
+<% end %>
+</div>
+
+<%# list.inspect %>
+<h2>Analysis Parameters</h2>
+<div id="sortable" class="connectedSortable " style="border:1px solid;float:left;width:600px;height:200px">
+	&nbsp;
+</div>
+<div class="clear">
+	
+</div>
+<script>
+	$(function() {
+		
+		$( "#attributes, #sortable" ).sortable({
+			connectWith: ".connectedSortable",
+			stop:function(event,ui){
+			
+				// $('#document_update').click();
+				
+			}
+			
+		}).disableSelection({
+		});
+				
+	});
+</script>

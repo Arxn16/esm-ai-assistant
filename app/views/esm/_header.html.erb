@@ -1,0 +1,58 @@
+  <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+
+		<!-- Content -->
+		<%
+			p = {}
+			project_params = @current_project.get_params if @current_project 
+			p = project_params if project_params
+			title = (p['app_title']and p['app_title']!='')?p['app_title']:"EMR-LIFE : Medical Records Service Provider"
+			bg = (p['app_bg_style']and p['app_bg_style']!='')?p['app_bg_style']:"#fff"
+			logo = (p['app_logo_url']and p['app_logo_url']!='')?p['app_logo_url']:'/esm_core/banner1.png'
+			theme = (p['app_theme']and p['app_theme']!='')?p['app_theme']:'default'
+
+		%>
+
+    <!--<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>-->
+
+    <!-- Favicon -->
+        <link rel="shortcut icon" href="/favicon.ico" />
+	
+    <!--[if lte IE 8]>
+        <link rel="stylesheet" href="css/ie.css" />
+        <script src="/gebo/js/ie/html5.js"></script>
+		<script src="/gebo/js/ie/respond.min.js"></script>
+    <![endif]-->
+	
+	
+	
+	
+		<%= javascript_include_tag "application"  %>
+		
+		<%= stylesheet_link_tag    "application" ,"elfinder","elfinder-theme"%>
+		<%= csrf_meta_tag %>
+        
+		<%= render :partial=>'/layouts/kendoui'%>
+		<link href="/kendoui/source/styles/kendo.<%=theme%>.css" rel="stylesheet"/>
+
+		<link rel="stylesheet" href="/gebo/css/dark.css" />
+		
+
+
+
+	    <title><%=title%></title>
+
+			<script>
+				$(document).ready(function() {
+					//* show all elements & remove preloader
+					// setTimeout('$("html").removeClass("js")',1000);
+					 // $("html").removeClass("js");
+				});
+			</script>
+			
+	<style type="text/css" media="screen">
+		.form-data-content{
+			width:730px;
+		}
+	</style>

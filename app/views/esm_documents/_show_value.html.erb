@@ -1,0 +1,42 @@
+<% 
+if field and record
+	fparams = {}
+	fparams.merge! eval("{#{field.params}}") if field.params!=''
+	# begin
+	value = record[field.column_name]
+# rescue Exception=>e
+# 	
+# 	puts "ERROR "+field.column_name
+# 	
+# end
+
+# 	render_value xxx, 
+	
+	
+	case field.field_type
+	when 'extra_signature','relation_one','select_string'
+		@field = field
+		value = render(:partial=>"/esm_documents/fields/#{field.field_type}_show.html",:locals=>{:record=>record,:value=>value,:field=>field,:fparams=>fparams})
+	when 'select_date'
+		value = value.strftime("%d-%m-%Y") if value
+	when 'select_time'
+		value = value.strftime("%H:%M") if value
+	when 'check_string', 'radio_string'
+		if field.lov_type=='pair'
+		options = field.lov.split("\n").compact.collect{|i| i.split('|').reverse }
+	    map ={}
+		options.each do |i|
+			map[i[1]]=i[0].strip
+		end
+		value = value.split('|').compact.collect{|i| map[i.strip]}.join(", ") if value
+		else
+		value = value.split('|').join(', ') if value
+		end
+	end
+	
+	if field.label.index('@') and value and value!="" and (opt==nil or (opt and opt[:label]) )
+		l = field.label.split('@')
+		value = "#{l[0]} #{value} #{l[1]}"
+	end
+	
+%><%= value.to_s.html_safe %><%else%><%=value%>!<%end%>

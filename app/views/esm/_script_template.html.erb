@@ -1,0 +1,7 @@
+<%
+template = ERB.new command
+puts "------------"
+puts command
+content = template.result(binding)
+%>
+<%= content.html_safe %>

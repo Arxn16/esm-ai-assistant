@@ -1,0 +1,69 @@
+
+
+<%  @operation.edit_mode %>
+
+<div style="left:250px;right:0px;top:300px;bottom:100px;height:70vh">
+
+		
+	<div class="field left" style="margin-right:20px">
+	  <%= f.label :name , :style=>'display:inline'%> :
+	  <%= f.text_field :name, :onkeyup=>methodize("operation_title"),:style=>'width:150px' ,:class=>tb_class%>
+	  <%= f.hidden_field :title %>
+	<%= f.label :acl , :style=>'display:inline'%> :
+	 <%= f.text_field :acl,:class=>tb_class ,:style=>'width:150px' %>
+	  <%= f.label :template , :style=>'display:inline'%> :
+
+	<%= f.select :template_id, ScriptTemplate.all.collect{|i| [i.name,i.id]},{},:style=>'width:150px'%> 
+	<%= f.submit 'Update',:data=>{:disable_with=>'Loading'} ,:class=>bt_class,:style=>"width:100px"%>
+
+	</div>
+	<div class="clear">
+
+	</div>
+<div id="editor" style="display:block;position:relative;border:1px solid #aaa;height:100%"><%=@operation.command%></div>
+<span style='float:left;margin-top:10px'>
+<%= f.submit 'Update',:data=>{:disable_with=>'Loading'} ,:class=>bt_class,:style=>"width:100px"%> | 
+<%= f.submit 'Test',:class=>bt_class %> | 
+<%= link_to 'Cancel', {:controller=>'esm_services',:action=>'show',:id=>@service,:update=>'workspace'},:remote=>true %> | 
+<%= link_to 'Delete', {:action=>'destroy',:id=>@operation},:remote=>true,:data=>{:confirm=>'Are you sure?'} %>
+</span>
+</div>
+<%= f.text_area :command ,:style=>"display:none"%>
+
+<script>
+    var editor = ace.edit("editor");
+	var editor_input = 	document.getElementById('operation_command');
+	editor.setShowPrintMargin(false);
+	editor.setShowInvisibles(false);
+	editor.setDisplayIndentGuides(true);
+    editor.setTheme("ace/theme/twilight");
+    editor.getSession().setMode("ace/mode/html_ruby");
+	editor.getSession().on('change', function(){
+	editor_input.value=editor.getSession().getValue();
+	});
+</script>
+
+
+
+<script>
+   $(document).ready(function(){
+     $("#operation_template_id").kendoDropDownList();
+   });
+
+$(function() {
+    function unifyHeights() {
+        var maxHeight = 0;
+        $('#container').children('#navigation, #content').each(function() {
+            var height = $(this).outerHeight();
+            // alert(height);
+            if ( height > maxHeight ) {
+                maxHeight = height;
+            }
+        });
+        $('#navigation, #content').css('height', maxHeight);
+    }
+    unifyHeights();
+});
+</script>
+<div id="update-panel">
+</div>

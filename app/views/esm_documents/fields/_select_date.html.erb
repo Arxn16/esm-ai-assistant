@@ -1,0 +1,32 @@
+<%
+	p={:order=>[:day,:month,:year]}
+	p.merge! fparams
+	unless value
+	value = Time.now unless p.has_key? :default 
+	end
+%>
+<%# date_select name, value, p %>
+<% unless @show %>
+<%= text_field_tag name,value,:style=>'width:150px',:id=>fid %>
+<% else %>
+<value><%= value.strftime('%d-%m-%Y') if value %></value>
+<% end %>
+<script>
+	$("#<%=fid%>").kendoDatePicker({
+		value: '<%= value.strftime("%d/%m/%Y") if value %>',
+	});
+	
+	$("#<%=fid%>").change(function(){
+		obj = $(this)
+		v = obj.val()
+		if(v.length>0){
+		s = v.split("/")
+		y = parseInt(s[2])
+		if(y>2200)
+		y = y-543
+		
+		d = new Date(y,parseInt(s[1]-1),parseInt(s[0]))
+		obj.val(""+parseInt(s[0])+"/"+parseInt(s[1])+"/"+y)
+		}
+	});
+</script>

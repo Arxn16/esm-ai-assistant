@@ -1,0 +1,24 @@
+<style type="text/css" media="screen">
+	.tools a{
+		display:inline-block;
+	
+		padding:5px;
+	}
+</style>
+<div id="colors_demo" style="width:100%">
+<div class="tools" style="border:0px solid">
+  <a href="#colors_sketch" class="<%=bt_class%>" data-download="png" style="float: right;">Download</a>
+</div>
+<canvas id="colors_sketch" width="<%=@width*4%>" height="300" class="<%=tb_class%>"></canvas>
+</div>
+<script type="text/javascript">
+  $(function() {
+    $.each(['#f00', '#ff0', '#0f0', '#0ff', '#00f', '#f0f', '#000', '#fff'], function() {
+      $('#colors_demo .tools').append("<a href='#colors_sketch' data-color='" + this + "' style='width: 10px; background: " + this + ";'>&nbsp;</a> ");
+    });
+    $.each([3, 5, 10, 15], function() {
+      $('#colors_demo .tools').append("<a href='#colors_sketch' data-size='" + this + "' style='background: #ccc'>" + this + "</a> ");
+    });
+    $('#colors_sketch').sketch();
+  });
+</script>

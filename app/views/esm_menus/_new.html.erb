@@ -1,0 +1,16 @@
+<div style="width:100%;border:0px solid">
+	
+<%= form_for(:menu_action,:url=>{:action=>"new",:id=>@project},:remote=>true) do |f| %>
+<br/>
+<%= hidden_field_tag :id, @menu_action.id %>
+<%= render :partial=> 'menu.html', :locals=>{:f=>f} %>
+<br/>
+<span style='float:left'>
+<%= f.submit 'Create' ,:class=>bt_class%> |  <%= link_to 'Cancel', {:controller=>'esm_menus',:action=>'index',:id=>@project},:remote=>true %> 
+</span>
+<% end %>
+
+</div>
+<div class="clear">
+	
+</div>

@@ -1,0 +1,8 @@
+<%=  remote_function({:controller=>'esm_projects',:action=>'show',:id=>@project, :path=>@url,:format=>'js'})%>
+<%
+	@current_project = @project
+%>
+<script type="text/javascript" charset="utf-8">
+	$('#context-menu').html('<%=escape_javascript(render(:partial=>"/layouts/context_menu"))%>');
+</script>
+

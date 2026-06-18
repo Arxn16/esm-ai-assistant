@@ -1,0 +1,9 @@
+
+<p>
+<%= tabular :model=>[:id, :name, :label, :url,:parent_id,:published],:title=>'Menus', :data=>@menu_actions do |row,out|
+	out<<link_to("Edit",{:action=>'edit',:id=>row},:remote=>true)
+	out<<link_to("Delete",{:action=>'destroy',:id=>row},:remote=>true,:confirm=>'Are you sure?')	
+	out
+end %>
+</p>
+<%= link_to "New Action", {:action => "new",:id=>@project},:remote=>true ,:class=>bt_class%>

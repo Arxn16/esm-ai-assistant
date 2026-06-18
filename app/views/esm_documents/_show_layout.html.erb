@@ -1,0 +1,174 @@
+<script type="text/javascript" charset="utf-8">
+		function changeValue(fid,t,val,text){
+			
+		}
+		function updateReport(){
+			
+		}
+		function select_tab(a,b){
+			
+		}
+</script>
+<%  @edit = false
+	@prefix = ''
+	@selctor=nil
+	
+%>
+<%
+
+	if defined? selector_key_options
+		@selector_key_options = selector_key_options
+		if false
+		%>selector_key_options : <%=@selector_key_options.inspect %>
+		<%
+		end
+	end
+
+%>
+<%= render :partial=>'/esm_documents/render_containers.html',:locals=>{:hidden=>true}%>
+<div id="clear">
+</div>
+
+<%
+
+	# @prefix = ''
+	if @document.tree_data 
+	root_data_node, root_fields_node, map, fmap = @document.get_root_format_node @record
+	fields = @document.fields
+
+	  	subtree = []
+		for f in fields
+			fparams = {}
+			fparams.merge! eval("{#{f.params}}") if f.params!=''
+			if fparams[:subtree]
+				subtree << f
+			end
+		end
+
+	
+%>
+<script type="text/javascript" charset="utf-8">
+
+	var map = <%=map.to_json.html_safe%>
+	var fmap = <%=fmap.to_json.html_safe%>
+    var master = <%=@document.get_mapping_master().to_json.html_safe %>;
+	var model = ''
+	tree = new ESMTree('<%=@document.name%>',model, map, fmap, master);
+
+	esm_helper.push('<%=@document.name%>',tree)
+	
+	
+	function init_document_func(){
+		// console.log('init doc')
+
+		<%
+			for field in subtree
+			
+			if field.lov_type and field.lov_type!=''
+			options = nil
+
+			    if field.lov_type == 'plain'
+					options = field.lov.split("\n").collect{|i| i.strip}.compact
+					keys = options
+			    elsif field.lov_type == 'pair'
+					options = field.lov.split("\n").compact.collect{|i| i.strip.split('|').reverse }
+					keys = options.collect{|i| i[1]}
+		    	end
+			
+
+			
+			options.each_with_index do |i,index| 
+			if map["#{field.id}|#{i[1]}"] and map["#{field.id}|#{i[1]}"][:items] and map["#{field.id}|#{i[1]}"][:items].size>0
+		%>
+		// console.log('init <%= i[1] %> <%= field.column_name %>')
+		
+		subtree = tree.map['<%=field.id%>|<%=i[1]%>']
+		if(typeof subtree['items']!='undefined' && subtree['items'].length>0){
+	  	
+			// alert('<%=field.column_name%> <%=i[0]%> <%=i[1]%> '+subtree['items'].length)
+			
+	    		obj = $("#update_<%=field.column_name%>_item_<%=index%>")
+				obj.parent().parent().append("<div  style='margin-left:20px;margin-top: 0px;border:0px solid' id='panel_<%=field.column_name%>_item_<%=index%>'>&nbsp;</div>")
+				
+				<% if index%2==0 %>
+				obj.parent().parent().addClass('rowx')
+				<% end %>
+				 	
+	
+				   
+				  target = $('#panel_<%=field.column_name%>_item_<%=index%>');
+				    for(var i in subtree['items']){
+						fid = subtree['items'][i]['id']
+						obj = $('#'+tree.fmap[fid])
+						$(obj).appendTo(target);
+	
+						
+					}
+					target.append("<div class='clear'></div>");
+			
+	
+		}
+		
+		<% end %>
+		<% end %>
+	
+		<% else %>
+		// when no lov true or false
+		
+		subtree = map['<%=field.id%>']
+		if(typeof subtree['items']!='undefined' && subtree['items'].length>0){
+	  			
+	
+				obj = $("#data-<%=field.column_name%>")
+				obj.parent().parent().append("<td  style='margin-left:20px;margin-top: 0px;padding:0px;border:0px solid' id='panel_<%=field.column_name%>'>&nbsp;</td>")
+			    target = $('#panel_<%=field.column_name%>');
+	
+				for(var i in subtree['items']){
+					fid = subtree['items'][i]['id']
+					obj = $('#'+tree.fmap[fid])
+					
+					$(obj).appendTo(target);
+					
+				}
+				target.append("<div class='clear'></div>");
+				
+				
+	
+		}
+		
+		<% end %>
+		
+	   tree = esm_helper.get('<%=@document.name%>')
+		<%
+			i = field
+		    if i.column_name and i.column_name!='' and !Document.visual_types.index(i.field_type)
+		%>	
+	
+		v  = $('#data-<%=i.column_name%>').val()
+		tree.changeValue('<%=i.id%>',$('#<%=i.column_name%>'),v,'')
+		<% end %>
+		
+	
+		
+		
+	
+	 tree.updateReport();
+	
+	  <% end %>
+		
+		
+	}
+	
+	
+	$(document).ready(function() {
+	   $('.k-sprite').removeClass("k-sprite");
+		init_document_func();
+		// alert('load')
+	});
+
+
+</script>
+
+<%
+	end
+%>

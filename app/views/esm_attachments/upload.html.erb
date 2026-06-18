@@ -1,0 +1,42 @@
+<html>
+<head>
+<%= stylesheet_link_tag    "application" %>
+<%= javascript_include_tag "application" %>
+<%= csrf_meta_tag %>
+
+<link rel="stylesheet" type="text/css" href="/extjs/resources/css/ext-all.css"/>
+<link href="/stylesheets/esm_home.css" media="screen" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="name" style="padding:20px">
+	
+<h1>File Uploads</h1>
+<br/>
+<%= form_for :upload, :url=>{}, :html=>{:multipart=>true} do |f|%>
+<%= hidden_field_tag :id, @project.id %>
+<%= hidden_field_tag :path, params[:path]%>
+<%= hidden_field_tag :fid, params[:fid]%>
+
+<%= hidden_field_tag :callback, params[:callback]%>
+
+	
+<p>
+File : 	<%= f.file_field :file %>
+</p><br/>
+<%= f.submit :submit %>
+<% end %>	
+<script type="text/javascript" charset="utf-8">
+	<% if request.post? 
+	
+		if params[:callback]
+	%>
+		<%= "window.opener.document.getElementById('#{params[:fid]}').value = '#{Time.now.to_s}' ;" %>
+	<% end %>
+	window.close();
+
+	<% end %>
+</script>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,942 @@
+/*
+* Quickess HTML
+* Copyright 2012, CanYigit
+* www.sourceofsuperiority.com
+*/
+
+/* Table of Content
+==================================================
+	#Custom Color
+	#Header
+	#Navigation & Menu
+	#Slider Styles
+	#Contetnt Styles
+	#Portfolio Styles
+	#Blog Styles
+	#Comment
+	#Pagination
+	#Widgets
+	#Shortcodes
+	#Footer
+	#Other Script Style
+	#Responsive @media
+
+	
+	
+/* #CustomColor
+================================================== */
+
+/*Main hover Color*/
+.button:hover,
+button:hover,
+input[type="submit"]:hover,
+input[type="reset"]:hover,
+input[type="button"]:hover ,
+ul.menu li a:hover , ul.menu li.current a ,  ul.menu li:hover a , a:hover, a:focus , #footer-wrapper a:hover , .page-nav li.current , .portfolio-filter li a.selected  {
+	color:#D64937;}
+
+/*Main Border Color*/	
+ul.menu li a , #footer-wrapper {
+	border-color:#F8F8F8;}
+
+/*Main hover border*/
+ul.menu li a:hover , ul.menu li.current a ,  ul.menu li:hover a{
+	border-color:#D64937;}
+
+/*Main background color*/	
+.caption-title , .caption-title2 , .blog-thumb-image , .blog-item-image ,.recentportfolio li , .portfolio-thumb-image , .lightbox , #slider2 .flex-control-nav a , .left-main-64 , .bbutton.mainbutton{
+	background-color:#FF6037;
+}
+
+/* #Site Styles
+================================================== */
+#wrapper { 
+	width:990px; height:auto; margin:0 auto;
+	background-color:#FFF; 
+	-webkit-box-shadow:  0px 0px 30px 10px rgba(0, 0, 0, 0.05);
+    box-shadow:  0px 0px 30px 10px rgba(0, 0, 0, 0.05);}
+
+/* #Header
+================================================== */
+#header {
+	width:930px;
+	padding:30px 30px 0px 30px;}
+
+#logo {
+	float:left;
+	margin-bottom:30px;}
+
+#header-right {
+	float:right;
+	margin-bottom:30px;}
+
+/* #Navigation & Menu
+================================================== */
+.mobile-main-menu {
+	background-color:#F2F2F2;
+	padding:0 0 1px 0;
+	margin-bottom:30px;
+	-webkit-border-radius: 3px 3px 3px 3px;
+	-moz-border-radius: 3px 3px 3px 3px;
+	border-radius: 3px 3px 3px 3px;}
+
+.main-menu {
+	height:60px;
+	width:930px;
+	border:1px solid #D5D5D5;
+	background-image:url(/emr-life/images/border.png);
+	background-position:center bottom;
+	background-repeat:repeat-x;
+	background-color:#FFF;
+	-moz-border-radius: 3px 3px 3px 3px;
+	-webkit-border-radius: 3px 3px 3px 3px;
+	border-radius: 3px 3px 3px 3px;
+	position: relative;}
+
+ul.menu {
+	margin:0;
+	padding:0;
+	width:650px;
+	float:left;}
+
+ul.menu li {
+	float:left;
+	display:inline;
+	border-right:1px solid #d5d5d5;
+	margin-bottom:0;
+	position:relative;}
+
+ul.menu li ul {
+	position:absolute;
+	width:200px;
+	z-index:99;
+	top:61px;
+	left:-1px;
+	background-color:#f2f2f2;
+	margin:0px;
+	padding:0px;
+	border:1px solid #d5d5d5;
+	border-top:none;
+	padding:2px 0 0 0;
+	-webkit-border-radius: 0px 0px 3px 3px;
+    border-radius: 0px 0px 3px 3px;
+	display:none;}
+
+ul.menu li ul li {
+	border-right:none;
+	display:block;}
+
+ul.menu li ul li a ,  ul.menu li:hover ul li a , ul.menu li.current ul li a {
+	height:32px;
+	line-height:32px;
+	font-size:13px;
+	display:block;
+	width:140px;
+	padding:0px 30px 0 30px;
+	font-family:'PT Sans', sans-serif;
+	border-bottom:1px solid #fff;
+	background-color:#f8f8f8;
+	color:#535353;}
+	
+ul.menu li ul li a:hover { 
+	border-bottom:1px solid #fff;
+	background-color:#FFF;
+	color:#181818;}
+	
+ul.menu li a {
+	padding:0 30px;
+	display:block;
+	text-decoration:none;
+	font-family: 'Viga', sans-serif;
+	font-size:14px;
+	line-height:55px;
+	border-bottom-style:solid;
+	border-bottom-width:5px;
+	color:#000;}	
+
+.main-menu select { 
+	background-image: url(/emr-life/images/select_arrow.png);
+	background-position: center right;
+	background-repeat: no-repeat;
+	display: none;
+	height: 55px;
+	-webkit-appearance: none;
+	background-color:none !important;
+	border:none !important;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	box-shadow: none;
+	color: #8F8F8F;
+	padding: 5px 10px;}
+
+.searhbar {
+	float:right;
+	height:60px;
+	min-width:60px;
+	border-left-style:solid;
+	border-left-width:1px;
+	border-left-color:#d5d5d5;
+	cursor:pointer;
+	position:absolute;
+	right:0px;}	
+
+input[type="text"].searchinput { 
+	background-image:url(/emr-life/images/search_icon.png) !important;
+	background-repeat:no-repeat;
+	background-position:21px center;
+	background-color:#F8F8F8;
+	border:none !important;
+	width:60px;
+	padding:19px 0px;
+	margin:0px;
+	line-height:22px;
+	height:22px;}
+	
+
+/* #Slider
+================================================== */
+.slider-wrapper { width:930px; margin:0 auto; margin-bottom:30px; position:relative; }
+.caption-title { position:absolute;  bottom:53px; left:100px; z-index:99; color:#FFF; padding:10px; }
+.caption-subtitle {position:absolute; bottom:30px; left:100px; z-index:99; color:#FFF; padding:5px 10px; background-color:#000;}
+.caption-title2 { position:absolute;  bottom:53px; right:100px; z-index:99; color:#FFF; padding:10px;}
+.caption-subtitle2 {position:absolute; bottom:30px; right:100px; z-index:99; color:#FFF; padding:5px 10px; background-color:#000;} 
+.slider-video-wrapper { padding-right:32px;}
+.slider-video-container1 { border:1px solid #d5d5d5; padding:5px;}
+
+
+
+	
+/* #Contetnt Styles
+================================================== */
+
+.titlebg { background:url(/emr-life/images/title_bg.png); background-repeat:no-repeat; background-position:left center; background-color:#f8f8f8; padding:30px; margin-bottom:30px; }
+.fleft {float:left; margin-right:15px;}
+.breadcrumbs { margin:0px; padding:0px; }
+.breadcrumbs li { margin:0px; padding:0px; float:left; display:inline; padding:0 5px;}
+.breadcrumbs li a {  display:block; background:url(/emr-life/images/bc.png); background-repeat:no-repeat; background-position:right center;  float:left; font-size:11px; padding-right:10px; line-height:24px; }
+.announcement {background:#f8f8f8; padding:30px; margin-bottom:30px;}
+.seperator { background-image:url(/emr-life/images/seperator.png); margin:0 30px 30px 30px; height:10px; clear:both; background-position:center center; background-repeat:no-repeat; }
+.del-margin { margin:0 auto 30px auto;}
+
+.page-nav { margin:0 0 30px 0; padding:0; }
+.page-nav li { float:left; margin:0 15px 0 5px;}
+
+.left-main-64 { width:32px; height:32px;  padding:16px; font-size:32px; line-height:32px; color:#FFF; text-align:center; float:left; display:block; margin-right:10px; }
+h2.icon-title { font-size:13px;  display:block; margin:0px; padding:0px; line-height:21px; letter-spacing:0.5px;}
+.round { -webkit-border-radius: 300px; -moz-border-radius: 300px; border-radius: 300px; }
+
+/* #Portfolio
+================================================== */
+.portfolio-wrapper { width:930px; overflow:hidden; }
+.portfolio-container1 { width:960px; }
+.portfolio-container1 li { list-style-type:none; margin-bottom:0; }
+.current .current { font-weight:bold; }
+
+#changer {width:57px; height:22px; background-image:url(/emr-life/images/p_layout2.jpg); background-repeat:no-repeat; background-position:center center; display:inline-block; padding:0 5px; }
+#changer2 {width:56px; height:22px; background-image:url(/emr-life/images/p_layout.jpg); background-repeat:no-repeat; background-position:center center; display:inline-block; padding:0 5px;}
+#changer3 {width:57px; height:22px; background-image:url(/emr-life/images/p_layout3.jpg); background-repeat:no-repeat; background-position:center center; display:inline-block; padding:0 5px; }
+
+ul.portfolio-filter , .option-set{ margin:0; padding:0; }
+.portfolio-filter li { margin:0; padding:0; display:inline; }
+.portfolio-filter li a { padding:0 10px; margin:0;  }
+
+.pdetaillink { padding:0 5px 0 5px; }
+
+
+   /* Shortcodes
+================================================== */
+
+/* Button
+///////////////////////////////////////////*/
+.bbutton i , .yah 	{ padding-right:10px;}
+.bbutton.gold 		{ background-color:#E7C836; }
+.bbutton.red 		{ background-color:#D64937; }
+.bbutton.green 		{ background-color:#57985B; }
+.bbutton.orange 	{ background-color:#E58038; }
+.bbutton.gray 		{ background-color:#7B7B7B; }
+.bbutton.teal 		{ background-color:#579497; }
+.bbutton.blue 		{ background-color:#577C97; }
+.bbutton.violet 	{ background-color:#97576D; }
+.bbutton.orchid 	{ background-color:#975797; }
+.bbutton.khaki 		{ background-color:#978A57; }
+.bbutton.black 		{ background-color:#0D0D0D; }
+
+a.bbutton 			{ color:rgba(255,255,255,0.9);  font-weight:bold; text-decoration:none; background-image:url(/emr-life/images/button_shadow.png); }
+a:hover.bbutton 	{ background-image:url(/emr-life/images/button_shadow_h.png); }
+a:active.bbutton , a.selected.bbutton { background-image:url(/emr-life/images/button_shadow_c.png);}
+
+.bbutton { 
+	margin:4px; 
+	display:inline-block;  
+	background-repeat:repeat-x; 
+	height:35px; 
+	line-height:35px; 
+	background-position:center bottom; 
+	padding:0px 15px; 
+	color:rgba(255,255,255,0.9); 
+ 	text-shadow: 0px -1px rgba(0,0,0,0.2);
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;}
+
+
+/* Notification Box 
+///////////////////////////////////////////*/
+.b_green ,.b_red , .b_yellow , .b_grey , .b_white 
+{ position:relative; background-position:15px center; background-repeat:no-repeat;}
+.b_green 	{ margin:15px 0px; padding:10px 15px 10px 45px; background-image:url(/emr-life/images/b_green.png);	background-color:#DDEADE; border:1px solid #ABCCAD; color:#57985B; }
+.b_red 		{ margin:15px 0px; padding:10px 15px 10px 45px; background-image:url(/emr-life/images/b_red.png); 		background-color:#F9E4E1; border:1px solid #EAA49B; color:#D64937; }
+.b_yellow 	{ margin:15px 0px; padding:10px 15px 10px 45px; background-image:url(/emr-life/images/b_yellow.png); 	background-color:#FAF4D7; border:1px solid #F3E49B; color:#D0B01A; }
+.b_grey 	{ margin:15px 0px; padding:10px 15px 10px 45px; background-image:url(/emr-life/images/b_grey.png);  	background-color:#f8f8f8; border:1px solid #d5d5d5; color:#000; }
+.b_white 	{ margin:15px 0px; padding:10px 15px 10px 45px; background-image:url(/emr-life/images/b_white.png);	background-color:#fff; border:1px solid #d5d5d5;  }
+
+.b_green .closebox ,
+.b_red .closebox ,
+.b_yellow .closebox ,
+.b_grey .closebox ,
+.b_white .closebox 
+{ right:15px; top:50%; margin-top:-10px; position:absolute; cursor:pointer; }
+
+
+/* Tabs
+///////////////////////////////////////////*/
+
+ul.tabs li a {
+	float:left;
+	display:block;
+	height:37px;
+	margin-top:-38px;
+	background-color:#f8f8f8;
+	z-index:99;
+	padding:0 15px;
+	margin-right:-1px;
+	border:1px solid #d5d5d5;
+	color:#444;
+	line-height:36px;
+	text-decoration:none;
+}
+ul.tabs li a:hover.current , 
+ul.tabs li a.current , 
+.accordion h2.current , 
+.accordion h2.current span , 
+.accordion h2:hover.current 	{ background-color:#fff; }
+ul.tabs li 						{ float:left;}
+ul.tabs li a.current 			{ border-bottom:1px solid #fff;}
+ul.tabs li a:hover 				{ text-decoration:none; background-color:#fff;}
+div.wrap 						{ margin-top:38px;}
+.wrap .pane 					{ border:1px solid #d5d5d5;padding:15px;margin-top:-1px;}
+.panes .pane 					{ display:none;}
+.wrap .pane p 					{ margin:-10px 0 -20px 0;}
+
+
+/* Accordion
+///////////////////////////////////////////*/
+
+.accordion h2 {
+	padding-left:33px;
+	min-height:37px;
+	line-height:37px !important;
+	-webkit-transition: all 0.2s linear;
+	-moz-transition: all 0.3s ease-in;
+	-ms-transition: all 0.3s ease-in;
+	-o-transition: all 0.3s ease-in;
+	transition: all 0.3s ease-in;
+	-webkit-border-radius: 0px;
+	-moz-border-radius: 0px;
+	border-radius: 0px;
+	margin-bottom:-1px;
+	background-image:url(/emr-life/images/accordion_c.jpg);
+	background-repeat:no-repeat;
+	background-position:0px center;
+	font-family:'PT Sans', sans-serif !important;
+	font-weight:bold;
+}
+.accordion h2.current {
+	background-image:url(/emr-life/images/accordion.jpg);
+	background-position:left 2px;
+	background-repeat:no-repeat;
+	background-position:left center;
+	background-position:0px center;
+}
+.accordion h2.current span {
+	width:25px;
+	height:35px;
+	margin-top:2px;
+	display:inline-block;
+	background-image:url(/emr-life/images/accordion_icon.png);
+	background-position:-10px 0px;
+	color:#FFF;
+}
+.accordion h2 span {
+	width:25px;
+	height:35px;
+	margin-top:2px;
+	display:inline-block;
+	background-image:url(/emr-life/images/accordion_icon.png);
+	background-position:right 0px;
+	color:#FFF;
+}
+.accordion h2:hover {
+	background-color:#FFF;
+	cursor:pointer;
+}
+.accordion .pane {
+	padding:10px 0px;
+	margin-bottom:-1px;
+}
+.accordion h2 {
+	font-size:13px;
+} 
+
+/* Vertical Accordion
+///////////////////////////////////////////*/
+
+.accordion-v h2 {
+	line-height:22px !important;
+	padding: 15px 0px 15px 15px;
+	-webkit-transition: all 0.2s linear;
+	-moz-transition: all 0.3s ease-in;
+	-ms-transition: all 0.3s ease-in;
+	-o-transition: all 0.3s ease-in;
+	transition: all 0.3s ease-in;
+	-webkit-border-radius: 0px;
+	-moz-border-radius: 0px;
+	border-radius: 0px;
+	margin-bottom:-1px;
+	font-family:'PT Sans', sans-serif !important;
+	font-weight:bold;
+	display:block;
+	background-color:#f8f8f8;
+	-webkit-box-shadow: inset -3px 0px 6px 0px rgba(0, 0, 0, 0.1);
+    box-shadow: inset -3px 0px 6px 0px rgba(0, 0, 0, 0.1);
+	color:#F90;
+	border-top:1px solid #d5d5d5;
+	border-left:1px solid #f8f8f8;
+}
+.accordion-v h2.current {
+	color:#000;
+	-webkit-box-shadow: inset 2px 0px 3px 0px rgba(0, 0, 0, 0);
+    box-shadow: inset 2px 0px 3px 0px rgba(0, 0, 0, 0);
+	background-color:#FFF;
+	border-top:1px solid #d5d5d5;
+	border-left:1px solid #d5d5d5;
+}
+.accordion-v h2.current span {
+	width:25px;
+	height:35px;
+	margin-top:2px;
+	display:inline-block;
+	background-image:url(/emr-life/images/accordion_icon.png);
+	background-position:-10px 0px;
+	color:#FFF;
+}
+.accordion-v h2 span {
+	width:25px;
+	height:35px;
+	margin-top:2px;
+	display:inline-block;
+	background-image:url(/emr-life/images/accordion_icon.png);
+	background-position:right 0px;
+	color:#FFF;
+}
+.accordion-v h2:hover {
+	background-color:#FFF;
+	cursor:pointer;
+}
+.accordion-v .pane {
+	padding:0;
+	margin-bottom:-1px;
+	float:left;
+}
+.accordion-v h2 {
+	font-size:13px;
+} 
+
+
+
+
+/* #Widget
+================================================== */
+
+/* sidebar1 Style
+///////////////////////////////////////////*/
+.sidebar1 { background-image:url(/emr-life/images/vertical_sep.png); background-position:left top; background-repeat:no-repeat; padding-left:30px; border-left:1px solid #f2f2f2; }
+
+/* sidebar1 Categories
+///////////////////////////////////////////*/
+ul.categories { margin:0; padding:0;}
+ul.categories li {  border-bottom:1px solid #EAEAEA; margin:0; padding:10px 15px 10px 15px; }
+ul.categories li:hover , ul.categories li.current {background-color:#f8f8f8;}
+ul.categories li a { display:block; background-image:url(/emr-life/images/arrow.png); background-position:left center; background-repeat:no-repeat; padding-left:15px; }
+
+
+/* Recent Portfolio 
+///////////////////////////////////////////*/
+ul.recentportfolio { margin-left:-11px;}
+ul.recentportfolio li  { margin:0 0 10px 10px; padding:0; line-height:0; float:left; }
+ul.recentportfolio li img { width:80px; height:auto; }
+
+
+/* Flickr
+///////////////////////////////////////////*/ 
+#flickr-images-wrapper li 		{ border:none !important; list-style-type:none; float:left; padding:0px; margin:0px; }
+#flickr-images-wrapper li a img { width:61px;   height:auto; padding:0px; margin-left:10px; margin-bottom:5px;}
+#flickr-images-wrapper li a 	{ display:block; margin:0px !important; padding:0px !important; float:left;  }
+
+#flickr-images-wrapper 			{ margin-left:-10px; }
+#footer-wrapper li.flickr-image { padding:0px !important; margin:0px !important}
+
+/* Embed container1
+///////////////////////////////////////////*/
+.embed-container1 {
+position: relative;
+padding-bottom: 56.25%;
+padding-top: 9px;
+height: 0;
+overflow: hidden;
+}
+
+.embed-container1 iframe, .embed-container1 object, .embed-container1 embed {
+position: absolute;
+top: 0;
+left: 0;
+width: 100% !important;
+height: 100% !important;}
+	
+/* Latest Item
+///////////////////////////////////////////*/
+.latest-item li { margin-bottom:30px; }
+.latest-item li span { display:block; }
+.imgfloat {float:left; margin-right:10px;}
+
+/* Testimonials
+///////////////////////////////////////////*/
+.testimonials-top { border-style:solid; border-width:1px; border-color:#d5d5d5; padding:15px; }
+.testimonials-bottom { background-image:url(/emr-life/images/testimonial.jpg); background-repeat:no-repeat; background-position:30px top; margin-top:-1px; padding-top:15px; }
+
+/* #Blog
+================================================== */
+
+.medium-blog-item .blog-item-content {  }
+.medium-blog-item .mediumbox { width:290px; float:left; margin-right:30px; }
+.blog-item-content blockquote { margin-left:30px; }
+.blog-thumb-image , .blog-item-image , 
+.recentportfolio li , .portfolio-thumb-image ,
+.lightbox { position:relative; line-height:0px; background-image:url(/emr-life/images/plus.png); background-repeat:no-repeat; background-position:center center; }
+.lightbox { line-height:0px; display:inline-block; }
+.loading { height:100px; background-image:url(/emr-life/images/load_slider.gif); background-repeat:no-repeat; background-position:center center; }
+.icon-elements li {float:left; margin:0px; padding:5px; }
+.icon-elements { margin-bottom:30px; }
+
+
+/* #comment
+=======================================================*/
+.comment 	{ list-style-type:none; }
+.avatar 	{ float:left; margin-right:15px; }
+.children 	{ font-size:inherit; }
+.comment-form-inputs , 
+.comment-form-textarea 	{ background-color:#F8F8F8 !important;}
+.comment-form-textarea 	{ margin-top:5px !important; height:210px; margin-bottom:30px; }
+.input-float 			{ float:left; margin-right:30px; margin-bottom:10px; width:179px; }
+.comment-form-inputs , 
+.comment-form-textarea 	{ padding: 10px 5px !important; border:1px solid #f8f8f8 !important; margin-top:15px; border-radius:0px !important; -webkit-border-radius:0px !important; -moz-border-radius:0px !important;}
+.comment-form-inputs:focus , 
+.comment-form-textarea:focus { background-color:#fff !important; border:1px solid #d5d5d5 !important; -webkit-box-shadow: inset 0px 1px 3px 1px rgba(0, 0, 0, 0.1) !important;
+        box-shadow: inset 0px 1px 3px 1px rgba(0, 0, 0, 0.1) !important;}
+.input-label 			{ margin-bottom:5px; }
+textarea.error 			{ background:none; }
+.error 					{ background-color: #FFECEC;
+font-weight: normal;
+color: #E65151;
+padding: 5px 5px 5px 30px ;
+display:inline-block;
+background-image:url(/emr-life/images/b_red.png);
+background-position:8px center;
+background-repeat:no-repeat;}
+
+/* #Footer
+================================================== */
+
+#footer-wrapper 	{ background:#000; border-top-style:solid; border-top-width:5px; padding-top:15px; color:#5A5A5A;}
+#footer-wrapper a 	{ color:#fff; }
+.footer-bottom 		{ padding:15px 30px; background:#0D0D0D; }
+
+
+/* #External Plugin Css
+================================================== */
+
+/* PrettyPhoto
+///////////////////////////////////////////*/
+div.pp_default .pp_top,div.pp_default .pp_top .pp_middle,div.pp_default .pp_top .pp_left,div.pp_default .pp_top .pp_right,div.pp_default .pp_bottom,div.pp_default .pp_bottom .pp_left,div.pp_default .pp_bottom .pp_middle,div.pp_default .pp_bottom .pp_right{height:13px}
+div.pp_default .pp_top .pp_left{background:url(/emr-life/images/prettyPhoto/default/sprite.png) -78px -93px no-repeat}
+div.pp_default .pp_top .pp_middle{background:url(/emr-life/images/prettyPhoto/default/sprite_x.png) top left repeat-x}
+div.pp_default .pp_top .pp_right{background:url(/emr-life/images/prettyPhoto/default/sprite.png) -112px -93px no-repeat}
+div.pp_default .pp_content .ppt{color:#f8f8f8}
+div.pp_default .pp_content_container1 .pp_left{background:url(/emr-life/images/prettyPhoto/default/sprite_y.png) -7px 0 repeat-y;padding-left:13px}
+div.pp_default .pp_content_container1 .pp_right{background:url(/emr-life/images/prettyPhoto/default/sprite_y.png) top right repeat-y;padding-right:13px}
+div.pp_default .pp_next:hover{background:url(/emr-life/images/prettyPhoto/default/sprite_next.png) center right no-repeat;cursor:pointer}
+div.pp_default .pp_previous:hover{background:url(/emr-life/images/prettyPhoto/default/sprite_prev.png) center left no-repeat;cursor:pointer}
+div.pp_default .pp_expand{background:url(/emr-life/images/prettyPhoto/default/sprite.png) 0 -29px no-repeat;cursor:pointer;height:28px;width:28px}
+div.pp_default .pp_expand:hover{background:url(/emr-life/images/prettyPhoto/default/sprite.png) 0 -56px no-repeat;cursor:pointer}
+div.pp_default .pp_contract{background:url(/emr-life/images/prettyPhoto/default/sprite.png) 0 -84px no-repeat;cursor:pointer;height:28px;width:28px}
+div.pp_default .pp_contract:hover{background:url(/emr-life/images/prettyPhoto/default/sprite.png) 0 -113px no-repeat;cursor:pointer}
+div.pp_default .pp_close{background:url(/emr-life/images/prettyPhoto/default/sprite.png) 2px 1px no-repeat;cursor:pointer;height:30px;width:30px}
+div.pp_default .pp_gallery ul li a{background:url(/emr-life/images/prettyPhoto/default/default_thumb.png) center center #f8f8f8;border:1px solid #aaa}
+div.pp_default .pp_social{margin-top:7px}
+div.pp_default .pp_gallery a.pp_arrow_previous,div.pp_default .pp_gallery a.pp_arrow_next{left:auto;position:static}
+div.pp_default .pp_nav .pp_play,div.pp_default .pp_nav .pp_pause{background:url(/emr-life/images/prettyPhoto/default/sprite.png) -51px 1px no-repeat;height:30px;width:30px}
+div.pp_default .pp_nav .pp_pause{background-position:-51px -29px}
+div.pp_default a.pp_arrow_previous,div.pp_default a.pp_arrow_next{background:url(/emr-life/images/prettyPhoto/default/sprite.png) -31px -3px no-repeat;height:20px;margin:4px 0 0;width:20px}
+div.pp_default a.pp_arrow_next{background-position:-82px -3px;left:52px}
+div.pp_default .pp_content_container1 .pp_details{margin-top:5px}
+div.pp_default .pp_nav{clear:none;height:30px;position:relative;width:110px}
+div.pp_default .pp_nav .currentTextHolder{color:#999;font-family:Georgia;font-size:11px;font-style:italic;left:75px;line-height:25px;margin:0;padding:0 0 0 10px;position:absolute;top:2px}
+div.pp_default .pp_close:hover,div.pp_default .pp_nav .pp_play:hover,div.pp_default .pp_nav .pp_pause:hover,div.pp_default .pp_arrow_next:hover,div.pp_default .pp_arrow_previous:hover{opacity:0.7}
+div.pp_default .pp_description{font-size:11px;font-weight:700;line-height:14px;margin:5px 50px 5px 0}
+div.pp_default .pp_bottom .pp_left{background:url(/emr-life/images/prettyPhoto/default/sprite.png) -78px -127px no-repeat}
+div.pp_default .pp_bottom .pp_middle{background:url(/emr-life/images/prettyPhoto/default/sprite_x.png) bottom left repeat-x}
+div.pp_default .pp_bottom .pp_right{background:url(/emr-life/images/prettyPhoto/default/sprite.png) -112px -127px no-repeat}
+div.pp_default .pp_loaderIcon{background:url(/emr-life/images/prettyPhoto/default/loader.gif) center center no-repeat}
+div.light_rounded .pp_top .pp_left{background:url(/emr-life/images/prettyPhoto/light_rounded/sprite.png) -88px -53px no-repeat}
+div.light_rounded .pp_top .pp_right{background:url(/emr-life/images/prettyPhoto/light_rounded/sprite.png) -110px -53px no-repeat}
+div.light_rounded .pp_next:hover{background:url(/emr-life/images/prettyPhoto/light_rounded/btnNext.png) center right no-repeat;cursor:pointer}
+div.light_rounded .pp_previous:hover{background:url(/emr-life/images/prettyPhoto/light_rounded/btnPrevious.png) center left no-repeat;cursor:pointer}
+div.light_rounded .pp_expand{background:url(/emr-life/images/prettyPhoto/light_rounded/sprite.png) -31px -26px no-repeat;cursor:pointer}
+div.light_rounded .pp_expand:hover{background:url(/emr-life/images/prettyPhoto/light_rounded/sprite.png) -31px -47px no-repeat;cursor:pointer}
+div.light_rounded .pp_contract{background:url(/emr-life/images/prettyPhoto/light_rounded/sprite.png) 0 -26px no-repeat;cursor:pointer}
+div.light_rounded .pp_contract:hover{background:url(/emr-life/images/prettyPhoto/light_rounded/sprite.png) 0 -47px no-repeat;cursor:pointer}
+div.light_rounded .pp_close{background:url(/emr-life/images/prettyPhoto/light_rounded/sprite.png) -1px -1px no-repeat;cursor:pointer;height:22px;width:75px}
+div.light_rounded .pp_nav .pp_play{background:url(/emr-life/images/prettyPhoto/light_rounded/sprite.png) -1px -100px no-repeat;height:15px;width:14px}
+div.light_rounded .pp_nav .pp_pause{background:url(/emr-life/images/prettyPhoto/light_rounded/sprite.png) -24px -100px no-repeat;height:15px;width:14px}
+div.light_rounded .pp_arrow_previous{background:url(/emr-life/images/prettyPhoto/light_rounded/sprite.png) 0 -71px no-repeat}
+div.light_rounded .pp_arrow_next{background:url(/emr-life/images/prettyPhoto/light_rounded/sprite.png) -22px -71px no-repeat}
+div.light_rounded .pp_bottom .pp_left{background:url(/emr-life/images/prettyPhoto/light_rounded/sprite.png) -88px -80px no-repeat}
+div.light_rounded .pp_bottom .pp_right{background:url(/emr-life/images/prettyPhoto/light_rounded/sprite.png) -110px -80px no-repeat}
+div.dark_rounded .pp_top .pp_left{background:url(/emr-life/images/prettyPhoto/dark_rounded/sprite.png) -88px -53px no-repeat}
+div.dark_rounded .pp_top .pp_right{background:url(/emr-life/images/prettyPhoto/dark_rounded/sprite.png) -110px -53px no-repeat}
+div.dark_rounded .pp_content_container1 .pp_left{background:url(/emr-life/images/prettyPhoto/dark_rounded/contentPattern.png) top left repeat-y}
+div.dark_rounded .pp_content_container1 .pp_right{background:url(/emr-life/images/prettyPhoto/dark_rounded/contentPattern.png) top right repeat-y}
+div.dark_rounded .pp_next:hover{background:url(/emr-life/images/prettyPhoto/dark_rounded/btnNext.png) center right no-repeat;cursor:pointer}
+div.dark_rounded .pp_previous:hover{background:url(/emr-life/images/prettyPhoto/dark_rounded/btnPrevious.png) center left no-repeat;cursor:pointer}
+div.dark_rounded .pp_expand{background:url(/emr-life/images/prettyPhoto/dark_rounded/sprite.png) -31px -26px no-repeat;cursor:pointer}
+div.dark_rounded .pp_expand:hover{background:url(/emr-life/images/prettyPhoto/dark_rounded/sprite.png) -31px -47px no-repeat;cursor:pointer}
+div.dark_rounded .pp_contract{background:url(/emr-life/images/prettyPhoto/dark_rounded/sprite.png) 0 -26px no-repeat;cursor:pointer}
+div.dark_rounded .pp_contract:hover{background:url(/emr-life/images/prettyPhoto/dark_rounded/sprite.png) 0 -47px no-repeat;cursor:pointer}
+div.dark_rounded .pp_close{background:url(/emr-life/images/prettyPhoto/dark_rounded/sprite.png) -1px -1px no-repeat;cursor:pointer;height:22px;width:75px}
+div.dark_rounded .pp_description{color:#fff;margin-right:85px}
+div.dark_rounded .pp_nav .pp_play{background:url(/emr-life/images/prettyPhoto/dark_rounded/sprite.png) -1px -100px no-repeat;height:15px;width:14px}
+div.dark_rounded .pp_nav .pp_pause{background:url(/emr-life/images/prettyPhoto/dark_rounded/sprite.png) -24px -100px no-repeat;height:15px;width:14px}
+div.dark_rounded .pp_arrow_previous{background:url(/emr-life/images/prettyPhoto/dark_rounded/sprite.png) 0 -71px no-repeat}
+div.dark_rounded .pp_arrow_next{background:url(/emr-life/images/prettyPhoto/dark_rounded/sprite.png) -22px -71px no-repeat}
+div.dark_rounded .pp_bottom .pp_left{background:url(/emr-life/images/prettyPhoto/dark_rounded/sprite.png) -88px -80px no-repeat}
+div.dark_rounded .pp_bottom .pp_right{background:url(/emr-life/images/prettyPhoto/dark_rounded/sprite.png) -110px -80px no-repeat}
+div.dark_rounded .pp_loaderIcon{background:url(/emr-life/images/prettyPhoto/dark_rounded/loader.gif) center center no-repeat}
+div.dark_square .pp_left,div.dark_square .pp_middle,div.dark_square .pp_right,div.dark_square .pp_content{background:#000}
+div.dark_square .pp_description{color:#fff;margin:0 85px 0 0}
+div.dark_square .pp_loaderIcon{background:url(/emr-life/images/prettyPhoto/dark_square/loader.gif) center center no-repeat}
+div.dark_square .pp_expand{background:url(/emr-life/images/prettyPhoto/dark_square/sprite.png) -31px -26px no-repeat;cursor:pointer}
+div.dark_square .pp_expand:hover{background:url(/emr-life/images/prettyPhoto/dark_square/sprite.png) -31px -47px no-repeat;cursor:pointer}
+div.dark_square .pp_contract{background:url(/emr-life/images/prettyPhoto/dark_square/sprite.png) 0 -26px no-repeat;cursor:pointer}
+div.dark_square .pp_contract:hover{background:url(/emr-life/images/prettyPhoto/dark_square/sprite.png) 0 -47px no-repeat;cursor:pointer}
+div.dark_square .pp_close{background:url(/emr-life/images/prettyPhoto/dark_square/sprite.png) -1px -1px no-repeat;cursor:pointer;height:22px;width:75px}
+div.dark_square .pp_nav{clear:none}
+div.dark_square .pp_nav .pp_play{background:url(/emr-life/images/prettyPhoto/dark_square/sprite.png) -1px -100px no-repeat;height:15px;width:14px}
+div.dark_square .pp_nav .pp_pause{background:url(/emr-life/images/prettyPhoto/dark_square/sprite.png) -24px -100px no-repeat;height:15px;width:14px}
+div.dark_square .pp_arrow_previous{background:url(/emr-life/images/prettyPhoto/dark_square/sprite.png) 0 -71px no-repeat}
+div.dark_square .pp_arrow_next{background:url(/emr-life/images/prettyPhoto/dark_square/sprite.png) -22px -71px no-repeat}
+div.dark_square .pp_next:hover{background:url(/emr-life/images/prettyPhoto/dark_square/btnNext.png) center right no-repeat;cursor:pointer}
+div.dark_square .pp_previous:hover{background:url(/emr-life/images/prettyPhoto/dark_square/btnPrevious.png) center left no-repeat;cursor:pointer}
+div.light_square .pp_expand{background:url(/emr-life/images/prettyPhoto/light_square/sprite.png) -31px -26px no-repeat;cursor:pointer}
+div.light_square .pp_expand:hover{background:url(/emr-life/images/prettyPhoto/light_square/sprite.png) -31px -47px no-repeat;cursor:pointer}
+div.light_square .pp_contract{background:url(/emr-life/images/prettyPhoto/light_square/sprite.png) 0 -26px no-repeat;cursor:pointer}
+div.light_square .pp_contract:hover{background:url(/emr-life/images/prettyPhoto/light_square/sprite.png) 0 -47px no-repeat;cursor:pointer}
+div.light_square .pp_close{background:url(/emr-life/images/prettyPhoto/light_square/sprite.png) -1px -1px no-repeat;cursor:pointer;height:22px;width:75px}
+div.light_square .pp_nav .pp_play{background:url(/emr-life/images/prettyPhoto/light_square/sprite.png) -1px -100px no-repeat;height:15px;width:14px}
+div.light_square .pp_nav .pp_pause{background:url(/emr-life/images/prettyPhoto/light_square/sprite.png) -24px -100px no-repeat;height:15px;width:14px}
+div.light_square .pp_arrow_previous{background:url(/emr-life/images/prettyPhoto/light_square/sprite.png) 0 -71px no-repeat}
+div.light_square .pp_arrow_next{background:url(/emr-life/images/prettyPhoto/light_square/sprite.png) -22px -71px no-repeat}
+div.light_square .pp_next:hover{background:url(/emr-life/images/prettyPhoto/light_square/btnNext.png) center right no-repeat;cursor:pointer}
+div.light_square .pp_previous:hover{background:url(/emr-life/images/prettyPhoto/light_square/btnPrevious.png) center left no-repeat;cursor:pointer}
+div.facebook .pp_top .pp_left{background:url(/emr-life/images/prettyPhoto/facebook/sprite.png) -88px -53px no-repeat}
+div.facebook .pp_top .pp_middle{background:url(/emr-life/images/prettyPhoto/facebook/contentPatternTop.png) top left repeat-x}
+div.facebook .pp_top .pp_right{background:url(/emr-life/images/prettyPhoto/facebook/sprite.png) -110px -53px no-repeat}
+div.facebook .pp_content_container1 .pp_left{background:url(/emr-life/images/prettyPhoto/facebook/contentPatternLeft.png) top left repeat-y}
+div.facebook .pp_content_container1 .pp_right{background:url(/emr-life/images/prettyPhoto/facebook/contentPatternRight.png) top right repeat-y}
+div.facebook .pp_expand{background:url(/emr-life/images/prettyPhoto/facebook/sprite.png) -31px -26px no-repeat;cursor:pointer}
+div.facebook .pp_expand:hover{background:url(/emr-life/images/prettyPhoto/facebook/sprite.png) -31px -47px no-repeat;cursor:pointer}
+div.facebook .pp_contract{background:url(/emr-life/images/prettyPhoto/facebook/sprite.png) 0 -26px no-repeat;cursor:pointer}
+div.facebook .pp_contract:hover{background:url(/emr-life/images/prettyPhoto/facebook/sprite.png) 0 -47px no-repeat;cursor:pointer}
+div.facebook .pp_close{background:url(/emr-life/images/prettyPhoto/facebook/sprite.png) -1px -1px no-repeat;cursor:pointer;height:22px;width:22px}
+div.facebook .pp_description{margin:0 37px 0 0}
+div.facebook .pp_loaderIcon{background:url(/emr-life/images/prettyPhoto/facebook/loader.gif) center center no-repeat}
+div.facebook .pp_arrow_previous{background:url(/emr-life/images/prettyPhoto/facebook/sprite.png) 0 -71px no-repeat;height:22px;margin-top:0;width:22px}
+div.facebook .pp_arrow_previous.disabled{background-position:0 -96px;cursor:default}
+div.facebook .pp_arrow_next{background:url(/emr-life/images/prettyPhoto/facebook/sprite.png) -32px -71px no-repeat;height:22px;margin-top:0;width:22px}
+div.facebook .pp_arrow_next.disabled{background-position:-32px -96px;cursor:default}
+div.facebook .pp_nav{margin-top:0}
+div.facebook .pp_nav p{font-size:15px;padding:0 3px 0 4px}
+div.facebook .pp_nav .pp_play{background:url(/emr-life/images/prettyPhoto/facebook/sprite.png) -1px -123px no-repeat;height:22px;width:22px}
+div.facebook .pp_nav .pp_pause{background:url(/emr-life/images/prettyPhoto/facebook/sprite.png) -32px -123px no-repeat;height:22px;width:22px}
+div.facebook .pp_next:hover{background:url(/emr-life/images/prettyPhoto/facebook/btnNext.png) center right no-repeat;cursor:pointer}
+div.facebook .pp_previous:hover{background:url(/emr-life/images/prettyPhoto/facebook/btnPrevious.png) center left no-repeat;cursor:pointer}
+div.facebook .pp_bottom .pp_left{background:url(/emr-life/images/prettyPhoto/facebook/sprite.png) -88px -80px no-repeat}
+div.facebook .pp_bottom .pp_middle{background:url(/emr-life/images/prettyPhoto/facebook/contentPatternBottom.png) top left repeat-x}
+div.facebook .pp_bottom .pp_right{background:url(/emr-life/images/prettyPhoto/facebook/sprite.png) -110px -80px no-repeat}
+div.pp_pic_holder a:focus{outline:none}
+div.pp_overlay{background:#000;display:none;left:0;position:absolute;top:0;width:100%;z-index:9500}
+div.pp_pic_holder{display:none;position:absolute;width:100px;z-index:10000}
+.pp_content{height:40px;min-width:40px}
+* html .pp_content{width:40px}
+.pp_content_container1{position:relative;text-align:left;width:100%}
+.pp_content_container1 .pp_left{padding-left:20px}
+.pp_content_container1 .pp_right{padding-right:20px}
+.pp_content_container1 .pp_details{float:left;margin:10px 0 2px}
+.pp_description{display:none;margin:0}
+.pp_social{float:left;margin:0}
+.pp_social .facebook{float:left;margin-left:5px;overflow:hidden;width:55px}
+.pp_social .twitter{float:left}
+.pp_nav{clear:right;float:left;margin:3px 10px 0 0}
+.pp_nav p{float:left;margin:2px 4px;white-space:nowrap}
+.pp_nav .pp_play,.pp_nav .pp_pause{float:left;margin-right:4px;text-indent:-10000px}
+a.pp_arrow_previous,a.pp_arrow_next{display:block;float:left;height:15px;margin-top:3px;overflow:hidden;text-indent:-10000px;width:14px}
+.pp_hovercontainer1{position:absolute;top:0;width:100%;z-index:2000}
+.pp_gallery{display:none;left:50%;margin-top:-50px;position:absolute;z-index:10000}
+.pp_gallery div{float:left;overflow:hidden;position:relative}
+.pp_gallery ul{float:left;height:35px;margin:0 0 0 5px;padding:0;position:relative;white-space:nowrap}
+.pp_gallery ul a{border:1px rgba(0,0,0,0.5) solid;display:block;float:left;height:33px;overflow:hidden}
+.pp_gallery ul a img{border:0}
+.pp_gallery li{display:block;float:left;margin:0 5px 0 0;padding:0}
+.pp_gallery li.default a{background:url(/emr-life/images/prettyPhoto/facebook/default_thumbnail.gif) 0 0 no-repeat;display:block;height:33px;width:50px}
+.pp_gallery .pp_arrow_previous,.pp_gallery .pp_arrow_next{margin-top:7px!important}
+a.pp_next{background:url(/emr-life/images/prettyPhoto/light_rounded/btnNext.png) 10000px 10000px no-repeat;display:block;float:right;height:100%;text-indent:-10000px;width:49%}
+a.pp_previous{background:url(/emr-life/images/prettyPhoto/light_rounded/btnNext.png) 10000px 10000px no-repeat;display:block;float:left;height:100%;text-indent:-10000px;width:49%}
+a.pp_expand,a.pp_contract{cursor:pointer;display:none;height:20px;position:absolute;right:30px;text-indent:-10000px;top:10px;width:20px;z-index:20000}
+a.pp_close{display:block;line-height:22px;position:absolute;right:0;text-indent:-10000px;top:0}
+.pp_loaderIcon{display:block;height:24px;left:50%;margin:-12px 0 0 -12px;position:absolute;top:50%;width:24px}
+#pp_full_res{line-height:1!important}
+#pp_full_res .pp_inline{text-align:left}
+#pp_full_res .pp_inline p{margin:0 0 15px}
+div.ppt{color:#fff;display:none;font-size:17px;margin:0 0 5px 15px;z-index:9999}
+div.pp_default .pp_content,div.light_rounded .pp_content{background-color:#fff}
+div.pp_default #pp_full_res .pp_inline,div.light_rounded .pp_content .ppt,div.light_rounded #pp_full_res .pp_inline,div.light_square .pp_content .ppt,div.light_square #pp_full_res .pp_inline,div.facebook .pp_content .ppt,div.facebook #pp_full_res .pp_inline{color:#000}
+div.pp_default .pp_gallery ul li a:hover,div.pp_default .pp_gallery ul li.selected a,.pp_gallery ul a:hover,.pp_gallery li.selected a{border-color:#fff}
+div.pp_default .pp_details,div.light_rounded .pp_details,div.dark_rounded .pp_details,div.dark_square .pp_details,div.light_square .pp_details,div.facebook .pp_details{position:relative}
+div.light_rounded .pp_top .pp_middle,div.light_rounded .pp_content_container1 .pp_left,div.light_rounded .pp_content_container1 .pp_right,div.light_rounded .pp_bottom .pp_middle,div.light_square .pp_left,div.light_square .pp_middle,div.light_square .pp_right,div.light_square .pp_content,div.facebook .pp_content{background:#fff}
+div.light_rounded .pp_description,div.light_square .pp_description{margin-right:85px}
+div.light_rounded .pp_gallery a.pp_arrow_previous,div.light_rounded .pp_gallery a.pp_arrow_next,div.dark_rounded .pp_gallery a.pp_arrow_previous,div.dark_rounded .pp_gallery a.pp_arrow_next,div.dark_square .pp_gallery a.pp_arrow_previous,div.dark_square .pp_gallery a.pp_arrow_next,div.light_square .pp_gallery a.pp_arrow_previous,div.light_square .pp_gallery a.pp_arrow_next{margin-top:12px!important}
+div.light_rounded .pp_arrow_previous.disabled,div.dark_rounded .pp_arrow_previous.disabled,div.dark_square .pp_arrow_previous.disabled,div.light_square .pp_arrow_previous.disabled{background-position:0 -87px;cursor:default}
+div.light_rounded .pp_arrow_next.disabled,div.dark_rounded .pp_arrow_next.disabled,div.dark_square .pp_arrow_next.disabled,div.light_square .pp_arrow_next.disabled{background-position:-22px -87px;cursor:default}
+div.light_rounded .pp_loaderIcon,div.light_square .pp_loaderIcon{background:url(/emr-life/images/prettyPhoto/light_rounded/loader.gif) center center no-repeat}
+div.dark_rounded .pp_top .pp_middle,div.dark_rounded .pp_content,div.dark_rounded .pp_bottom .pp_middle{background:url(/emr-life/images/prettyPhoto/dark_rounded/contentPattern.png) top left repeat}
+div.dark_rounded .currentTextHolder,div.dark_square .currentTextHolder{color:#c4c4c4}
+div.dark_rounded #pp_full_res .pp_inline,div.dark_square #pp_full_res .pp_inline{color:#fff}
+.pp_top,.pp_bottom{height:20px;position:relative}
+* html .pp_top,* html .pp_bottom{padding:0 20px}
+.pp_top .pp_left,.pp_bottom .pp_left{height:20px;left:0;position:absolute;width:20px}
+.pp_top .pp_middle,.pp_bottom .pp_middle{height:20px;left:20px;position:absolute;right:20px}
+* html .pp_top .pp_middle,* html .pp_bottom .pp_middle{left:0;position:static}
+.pp_top .pp_right,.pp_bottom .pp_right{height:20px;left:auto;position:absolute;right:0;top:0;width:20px}
+.pp_fade,.pp_gallery li.default a img{display:none}
+
+
+/* Isotope
+///////////////////////////////////////////*/
+.isotope-item {
+	z-index: 2;
+}
+.isotope-hidden.isotope-item {
+	pointer-events: none;
+	z-index: 1;
+}
+.isotope, .isotope .isotope-item {
+	-webkit-transition-duration: 0.8s;
+	-moz-transition-duration: 0.8s;
+	-ms-transition-duration: 0.8s;
+	-o-transition-duration: 0.8s;
+	transition-duration: 0.8s;
+}
+.isotope {
+	-webkit-transition-property: height, width;
+	-moz-transition-property: height, width;
+	-ms-transition-property: height, width;
+	-o-transition-property: height, width;
+	transition-property: height, width;
+}
+.isotope .isotope-item {
+	-webkit-transition-property: -webkit-transform, opacity;
+	-moz-transition-property:    -moz-transform, opacity;
+	-ms-transition-property:     -ms-transform, opacity;
+	-o-transition-property:         top, left, opacity;
+	transition-property:         transform, opacity;
+}
+ 
+ 
+
+/* FlexSlider
+///////////////////////////////////////////*/
+
+/* Browser Resets */
+.flex-container1 a,
+.flexslider a,
+.flex-container1 a:active,
+.flexslider a:active,
+.flex-container1 a:focus,
+.flexslider a:focus  {outline: none;}
+.slides,
+.flex-control-nav,
+.flex-direction-nav {margin: 0; padding: 0; list-style: none;}
+
+
+/* FlexSlider Necessary Styles
+*********************************/
+.flexslider {margin: 0; padding: 0;}
+.flexslider .slides > li {display: none; -webkit-backface-visibility: hidden;} /* Hide the slides before the JS is loaded. Avoids image jumping */
+.flexslider .slides img {max-width: 100%; display: block;}
+.flex-pauseplay span {text-transform: capitalize;}
+
+/* Clearfix for the .slides element */
+.slides:after {content: "."; display: block; clear: both; visibility: hidden; line-height: 0; height: 0;}
+html[xmlns] .slides {display: block;}
+* html .slides {height: 1%;}
+
+/* No JavaScript Fallback */
+/* If you are not using another script, such as Modernizr, make sure you
+ * include js that eliminates this class on page load */
+.no-js .slides > li:first-child {display: block;}
+
+
+/* FlexSlider Default Theme
+*********************************/
+.flexslider { zoom: 1;}
+.flexslider li { margin:0px; padding:0px; }
+.flexslider .slides {zoom: 1;}
+.flexslider .slides > li {position: relative;}
+#slider3 .flexslider .slides > li {position: relative; margin-right:30px;}
+/* Suggested container1 for "Slide" animation setups. Can replace this with your own, if you wish */
+.flex-container1 {zoom: 1; position: relative;}
+
+/* Caption style */
+/* IE rgba() hack */
+.flex-caption {background:none; -ms-filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#4C000000,endColorstr=#4C000000);
+filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#4C000000,endColorstr=#4C000000); zoom: 1;}
+.flex-caption {width: 96%; padding: 2%; margin: 0; position: absolute; left: 0; bottom: 0; background: rgba(0,0,0,.3); color: #fff; text-shadow: 0 -1px 0 rgba(0,0,0,.3); font-size: 14px; line-height: 18px;}
+
+/* Direction Nav */
+.flex-direction-nav { height: 0; }
+.flex-direction-nav a { width: 32px; height: 60px; margin: -30px 0 0; display: block; background: url(/emr-life/images/slider_arrow.png) no-repeat; position: absolute; top: 50%; cursor: pointer; text-indent: -999em;}
+.flex-direction-nav .flex-next {background-position: -32px 0; right: 0px;}
+.flex-direction-nav .flex-prev { left: 0px;}
+.flex-direction-nav .flex-disabled {opacity: .3; filter:alpha(opacity=30); cursor: default;}
+
+/* Control Nav */
+.flex-control-nav {width: 100%; position:absolute;  text-align: center; margin-top:-30px;}
+.flex-control-nav li {margin: 0 0 0 5px; display: inline-block; zoom: 1; *display: inline;}
+.flex-control-nav li:first-child {margin: 0;}
+.flex-control-nav a {width: 13px; height: 13px; display: block; background: url(/emr-life/images/bg_control_nav.png) no-repeat; cursor: pointer; text-indent: -999em;}
+.flex-control-nav a:hover {background-position: 0 -13px;}
+.flex-control-nav a.flex-active {background-position: 0 -26px; cursor: default;}
+
+
+/* Control Nav */
+#slider2 .flex-control-nav {width: 32px; position:absolute;  text-align: center; top:0px; left:498px; margin:0px !important;}
+#slider2 .flex-control-nav li {margin: 0 0 0px 0px;  display:block; zoom: 1; *display:block; width:32px; height:32px;  margin-bottom:1px !important;}
+#slider2 .flex-control-nav li:first-child {margin: 0;}
+#slider2 .flex-control-nav a { background-image:none !important; width: 32px; height: 32px; display: block;  cursor: pointer; text-indent:1px !important; line-height:32px; text-decoration:none; color:#fff; font-weight:bold;}
+#slider2 .flex-control-nav a:hover { background-color:#181818;}
+#slider2 .flex-control-nav a.flex-active { cursor: default; background-image:url(/emr-life/images/slider_video_current.png) !important; background-position:0 0 !important;}
+
+
+
+/* #Tablet (Portrait)
+================================================== */
+
+    /* Note: Design for a width of 768px */
+
+    @media only screen and (min-width: 768px) and (max-width: 959px) {
+	#wrapper { width:768px; }
+	#header { width:708px; }
+	.main-menu {width:708px;}
+	.slider-wrapper { width:708px; }
+	.input-float { float:none; }
+	.portfolio-wrapper { width:768px; }
+	.portfolio-container1 { width:798px; }
+	
+	#slider2 .flex-control-nav {left:372px;}
+    }
+
+
+/*  #Mobile (Portrait)
+================================================== */
+
+    /* Note: Design for a width of 320px */
+
+    @media only screen and (max-width: 767px) {
+	
+	#wrapper { width:300px; }
+	#header { width:280px; padding:10px 10px 0px 10px;}
+	.main-menu {width:280px;}
+	.main-menu select { display:block; width:200px; }
+	.main-menu ul.menu { display:none; }
+	#logo , #header-right , #header-right .taling-r{ float:none; display:block; text-align:center;}
+	.slider-wrapper { width:280px; }
+	.caption-title2 , .caption-title , .caption-subtitle2 , .caption-subtitle { display:none; }
+	.input-float { float:none; }
+	.portfolio-wrapper { width:300px; }
+	.portfolio-container1 { width:330px; }
+	.footer-bottom  {padding:15px 10px; }
+	.announcement { padding:30px 10px; }
+	.sidebar1 { background-image:none; padding-left:0px; border-left:0px solid #f2f2f2; }
+	.taling-r , .footer-bottom { text-align:center !important; }
+	.accordion-v h2.current { border-left:1px solid  #fff; }
+	#slider2 .flex-control-nav {left:253px;}
+	#slider2 .seven {margin-bottom:30px;}
+
+    }
+
+
+/* #Mobile (Landscape)
+================================================== */
+
+    /* Note: Design for a width of 480px */
+
+    @media only screen and (min-width: 480px) and (max-width: 767px) {
+	
+	/*#################### HEADER #####################*/
+	#wrapper { width:480px; }
+	#header { width:420px; padding:30px 30px 0px 30px; }
+	.main-menu {width:420px;}
+	.main-menu select { display:block; width:340px; }
+	.main-menu ul.menu { display:none; }
+	.slider-wrapper { width:420px; }
+	.caption-title2 , caption-title , caption-subtitle2 , caption-subtitle { display:none; }
+	.input-float { float:none; }
+	.portfolio-wrapper { width:480px; }
+	.portfolio-container1 { width:480px; }
+	.taling-r , .footer-bottom { text-align:center !important; }
+	.accordion-v h2.current { border-left:1px solid  #fff; }
+	#slider2 .flex-control-nav {left:386px;}
+	#slider2 .seven {margin-bottom:30px;}
+
+    }
+	
+	
+/* #Font-Face
+================================================== */
+/* 	This is the proper syntax for an @font-face file
+		Just create a "fonts" folder at the root,
+		copy your FontName into code below and remove
+		comment brackets */
+
+/*	@font-face {
+	    font-family: 'FontName';
+	    src: url('../fonts/FontName.eot');
+	    src: url('../fonts/FontName.eot@iefix') format('eot'),
+	         url('../fonts/FontName.woff') format('woff'),
+	         url('../fonts/FontName.ttf') format('truetype'),
+	         url('../fonts/FontName.svg#webfontZam02nTh') format('svg');
+	    font-weight: normal;
+	    font-style: normal; }
+*/

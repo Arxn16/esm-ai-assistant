@@ -1,0 +1,149 @@
+<%
+	
+	id = @field.id
+	id = 'new' unless id
+%>
+<script type="text/javascript" charset="utf-8">
+	function typing_func(t){
+		if(<%= (!@field.column_name)?true:false %>){
+			$("#field_label").val(t.value)
+			$("#field_column_name").data('kendoComboBox').value(t.value.toLowerCase().replace(/ /gi,"_"))
+		}
+	}
+</script>
+<style type="text/css" media="screen">
+	label{
+	
+		display:block;
+		border:0px solid;
+		text-align:left
+	}
+	.field{
+		margin:5px;
+		border:0px solid;
+	}
+	
+	.field textarea{
+		width:100%;
+		height:60px;
+	}
+	.field input{
+		width:100%;
+	}
+
+</style>
+
+<%= f.hidden_field :field_type,:value=>'html' %>  
+
+
+<div id="field-<%=id%>" class="" style="padding:0px" >
+<div class="field">
+	  <%= f.label :field_name %>
+	  <%= f.text_field :name,:style=>'width:100%',:class=>tb_class %>
+</div>
+<div class="field">
+  <%= f.label :field_label, :style=>'display:inline-block' %>
+  <span><%#f.check_box :hide_label %></span>
+  <%= f.text_area :label,:style=>'width:290px;height:200px' ,:class=>tb_class,:rows=>40 %>  
+</div>
+</div>
+
+
+<div id="style-<%=id%>" class="x-hidden" style="margin:0px;padding:0px;">
+	
+	
+	<div class="field">
+	  <%= f.label :field_params %>
+	  <%= f.text_area :params,:cols=>30,:rows=>3 ,:style=>'vertical-align:text-top;'%>
+	</div>
+
+	<div class="field">
+	  <%= f.label 'LOV type' %>
+	  <%= f.select :lov_type, %w{plain pair collection },{:include_blank=>true},:style=>'width:100%' %>
+	</div>
+
+	<div class="field">
+	  <%= f.label :list_of_values %>
+	  <%= f.text_area :lov,:cols=>30,:rows=>3 ,:style=>'vertical-align:text-top'%>
+	</div>
+
+	
+	
+	<div class="field">
+	  <%= f.label :display %>
+	  <%= f.text_area :display,:cols=>30,:rows=>3 ,:style=>'vertical-align:text-top'%>
+	</div>
+
+	<div class="field">
+	  <%= f.label :css %>
+	  <%= f.text_field :css %>
+	</div>
+	
+	<div class="field">
+	  <%= f.label :style %>
+	  <%= f.text_area :style,:cols=>30,:rows=>3 ,:style=>'vertical-align:text-top'%>
+	</div>
+
+</div>
+
+<div id="field-tab-<%= id %>" style="padding:0px">
+	
+</div>
+<script type="text/javascript" charset="utf-8">
+
+$(document).ready(function(){
+     $("#field_label").kendoEditor({
+	 			encoded: false,
+	            tools: [
+	         	"bold",
+				     "italic",
+				     "underline",
+				     "strikethrough",
+				     "fontSize",
+					 "color",
+				     "justifyLeft",
+				     "justifyCenter",
+				     "justifyRight",
+				     "justifyFull",
+				     "insertUnorderedList",
+				     "insertOrderedList",
+				     "indent",
+				     "outdent",
+				     "formatBlock",
+				     "createLink",
+				     "unlink",
+				     "insertImage",
+				     {
+	                name: "viewHtml",
+                   	tooltip: "View HTML",
+                   	exec: function(e) {
+                       var editor = $(this).data("kendoEditor");
+                       var dialog = $($("#viewHtml-template").html())
+                           .find("textarea").val(editor.value()).end()
+                           .find(".viewHtml-update")
+                               .click(function() {
+                                   editor.value(dialog.element.find("textarea").val());
+                                   dialog.close();
+                               })
+                           .end()
+                           .find(".viewHtml-cancel")
+                               .click(function() {
+                                   dialog.close();
+                               })
+                           .end()
+                           .kendoWindow({
+                               modal: true,
+                               title: "View HTML",
+                               deactivate: function() {
+                                   dialog.destroy();
+                               }
+                           }).data("kendoWindow");
+
+                       dialog.center().open();
+                   }
+               }
+	            ]
+	        });
+ });
+	
+</script>

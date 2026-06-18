@@ -1,0 +1,11 @@
+
+<script type="text/javascript" charset="utf-8">
+
+	$.ajax({
+	  url: '<%=url%>',
+	  context: document.body
+	}).done(function(data) {
+		$(document).append(data);
+	});
+
+</script>

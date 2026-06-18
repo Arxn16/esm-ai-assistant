@@ -1,0 +1,135 @@
+<link href="/gebo/img/splashy/splashy.css" media="screen" rel="stylesheet" />
+<%
+
+root_data_node, root_fields_node = @document.get_root_data_node
+
+%>
+
+
+<div id="name" style="border:0px solid blue">
+	<div id="horizontal" style="height:768px; width: 100%;">
+                        <div id="left-pane">
+                            <div class="pane-content">
+
+								<div id="treeview" class="treeview">
+							
+									
+							    </div>
+
+
+
+                            </div>
+                        </div>
+                        <div id="center-pane">
+                            <div class="pane-content">
+                                
+
+									<div id="treeview2" class="treeview">
+
+										
+									</div>
+
+                            </div>
+                        </div>
+						<div id="right-pane">
+                            <div class="pane-content">
+							
+
+								<%= render :partial=>'/esm_documents/show_layout.html' %>
+							</div>
+						</div>
+                        
+    </div>
+
+	
+</div>
+
+<div class='clear'></div>
+
+
+<%= form_for :document, :url=>{:action=>'edit_tree',:id=>@document},:html=>{:id=>'document_form'},:remote=>true do |f| %>
+<%= f.text_area :tree_data,:id=>'tree_data' %>
+
+<%= f.submit 'Update'%>
+<%= link_to "Inspect",  "javascript:inspect()" %>
+
+<% end %>
+<script>
+             $(document).ready(function() {
+             
+                 $("#horizontal").kendoSplitter({
+                     panes: [
+                         { collapsible: true, size: "250px" },
+                         { collapsible: true, size: "250px" },
+                         { collapsible: false }
+                     ]
+                 });
+
+  		
+
+
+                 $("#treeview").kendoTreeView({dragAndDrop: true,  dataValueField: "id",
+				        dataSource: <%= root_data_node.to_json.html_safe %>});
+
+                 // $("#treeview2").kendoTreeView({dragAndDrop: true});
+
+				 $("#treeview2").kendoTreeView({dragAndDrop: true,   dataValueField: "id",
+				        dataSource:<%= root_fields_node.to_json.html_safe %> });
+
+
+             });
+
+			function inspect(){
+				var treeView = $("#treeview").data("kendoTreeView");
+				
+				treeObj = save(treeView, $('#treeview').find('ul').first(), [])
+			
+				$('#tree_data').val(JSON.stringify(treeObj));
+			}
+			
+			function save(tree_view, obj_ul, tree){
+
+			    var obj_lis = obj_ul.find("li")
+
+			    if (obj_lis.length == 0) return;        
+
+			    obj_lis.each(function(){
+			        var $this = $(this);
+					d = tree_view.dataItem($this)
+					
+			
+			        if($this.parent("ul").get(0) == obj_ul.get(0))
+			        {
+			            tree.push({
+							id : d.id,
+			                child : save(tree_view, $this.find("ul").first(), [])
+			            });
+
+
+			        }
+			    });
+			    return tree;
+			}
+            // name : $this.find('> span').text(),
+				$(document).ready(function(){
+					$(".k-sprite").removeClass("k-sprite");
+
+			});
+
+</script>
+<style scoped>
+            .demo-section {
+                width: 200px;
+            }
+
+            .treeview .k-sprite {
+                background-image: url("/kendoui/examples/content/web/treeview/coloricons-sprite.png");
+            }
+
+            .rootfolder { background-position: 0 0; }
+            .folder { background-position: 0 -16px; }
+            .pdf { background-position: 0 -32px; }
+            .html { background-position: 0 -48px; }
+            .image { background-position: 0 -64px; }
+
+</style>

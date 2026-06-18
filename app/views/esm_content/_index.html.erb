@@ -1,0 +1,17 @@
+<%
+	path = params[:path]
+	path = '.' unless path
+	list = @project.content path
+%>
+<strong>Static Content</strong>
+<hr/>
+<%= javascript_tag do %>
+  $().ready(function() { 
+    $('#elfinder').elfinder({ 
+      url: '/esm_content/<%=@project.id%>/data',
+      lang: 'en',
+
+    })
+  })
+<% end %>
+<div id='elfinder'></div>

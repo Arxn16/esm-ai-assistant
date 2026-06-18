@@ -1,0 +1,397 @@
+<%
+
+for field in fields 
+
+
+unless @edit
+cmode = ''	
+else
+cmode = 'edit'
+end
+
+f_id = "#{@prefix}#{@document.id}-#{field.id}"
+
+
+label = field.name
+label = field.label if field.label
+label = 'Untitled' if  label == nil or label==""
+label += " <span class='f_req'>*</span> " if field.mandatory=='1'
+
+field.style ='' unless field.style
+
+# if  defined?(hidden) and hidden==true 
+# 	field.style+=';display:none;'
+# end
+
+case  field.field_type
+when 'chapter' 
+c=0
+%>
+	<div id="<%=f_id%>" class="<%=cmode%>"  >
+	<b>
+		<% if @edit %>
+		<%= link_to label, {:action => "field_edit",:id=>@document,:field_id=>field.id,:update=>'control'},:remote=>true %>	: 
+		<% else %>
+		<%= label%>
+		<% end%>
+	</b>
+	</div>
+
+
+<%		
+when 'section'
+c=-1
+%>
+	<div id="<%=f_id%>" class="<%=cmode%> <%=field.css%> field" style="clear:both;font-size:1.2em;border-bottom:1px solid #ccc;margin-bottom:10px;<%=field.style%>">
+		<% unless @edit %>
+		<b><%=field.name%></b>
+		<% else %>
+		<%= link_to label, {:action => "field_edit",:id=>@document,:field_id=>field.id,:update=>'control'},:remote=>true %>	: 
+		<% end %>
+		<%= hidden_field_tag "field[]", field.id if @edit %>
+	</div>
+
+<%	
+when 'clear'
+%>
+	<div id="<%=f_id%>" class=" <%=cmode%> <%=field.css%> field" style="clear:both;text-align:right">
+		<% if @edit %>
+		<%= link_to "<<Clear [#{field.id}]>>", {:action => "field_edit",:id=>@document,:field_id=>field.id,:update=>'control'},:remote=>true %>
+		<% end %>
+		<%= hidden_field_tag "field[]", field.id if @edit  %>
+	</div>
+
+<%	
+when 'html'
+%>
+	<div id="<%=f_id%>" class="<%=cmode%> <%=field.css%> field" style="clear:both;<%=field.style%>">
+		<% unless @edit %>
+		<% else %>
+		<%= link_to field.name, {:action => "field_edit",:id=>@document,:field_id=>field.id,:update=>'control'},:remote=>true %> :
+		<% end %>
+		<%= hidden_field_tag "field[]", field.id  if @edit %><br/>
+		<%= field.display.html_safe if field.label %>
+	</div>
+	
+<%
+when 'tab'
+	c=-1
+	%>
+		<div id="<%=f_id%>" class="<%=cmode%> <%=field.css%> field" style="clear:both;font-size:1.2em;border-bottom:1px solid #ccc;margin-bottom:10px;<%=field.style%>;">
+			<% unless @edit %>
+			<b><%=field.name %><%="HTML" if field.name==""  %></b>
+			<% else %>
+			<%= link_to label+"<<Tab>>", {:action => "field_edit",:id=>@document,:field_id=>field.id,:update=>'control'},:remote=>true %>	: 
+			<% end %>
+			<%= hidden_field_tag "field[]", field.id if @edit %>
+		</div>
+
+	<%
+else
+
+	
+	# Data fields	
+	@field = field
+	id = "#{@prefix}#{@field.column_name}"
+	if @selector and field.column_name==@selector
+		@selector_f_id = id
+	end
+	fid = "data-#{id}"
+	field.style='' unless field.style
+	fparams = {}
+	fparams.merge! eval("{#{field.params}}") if field.params!=''
+	# many_1_
+	if @prefix == ''
+		name = "record[#{field.column_name}]"
+	else
+		t = @prefix.split("-")
+		name = "#{t[0]}[#{t[1]}][#{t[2]}][#{field.column_name}]"
+	end
+	value = fparams[:default]
+
+	v = @record.send field.column_name if @record
+	value = v if v
+
+	if @edit 
+		color = 'color:red' if label =='Untitled'
+		@label = link_to(label.html_safe, {:action => "field_edit",:id=>@document,:field_id=>@field.id,:update=>'control'},:remote=>true,:style=>color)
+	else
+		@label = label
+	end
+	 # class="btn pop_over" data-content="Lorem ipsum dolor sit amet, consectetur adipiscing elit" data-original-title="Lorem ipsum" data-placement="top"
+	if !field.description.blank?
+	t = ERB.new field.description
+	content = t.result(binding)
+	@label+='&nbsp;'.html_safe+link_to(image_tag('info.gif'),"javascript:alert('#{content}')",:class=>'pop_over','data-content'=>content,'data-original-title'=>label,'data-placement'=>'top') 
+	end
+	@label+= " : "
+	before_l=after_l=nil
+	if label.index('@')
+		t = label.split('@')
+		before_l = t[0].strip if t[0]
+		after_l = t[1].strip if t[1]
+		@label = '' unless @edit
+	end
+	
+
+width = @width
+case field.field_type 
+	when 'map_digitize','map_location','text_area','extra_signature','relation_many','text_grid','image_note','image_camera','image_selection'
+	    width = @width*4+45
+	    width = 700
+	when 'extra_attachment'
+	    width = @width*2+00
+		height = 40
+	else
+		
+end
+
+%>
+
+
+
+<div id="<%=id%>" class="<%= cmode %> <%= field.css %> portlet " style="border:0px solid blue;width:<%=width%>px;margin: 0 0.5em 0.5em 0;float:left;<%=@field.style%>;min-height:30px;">
+<% unless label.index('@') and !@edit %><span class=""><label><%= @label.html_safe%></label></span><% end %><%= hidden_field_tag "field[]", @field.id if @edit %>	
+<% 
+ begin
+
+	case field.field_type
+	when 'text_string','text_integer','text_float'
+	style = "vertical-align:text-top;width:100%;display:block"
+	style += field.style
+	if field.field_type !='text_string' and fparams[:type] != 'text'
+		# fparams[:pattern]="[0-9]*"
+		fparams[:type]='number' unless fparams[:type]
+		if field.field_type == 'text_integer'
+		fparams[:step]='1' unless fparams[:step]
+		elsif field.field_type == 'text_float'
+		fparams[:step]='0.001' unless fparams[:step]
+		end		
+		# fparams[:pattern]='[-+]?[0-9]*\.?[0-9]*.'
+		# fparams[:pattern]='\d+(\.\d{2})?'
+		
+		%>
+		<% content_for :script do %>
+		//$(document).ready(function(){
+     	//	  $("#<%=fid%>").kendoNumericTextBox({type: "number"});
+		//});
+		
+		$("#<%=fid%>").bind('invalid', function() {
+		    return false;
+		});
+		
+		<% end %>
+		<%
+		# style=style+";border:1px solid;margin-top:0px"
+		
+	end
+	p = {:size=>29,:style=>style,:class=>tb_class,:id=>fid }.merge(fparams)
+	p.merge! :required=>true,:validationMessage=>"Cannot be empty" if !@edit and field.mandatory=='1'
+%>
+<% unless @show %>
+<%="<table border=0 style='border:0px solid'><tr><td class='mlabel'  style='vertical-align:middle;'  >#{before_l}&nbsp;</td><td>".html_safe if  label.index('@') %>
+<%= text_field_tag name,value,p %>
+<%="</td><td valign='top' class='mlabel'  style='vertical-align:middle;' >&nbsp;#{after_l}</td></tr></table>".html_safe if  label.index('@') %>
+<% else %>
+<value><%= value %></value>
+<% end %>
+<% content_for :script do 
+	options = nil
+	
+	if field.lov_type == 'plain'
+		options = field.lov.split("\n")
+%>
+ $("#<%=fid%>").kendoComboBox({
+        dataTextField: "text",
+        dataValueField: "value",
+        dataSource: <%=options.collect{|i| {'text'=>i,'value'=>i}}.to_json.html_safe%>
+	
+    });
+<%		
+else		
+%>
+//$("#<%=fid%>").kendoAutoComplete(<%=options.to_json.html_safe if options%>);
+<%		
+end
+%>
+<%		
+end
+%>
+<% when 'text_area'
+	style = "vertical-align:text-top;min-height:#{height}px;width:#{width-3}px;"
+	style += field.style
+	p = {:cols=>30,:rows=>3,:class=>ta_class,:style=>style,:id=>fid}.merge(fparams)
+%>
+<% unless @show %>
+<%= text_area_tag name,value,p %>
+<% else %>
+<value><pre><%= value.html_safe if value %></pre></value>
+<% end %>
+<script type="text/x-kendo-template" id="viewHtml-template">
+        <div>
+            <textarea style="width: 400px; height: 70px;"></textarea>
+            <div class="viewHtml-actions">
+                <button class="k-button viewHtml-update">Update</button>
+                <button class="k-button viewHtml-cancel">Cancel</button>
+            </div>
+        </div>
+    </script>
+<% content_for :script do %>
+$(document).ready(function(){
+  $("#<%=fid%>").kendoEditor({
+			encoded:false,
+            tools: [
+         	"bold",
+			     "italic",
+			     "underline",
+			     "strikethrough",
+			     "fontName",
+			     "fontSize",
+			     "justifyLeft",
+			     "justifyCenter",
+			     "justifyRight",
+			     "justifyFull",
+			     "insertUnorderedList",
+			     "insertOrderedList",
+			     "indent",
+			     "outdent",
+			     "formatBlock",
+			     "createLink",
+			     "unlink",
+			     "insertImage",
+			     {
+                   name: "viewHtml",
+                	tooltip: "View HTML",
+                	exec: function(e) {
+	
+                    var editor = $(this).data("kendoEditor");
+                    var dialog = $($("#viewHtml-template").html())
+                        .find("textarea").val(editor.value()).end()
+                        .find(".viewHtml-update")
+                            .click(function() {
+                                editor.value(dialog.element.find("textarea").val());
+                                dialog.close();
+                            })
+                        .end()
+                        .find(".viewHtml-cancel")
+                            .click(function() {
+                                dialog.close();
+                            })
+                        .end()
+                        .kendoWindow({
+                            modal: true,
+                            title: "View HTML",
+                            deactivate: function() {
+                                dialog.destroy();
+                            }
+                        }).data("kendoWindow");
+
+                    dialog.center().open();
+                }
+            }
+            ]
+        });
+});
+<% end %> 
+<% else %>
+<div style="dispaly:inline-block;vertical-align:middle;border:0px solid red" >
+<%="<table border=0 ><tr><td class='mlabel'  style='vertical-align:middle;'>#{before_l}&nbsp;</td><td>".html_safe if   label.index('@') %>
+<%= render :partial=>"/esm_documents/fields/#{field.field_type}.html",:locals=>{:name=>name,:value=>value,:field=>field,:fparams=>fparams,:fid=>fid} %>	
+<%="</td><td valign='top' class='mlabel' style='vertical-align:middle;'>&nbsp;#{after_l}</td></tr></table>".html_safe if   label.index('@') %>
+</div>
+<% end %>
+<% rescue => e%>
+<%= e.message%>
+<% end %>
+</div>
+<% end %>
+<% if  defined?(hidden) and hidden==true %>
+<script type="text/javascript" charset="utf-8">
+$(document).ready(function(){
+<%
+	id = f_id if id==nil
+%>
+$('#<%=id%>').hide()	
+});
+</script>
+<% end %>
+<script type="text/javascript" charset="utf-8">
+
+
+    <%
+	if fid 
+	ffid = fid.gsub('-','_')
+	%>
+
+	$('#<%=fid%>').change(<%=ffid%>_proxy_update);
+	
+	function <%=ffid%>_proxy_update(){
+		var tree = esm_helper.get('<%=@record.id%>-tree').tree;
+		tree.updateReport();
+		<%=ffid%>_update()
+	}
+	function <%=ffid%>_update(){
+		
+		// alert('call <%=field.id%> <%=fid%>')
+		t = $('#<%=fid%>')
+		val = t.val()
+		if(val=='true'){
+			val = t.attr('checked')
+			if(val=='checked'){
+				val = 'TRUE'
+			}else{
+				val = ''
+			}
+						
+		}
+		text = val
+		<%
+			if field.field_type=='select_string' or field.field_type=='relation_one'
+		%>
+		text = $( "#<%=fid%> option:selected" ).text();
+		<%
+		    elsif field.field_type=='relation_many' or field.field_type=='check_string' or field.field_type=='image_camera'
+		%>
+		text=''
+		<%  elsif field.field_type=='radio_string' or field.field_type=='check_string'
+		
+		if field.lov_type
+
+			  if field.lov_type == 'plain'
+				options = field.lov.split("\n").collect{|i| i.strip}.compact
+				keys = options
+			   elsif field.lov_type == 'pair'
+				options = field.lov.split("\n").compact.collect{|i| i.split('|').reverse }
+				keys = options.collect{|i| i[1]}
+			   end
+				hash = {}
+				for op in options
+					hash[op[1]]=op[0].strip
+				end
+		%>
+		var values = <%=hash.to_json.html_safe%>;
+		var t = new Array()
+		var selected = val.split("|")
+	
+		for(var i in selected){
+			s = selected[i]
+			t.push(values[s])
+		}
+		text = t.join(",")
+		<% end %>
+		<% end %>
+		
+		changeValue('<%=@prefix2%><%=field.id%>',t,val,text)
+		
+	}
+	<% else 
+	
+
+	%>
+	
+	function data_<%=f_id.gsub('-','_')%>_update(){
+	}
+	<% end %>	
+		
+</script>
+<% end %>

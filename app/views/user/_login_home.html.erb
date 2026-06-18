@@ -1,0 +1,71 @@
+
+<style type="text/css" media="screen">
+	input.field{
+		font-size:1.1em;
+		border:2px inset #ccc;
+		background:#fff;
+		padding:5px;
+
+		overflow: hidden;
+		display:inline-block;
+        -moz-border-radius: 5px;
+	    -webkit-border-radius: 5px;
+	    -khtml-border-radius: 5px;
+	}
+
+	input.submit{
+		background:#ddd;
+		font-size:1.2em;
+		 -moz-border-radius: 5px;
+	    -webkit-border-radius: 5px;
+	    -khtml-border-radius: 5px;
+	    padding:5px;
+		font-family:Arial,Helvetica,sans-serif;
+	}
+	
+	#login{
+		font-size:1.2em;
+	}
+	#login td{
+		color:black;
+	}
+	#login input:focus {
+	    outline: none;
+	}
+</style>
+<% @theme_path%>
+<br/>
+<br/>
+
+<%=link_to image_tag("/esm/banner.png",:width=>400 ),"/"%>
+<br/>
+<br/>
+
+<div id="login">
+<%= form_for :user, :url=>{:controller=>'user',:action=>'login'} do|form|%>
+<table border="0" width="100%" cellspacing="5" cellpadding="0" style="font-size:0.9em;color:#0000ff">
+	
+	<tr valign="center"><td rowspan="6" width="200" align="center"><font size="4" color='black'>Please sign in</font><br/><%= image_tag '/esm/security.png' ,:width=>100%></td>
+	<tr ><td align="left" >Username</td></tr>
+	<tr ><td><%= form.text_field "login", :size => 20,:id=>'user_login',:class=>'field'%></td></tr>
+	<tr valign=""><td align="left" >Password</td></tr>
+	<tr ><td><%= form.password_field "password", :size => 20, :id=>'user_password' ,:class=>'field'%></td></tr>
+	<!--
+	<tr valign=""><td align="left" >Customer</td></tr>
+	<tr ><td><%= form.select "esm_id", Esm.published.collect{|i| [i.name.humanize,i.id]} , {},:class=>'field'%></td></tr>
+	-->
+	<tr height="20"><td><%= submit_tag "Submit" ,:class=>'submit' %></td></tr>
+	<tr height="20"><td>&nbsp;</td><td><%= link_to "Register", "/user/signup" %> | <%= link_to "Forgot password", :action => "forgot_password" %></td></tr>
+
+	</table>
+
+	<%# link_to 'Register', :action => 'signup' %>
+	
+<label class="comment" ><p style="color: green"><%= flash[:warning] %></p></label>
+<script type="text/javascript">
+try{document.getElementById('user_login').focus();}catch(e){}
+</script>
+<% end %>
+
+
+</div>

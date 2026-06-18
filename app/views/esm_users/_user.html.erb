@@ -1,0 +1,35 @@
+<% if @user.errors.any? %>
+   <div id="error_explanation">
+     <h2><%= pluralize(@user.errors.count, "error") %> prohibited this post from being saved:</h2>
+
+     <ul>
+     <% @user.errors.full_messages.each do |msg| %>
+       <li><%= msg %></li>
+     <% end %>
+     </ul>
+   </div>
+ <% end %>
+
+	<%= f.hidden_field :esm_id, :value=>@user.esm_id %>
+
+<div class="field ">
+	<%= f.label :login %>
+	<%= f.text_field "login",:class=>tb_class,:id=>'user_login',:placeholder=>"Login name",'data-icon'=>"user"%>
+</div>
+<div class="field ">
+	<%= f.label :email %>
+	<%= f.text_field "email",:class=>tb_class,:id=>'user_email',:placeholder=>"Email",'data-icon'=>"user"%>
+</div>
+
+ <div class="field ">
+	<%= f.label :password %>
+	<%= f.password_field "password",:class=>tb_class,:id=>'user_password',:placeholder=>"Password",'data-icon'=>"closed-lock"%>
+ </div>
+
+ <div class="field ">
+	<%= f.label :password_confirmation %>
+	<%= f.password_field "password_confirmation",:class=>tb_class,:id=>'password_confirmation',:placeholder=>"Password Confirmation",'data-icon'=>"closed-lock"%>
+ </div>
+
+
+

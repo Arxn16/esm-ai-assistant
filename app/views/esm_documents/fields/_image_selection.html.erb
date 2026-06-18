@@ -1,0 +1,75 @@
+
+<%= hidden_field_tag name, value.to_json ,:id=>fid  unless @show %>
+
+<% if !@show 
+	
+		ip="camera_image_#{field.id}"
+		pip= "gallery_#{field.id}"
+		p = {:alt=>'No images', :width=>220,:height=>160,:style=>"background-color:\#fff"}.merge(fparams)
+		p[:id] = "#{ip}_img"
+		record_id = "/#{Time.now.strftime('%Y-%m-%d')}-#{@record.id if @record}" if @record
+		record_name = ''
+		record_name = "/#{params[:record_name].gsub /\//, "-"}" if params[:record_name]
+		
+		path = "esm/#{@current_solution.name}/#{@document.project.name}#{record_name}/#{@document.name}#{record_id}/#{field.column_name}"
+		@attachments = []
+		# if value and value!=''
+		# model = @document.project.load_model[:attachment]
+		# @attachments=value.collect{|i| model.find(i)}.compact
+		#   		end
+        
+%>
+<div style="float:right;border:0px solid;margin-right:10px">
+<a data-toggle="modal" data-backdrop="static" href="#select-image-modal" onclick="doList('<%=fid%>')" >Select Images</a>
+</div>
+<% end %>
+
+<div style="width:98%;border:0px solid;">
+	<img src='/dragdrop/images/down16.png' id='indicator'/>
+	<div id='piczone-<%=fid%>' class='<%=tb_class%>' style="border:1px solid #aaa;width:680px;min-height:100px" >
+		<%
+			if value and value!=''
+		 	model = @document.project.load_model[:attachment]
+			@attachments=value.collect{|i| model.find(i)}.compact
+		 	@field = field
+			@name = "#{@document.name}[#{@field.column_name}]"		
+		%><%= render :partial=>'/esm_documents/fields/image_selection_item'%><% end %>
+</div>
+<div class="clear"></div>
+
+
+
+</div>
+
+<!-- Upload window -->
+<div id="search-<%=fid%>" style="display:none">	
+<% unless @show %>
+	<input name="upload[file]" id="_<%=fid%>" type="file" accept="image/*" capture="camera"/>
+<% end %>
+</div>
+<div id="search-<%=fid%>-camera" style="display:none">	
+<% unless @show %>
+	<input name="upload[file]" id="_<%=fid%>_camera" type="file" accept="image/*" capture="camera"/>
+<% end %>
+</div>
+
+
+
+<% content_for :script do %>
+<% unless @show
+	
+	ssid = rand(99999999)
+%>
+function onSuccess(e) {
+ 	//alert("Status: " + e.response.status);
+}
+$(document).ready(function() {
+	
+
+});
+<% end %>
+<% end %>
+
+
+
+<div class="clear"></div>

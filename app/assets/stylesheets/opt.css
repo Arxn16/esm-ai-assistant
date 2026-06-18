@@ -1,0 +1,200 @@
+
+.table1 {
+	color:#0000FF;
+	border-bottom:1px solid #cccccc;
+}
+.table1 td{
+/*	border:1px solid green;*/
+}
+.titlerow {
+	background:#ccccFF;
+}
+
+.titlerow span {
+	color:#EE6600;
+}
+
+.oddrow {
+	background:#eeeeFF;
+}
+
+.oddrow td {
+	color:#0000FF;
+}
+.evenrow td {
+	background:#FFFFFF;
+}
+.sedation {
+	width:50px;
+}
+
+
+
+.scopepass input[type="text"]  {
+	font-size:11px;
+	line-height:16px;
+	height:19px;
+}
+
+.scopepass select  {
+	font-size:11px;
+	line-height:15px;
+	height:17px;
+}
+
+.scopepass td {
+	border:1px solid #dddddd;
+}
+
+.scopepassview td {
+	border:1px solid #dddddd;
+	font-size:11px;
+}
+input[type="button"] {
+/*	border:1px solid red; */
+}
+
+.disable  {
+	border:1px solid #aaaaaa;
+	background-color:#eeeeee;
+	margin:1px;
+	padding:1px;
+}
+
+.picture td{
+	border-right:1px solid #aaaaaa;
+	padding:3px;
+}
+
+.mybutton {
+	background:url("/dragdrop/images/button_right.gif") no-repeat top right;
+	height:22px;
+	cursor:hand;
+	margin-left:5px;
+}
+
+.mybutton div {
+	margin-right:10px;
+	background:url("/dragdrop/images/button_left.gif") no-repeat top left;
+
+}
+.mybutton div p {
+	margin:0px 0px 0px 10px;
+	background:url("/dragdrop/images/button_bg.gif") repeat-x;
+	background-color:#888888;
+	height:22px;;
+	line-height:20px;
+	padding:0px 5px;
+	color:#333388;
+	text-align:center;
+}
+
+/*==============  for picture =============  */
+
+
+.ctrlbar {
+	height:30px;
+	width:96%;
+	background: url("images/coner-tp-bg.png") repeat-x;
+}
+
+
+#indicator {
+	visibility:hidden;
+	position:absolute;
+	border:none;
+}
+
+#pictzone{
+	width:98%;
+	min-height:200px;
+/*	border-top:0px solid #88C4FF;
+	border-bottom:0px solid #88C4FF;*/
+	overflow:auto;
+	padding:10px;
+}
+
+.eachpic, .eachpicprint {
+	float:left;
+	cursor:hand;
+	margin:0px;
+	padding:0px 2px;
+	border-left-width:2px;
+	overflow:hidden;
+}
+.eachpic  {
+	background-color:#FFFFFF;
+	border-left:2px solid #FFF;
+}
+
+.eachpic .picbody textarea{
+	border:1px solid #dddddd;
+}
+
+.eachpicprint {
+	background-color:#E0E0E2;
+	border-left:2px solid #E0E0E2;
+}
+
+.eachpicprint .picbody textarea {
+	border:1px solid #BDBEBA;
+}
+
+.picbody {
+	padding:2px;
+	border:none;
+	overflow:hidden;
+}
+
+.picbody img {
+	margin-top:0px;
+	border-right:1px solid #666666;
+	border-bottom:1px solid #666666;
+	border-top:1px solid #cccccc;
+	border-left:1px solid #cccccc;
+	-webkit-box-shadow:2px 2px 5px rgba(64, 64, 128, 0.8);
+}
+
+.comment {
+	font-size:11px;
+	text-align:center;
+}
+
+.comment textarea {
+	font-family: Verdana, Tahoma,  Arial, Helvetica, sans-serif;
+	font-size:11px;
+	resize: none;
+	text-align:center;
+	width:120px;
+	height:30px;
+	margin-left:0px;
+}
+
+#bottombar {
+/*	border-bottom:1px solid #88C4FF;*/
+	padding:2px;
+}
+
+#trash {
+	width:32px;
+	height:32px;
+	background: url("/dragdrop/images/trash2.png") no-repeat center center;
+}
+#trash:hover {
+	background: url("/dragdrop/images/trash.png") no-repeat center center;
+}
+.tm_no {
+	position:relative;	
+	top:20px;
+	left:10px;
+	width:20px;
+	height:0px;
+	font-size:10px;
+	color:#ffffff;
+	border:1px solid #777777;
+	background-color:#444444;
+	line-height:10px;
+
+	-webkit-border-radius: 3px;
+	opacity:0.7;
+}

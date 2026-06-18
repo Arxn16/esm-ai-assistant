@@ -1,0 +1,147 @@
+<%
+    options = []
+	if @field.lov_type == 'plain'
+	options = @field.lov.split("\n").compact.collect{|i| i.strip}
+	end
+	
+	max_count = 0 
+	cur_count = 0 
+	
+	@attachments.each do |i|
+		
+		if  i.selected and (t = i.selected.to_i) != 0 
+			cur_count+=1
+			max_count = t if t>max_count 
+		end
+	
+	end
+	
+	cur_count = max_count if max_count > cur_count
+	
+%>
+	
+	
+
+<%		
+	order_sel = 0 
+
+	@attachments.each_with_index do |i,index|
+%>
+
+
+	
+<div id='pic_<%=i.id%>' class='eachpicprint'  style="border:0px solid red; margin:0px;width:165px"
+		onmousedown='beginDrag()'
+		onmouseup='endDrag()'
+		ondragover='dragOver()'
+		ondragleave='dragOut()'
+		ondrop='dragDrop()'><span class='tm_no' >#<%=index+1%></span><div id='body_<%=i.id%>' class='picbody' style="border:0px solid;margin:0px;padding:0px;">
+<a href="<%=i.path%>?<%=i.id%>" id="F<%=i.id%>" class="highslide" rel="highslide" onclick="hs.onDimmerClick = function(){return false;}; return hs.expand(this,{wrapperClassName:'colored-border'})">
+	<center><img src="<%=i.path%>?<%=i.id%>&thumb=1" name='img' id="<%=i.id%>" class="eachpicimg" border=0   height=90px align=absmiddle ></center>
+</a>
+<div class="highslide-caption" style="padding: 0 10px 10px 0;display:none">
+	
+		<center><a class="esm-img-editor-btn btn"  href="javascript:image_editor('<%=i.id%>')" class="btn">Image Editor</a></center>
+		
+	</div>
+<div class='comment'>
+<input type='hidden' id='img_input_<%=i.id%>' name='<%= @name %>[id][]' value='<%=i.id%>'>
+<% if @show %>
+<pre style="width:160px;padding:0px;margin-left:10px"><%='<u>'.html_safe if i.selected == 1%><%=i.title%><%='</u>'.html_safe if i.selected == 1%></pre>
+<% else %>
+<%
+	selected  = " "
+	tselected = ""
+	if i.selected and i.selected != 0
+		selected = order_sel+1
+		tselected = "1"
+		order_sel+=1
+	end
+	
+%>
+<input type='hidden' name='<%= @name %>[selected][<%=i.id%>]' id="val-img-<%=i.id%>"  value='<%=tselected%>' />
+<!--
+<input type='button' class='btn btn-small img_library_<%=@field.id%>' name='<%= @name %>[selected][<%=i.id%>]' <%='checked="checked"' if i.selected==1%> value='<%='1'%>' />
+ -->
+
+<input type='button' iid="<%=i.id%>" id="btn-img-<%=i.id%>" class='btn-img-select btn btn-small img_library_<%=@field.id%>  <%='btn-success' if i.selected and i.selected != 0 %>  ' name='<%= @name %>[selected][<%=i.id%>]'  value='<%=selected %>' />
+<input type='text' id='img_comment_ui_<%=i.id%>' name='[]' value='<%=i.title%>' style='width:130px'/>
+<input type='hidden' id='img_comment_<%=i.id%>' name='<%= @name %>[title][]' value='<%=i.title%>' style='width:100px'/>
+
+<script>
+$(document).ready(function() {
+	    $("#img_comment_ui_<%=i.id%>").kendoComboBox({
+	        dataTextField: "text",
+	        dataValueField: "value",
+	        dataSource: <%=options.collect{|i| {'text'=>i,'value'=>i}}.to_json.html_safe%>,
+		 change: function(e) {
+			 $("#img_comment_<%=i.id%>").val(this.value());
+		}
+	    });
+});
+</script>
+
+<% end %>
+<!--
+<%= link_to "-", "javascript:trashRemove('pic_#{i.id}')",:data=>{:confirm=>'Are you sure?'},:class=>"btn btn-small btn-danger",:style=>'padding:2px;padding-right:7px'  unless @show %>
+-->
+</div></div></div>
+<% if index%4==3 and false%>
+<div class="clear"></div>
+<% end %>
+<% end %>
+
+<script>
+	var cur_count = <%=cur_count%>
+	
+	$(".btn-img-select").unbind('click');
+	
+	
+	$(".btn-img-select").click(function(e){
+		
+		iid  = $(this).attr("iid")
+	    
+		cur_count = 0 
+		max_count = 0 
+		$(".btn-img-select").each(function(){
+			v = parseInt($(this).val())
+			if(v>0){
+				cur_count++;
+				if(max_count<v)
+					max_count=v
+			}
+		});
+		if(max_count>cur_count){
+			cur_count = max_count;
+		}
+		
+		
+		
+		v = $(this).attr("value")
+		if(parseInt(v)>0){
+			v = parseInt($(this).val())
+			if(v==cur_count){
+				cur_count-=1;
+			}
+			$(this).removeClass("btn-success")
+			$(this).val(" ");
+			$("#val-img-"+iid).val("")
+		}else{
+			$(this).addClass("btn-success")
+			
+			$(this).val(cur_count+1);
+			$("#val-img-"+iid).val(cur_count+1)
+			$("#val-img-"+iid).val("1")
+			
+			cur_count+=1;
+			
+			
+		}
+		
+		
+		e.preventDefault()
+		
+		update_image();
+		
+	})
+</script>

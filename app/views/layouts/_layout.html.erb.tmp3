@@ -1,0 +1,229 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0" />
+	<link rel="apple-touch-icon" href="/images/fp.png"/>
+
+<!--
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+-->
+
+<% if params[:controller] != 'esm_proxy' %>
+<link rel="stylesheet" href="/extjs/resources/css/ext-all-gray.css">
+<script src="/extjs/ext-all.js"></script>
+<% end %>
+
+<!--
+<link rel="stylesheet" href="/starlight/css/style.css" type="text/css" />
+<link rel="stylesheet" href="/starlight/css/style.gray.css" type="text/css" />
+
+[if IE 9]>
+    <link rel="stylesheet" media="screen" href="/starlight/css/ie9.css"/>
+<![endif]-->
+<!--[if IE 8]>
+    <link rel="stylesheet" media="screen" href="/starlightcss/ie8.css"/>
+<![endif]-->
+<!--[if IE 7]>
+    <link rel="stylesheet" media="screen" href="/starlightcss/ie7.css"/>
+<![endif]-->
+<!--
+<script type="text/javascript" src="/starlight/js/plugins/jquery-1.7.min.js"></script>
+<script type="text/javascript" src="/starlight/js/plugins/jquery-ui-1.8.16.custom.min.js"></script>
+<script type="text/javascript" src="/starlight/js/custom/general.js"></script>
+<link rel="stylesheet" href="/dragdrop/opt.css">
+<script src="/dragdrop/dragdrop.js"></script>
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+
+-->
+<!-- Google Map -->
+
+<!--[if lt IE 9]>
+	<script src="http://css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script>
+<![endif]-->
+<meta charset="UTF-8">
+
+	<%= javascript_include_tag "application"  %>
+	<%= stylesheet_link_tag    "application" ,"elfinder","elfinder-theme"%>
+	<%= csrf_meta_tag %>
+
+
+<%= render :partial=>'/layouts/kendoui'%>
+<!-- Content -->
+<%
+	p = {}
+	project_params = @current_project.get_params if @current_project 
+	p = project_params if project_params
+	title = (p['app_title']and p['app_title']!='')?p['app_title']:"EMR-LIFE : Medical Records Service Provider"
+	bg = (p['app_bg_style']and p['app_bg_style']!='')?p['app_bg_style']:"#eee"
+	logo = (p['app_logo_url']and p['app_logo_url']!='')?p['app_logo_url']:'/esm_core/banner.png'
+	theme = (p['app_theme']and p['app_theme']!='')?p['app_theme']:'default'
+	
+%>
+<link href="/kendoui/source/styles/kendo.<%=theme%>.css" rel="stylesheet"/>
+
+<title><%= title %></title>
+
+</head>
+
+<body class="loggedin" style="background:<%=bg%>">
+
+		
+	
+	<!-- START OF HEADER -->
+	<div style="background:<%=bg%>;" class="mainwrapperheader">
+		
+	<div class="header radius3 div960" style="">
+    	<div class="headerinner">
+            <a href="/"><%=image_tag logo,:height=>36,:style=>''%></a>
+            <div class="headright">
+				<% if @current_project %>
+            	<div id="searchPanel" class="headercolumn">
+                	<div class="searchbox">
+                        <form action="<%=@current_project.get_home_url(request,'search') if @current_project %>" method="post">
+                            <input type="text" id="keyword" name="search[query]" class="radius2" style="width:150px" value="Search here" /> 
+                        </form>
+                    </div><!--searchbox-->
+                </div><!--headercolumn-->
+				<% end %>
+				<% if @current_user%>
+				<% if true %>
+            	<div id="notiPanel" class="headercolumn">
+                    <div class="notiwrapper">
+                        <a href="/starlight/ajax/messages.php.html" class="notialert radius2">5</a>
+                        <div class="notibox">
+                            <ul class="tabmenu">
+                                <li class="current"><a href="/starlight/ajax/messages.php.html" class="msg">Messages (2)</a></li>
+                                <li><a href="/starlight/ajax/activities.php.html" class="act">Recent Activity (3)</a></li>
+                            </ul>
+                            <br clear="all" />
+                            <div class="loader"><img src="/starlight/images/loaders/loader3.gif" alt="Loading Icon" /> Loading...</div>
+                            <div class="noticontent"></div><!--noticontent-->
+                        </div><!--notibox-->
+                    </div><!--notiwrapper-->
+                </div><!--headercolumn-->
+				<% end %>
+
+                <div id="userPanel" class="headercolumn" style="">
+                    <a href="" class="userinfo radius2">
+                        <img src="/starlight/images/avatar.png" alt="" class="radius2" />
+                        <span><strong><%=@current_user.get_name @current_solution if @current_user%></strong></span>
+                    </a>
+                    <div class="userdrop">
+                        <ul>
+                            <li style="border-bottom:1px solid #ccc"><a href="">Account Settings</a></li>
+						
+        					<li style="border-bottom:1px solid #ccc"><a href="/esm_home">My Solutions</a></li>
+								<% 
+								   if @context
+								   @context.projects.each do |j| %>
+									<li style="border-bottom:1px solid #ccc"><a href="<%=j.get_home_url(request)%>" class="elements"><span><i>- <%=j.title%></i></span></a></li>
+								<% end 
+								end 
+								%>
+                            <li><a href="/user/logout">Logout</a></li>
+                        </ul>
+                    </div><!--userdrop-->
+                </div><!--headercolumn-->
+				<% else %>
+				 <div id="userPanel" class="headercolumn" >
+						<a href="" class="userinfo radius2">
+	                        <img src="/starlight/images/avatar.png" alt="" class="radius2" />
+	                        <span><strong>User</strong></span>
+	                    </a>
+	                    <div class="userdrop">
+	                        <ul>
+	                            <li><a href="/user/login">Login</a></li>
+	                            <li><a href="/user/signup">Create New Account</a></li>
+	                            <li><a href="/user/logout">Forget Password</a></li>
+	                        </ul>
+	                    </div><!--userdrop-->
+	                </div><!--headercolumn-->
+	
+				<% end %>
+			
+            </div><!--headright-->
+				<div class="clear">
+					
+				</div>
+        </div><!--headerinner-->
+	   			<%= render :partial=>'/layouts/application_menus' %>
+		<div class='clear'>
+
+	    </div>
+	</div><!--header-->
+	<ul id="menu-left" style="height:27px;margin-top:-28px">
+	</ul>
+	</div>
+	<div class="mainwrapperinner" style="" >
+
+    <!-- END OF HEADER -->
+
+    <!-- START OF MAIN CONTENT -->
+    <div class="mainwrapper div960"  >
+		
+        <div class="mainleft" style="background:#fff;border:0px solid;position:absolute;bottom:0px;top:0px;right:0px;left:0px;">
+          	<div class="mainleftinner">
+	          	<div class="leftmenu" style="background:#fff;border:1px solid #ccc;position:absolute;bottom:0px;top:0px;right:0px;left:0px;">
+				<%= render :partial=>'/layouts/system_menus'%>
+				<%= yield :side_menu %>
+				</div>
+            </div><!--mainleftinner-->
+        </div><!--mainleft-->
+        
+        <div class="maincontent noright">
+        	<div class="maincontentinner">
+            	<!--maintabmenu
+    			<ul class="maintabmenu">
+                	<li class="current"><a href="/starlight/dashboard.html" class="k-button" >Dashboard</a></li>
+                <li ><a href="/starlight/dashboard.html">ภาษาไทย</a></li>
+
+                </ul>
+				-->
+                <div id="">
+			
+				</div>
+	
+                <div class="content k-content " style="padding-left:10px" >
+				<div id="content_panel" style="padding-left:0px" >
+			
+          	    <%= yield %><%= yield :content%>
+	
+		     	</div>
+                </div><!--content-->
+                
+            </div><!--maincontentinner-->
+<!--maincontent-->
+        <!--
+        <div class="mainright">
+        	<div class="mainrightinner">
+            	
+                
+            </div>
+        </div>mainright-->
+                
+     	</div><!--mainwrapperinner-->
+    </div><!--mainwrapper-->
+	<!-- END OF MAIN CONTENT -->
+    	<br/>	<br/>
+<div class="clear">
+	
+</div>
+
+
+<div class="footer" >
+<p>&copy; 
+	Copyright 2012 - 
+	E.S.M.Solution Co., Ltd. | 
+	Lead 
+	Developer - 
+	<a 
+	href="mailto:ksupasak@esm-solution.com" target="_blank">Supasak</a></p>            </div><!--footer-->
+
+</div>
+
+</body>
+</html>

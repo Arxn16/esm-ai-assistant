@@ -1,0 +1,120 @@
+
+<% 
+
+	home = '/'
+	home = @current_project.get_home_url request if @current_project
+
+%>
+
+
+<%
+	   if @home
+		@current_project = @home.project
+		@project_instance = @current_project.get_instance 
+	   end
+%>
+
+
+
+<nav class="navbar-default navbar-static-side" role="navigation">
+    <div class="sidebar-collapse">
+        <ul class="nav" id="side-menu">
+            <li class="nav-header">
+                <div class="dropdown profile-element">
+                    <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                        <span class="clear">
+                            <span class="block m-t-xs">
+	
+	
+                                <strong class="font-bold">
+                                	
+								<% if @current_user %>
+
+									<%
+										login = @current_user.get_name @current_solution
+										if session[:solution_user]
+											user_name = "#{session[:solution_user].name} (#{login})"
+											user_name = login unless session[:solution_user].name 
+											login = user_name
+										end
+									%>
+									<%= login %>
+				
+									<% end %>					
+
+                                </strong>
+                            </span> <span class="text-muted text-xs block">Profile <b class="caret"></b></span>
+                        </span>
+                    </a>
+                    <ul class="dropdown-menu animated fadeInRight m-t-xs">
+                        <li><a href="#">Logout</a></li>
+                    </ul>
+                </div>
+                <div class="logo-element">
+                    IN+
+                </div>
+            </li>
+            <li class="<%= 'active' if current_page?('../Home/index') %>">
+                <%= link_to "../Home/index" do %>
+                <i class="fa fa-laptop"></i> <span class="nav-label">Home</span>
+                <% end %>
+            </li>
+
+
+			<% if @current_project %>
+			<% if true %>
+			<%
+				# application tools bar
+
+				# menus = @current_project.menu_actions.root	
+				menus = []
+				if @project_instance
+					menus = @project_instance[:menus].collect{|i| MenuAction.find(i)} 
+				end
+
+
+				menus.each do |i| 
+			%>
+			<% if @current_user and @current_user.allow? @current_role, i.acl %>
+			<% if i.menu_actions.published.size==0  %>
+			
+			<li class="<%= 'active' if current_page?(i.url) %>">
+	                <%= link_to i.url do %>
+	                <i class="fa fa-desktop"></i> <span class="nav-label"><%= i.name %></span>
+	                <% end %>
+	        </li>
+			
+			<%else %>
+			 <li class="" style> 
+		        <a  <%#"href='#{i.url}' if i.url and i.url!=''" %> ><i class="fa fa-th-large"></i> <span class="nav-label"><%= i.name %></span><span class="fa arraw"></span> </a>
+					<% if i.menu_actions.published.size>0 %>
+				     <ul class="nav nav-second-level active collapse in"  aria-expanded="false">
+						<%=i.menu_actions.published.collect{|j| "<li><a href='#{j.url}'><b>#{j.name}</b></a></li>" if @current_user.allow? @current_role, j.acl }.compact.join().html_safe %>
+					</ul>
+					<% end %>
+				</li>
+			<% end %>
+			<% end %>
+
+			<% end %>
+
+			<% end %>
+
+			<% end %>
+
+      <%= render :partial=>'/layouts/inspinia_context_menu'%>
+
+   
+
+           
+
+
+
+        </ul>
+
+    </div>
+</nav>
+
+
+
+

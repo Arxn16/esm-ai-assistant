@@ -1,0 +1,31 @@
+<%
+	p={}
+	p.merge! fparams
+	unless value
+	value = Time.now unless p.has_key? :default 
+	end
+	interval=10
+	interval=fparams[:interval] if p.has_key? :interval
+%>
+<% unless @show %>
+<%= text_field_tag name,value ,:style=>'width:80%',:id=>fid, :required=>(field.mandatory=='1' and !@edit),:validationMessage=>"Cannot be empty",
+ :onkeypress=>" if ((event.keyCode == 13))  {event.preventDefault();} "%>
+<%# link_to "Now", "javascript:alert(dateFormat(new Date(), 'dddd, mmmm dS, yyyy, h:MM:ss TT'));$('\##{fid}').data('kendoTimePicker').value((new Date()).toString('HH:MM'))" %>
+<% else %>
+<value><%= value.strftime("%H:%M") if value %></value>
+<% end %>
+<script>
+
+$("#<%=fid%>").kendoTimePicker({
+	value: '<%= value.strftime("%H:%M") if value %>',
+	interval: <%=interval%>,
+	parseFormats: ["HH.mm","HHmm","HH;mm","HH mm"],
+	change: function(event){
+		var v = $('#<%=fid%>').val()
+		if(v.length==3){
+			$('#<%=fid%>').val(v[0]+":"+v[1]+v[2])
+		}
+		 
+	}
+});
+</script>

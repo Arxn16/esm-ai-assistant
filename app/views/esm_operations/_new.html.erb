@@ -1,0 +1,10 @@
+
+<br/>
+<%= form_for(:operation,:url=>"/esm_operations/new",:remote=>true) do |f| %>
+<%= hidden_field_tag :id, @service.id %>
+<%= render :partial=> 'operation', :locals=>{:f=>f} %>
+<br/>
+<span class="left">
+<%= f.submit 'Create',:class=>bt_class %> | <%= link_to 'Cancel', :action=>'service',:id=>@service%>
+</span>
+<% end %>

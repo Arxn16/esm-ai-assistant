@@ -1,0 +1,16 @@
+<div style="width:100%;border:0px solid">
+<h1 id="edit_role">Edit Role</h1>	
+<%= form_for(:role,:url=>{:action=>"edit"},:remote=>true) do |f| %>
+<span style='float:right'><%= f.submit 'Update' %> </span>
+<br/>
+<%= hidden_field_tag :id, @role.id %>
+<%= render :partial=> 'role.html', :locals=>{:f=>f} %>
+<br/>
+<span style='float:left'>
+<%= f.submit 'Update' ,:class=>bt_class%> |  <%= link_to 'Cancel', {:controller=>'esm_roles',:action=>'index',:id=>@project},:remote=>true %>  | <%= link_to 'Delete', {:action=>'role_delete',:id=>@role},:remote=>true,:confirm=>'Are you sure?' %>
+</span>
+<% end %>
+<div class="clear">
+	
+</div>
+</div>

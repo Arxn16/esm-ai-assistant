@@ -1,0 +1,15 @@
+<div style="width:100%;border:0px solid">
+<h1 id="create_document">Create Document</h1>	
+<%= form_for(:document,:url=>{:action=>"new",:id=>@project},:remote=>true) do |f| %>
+<br/>
+<%= hidden_field_tag :id, @document.id %>
+<%= render :partial=> 'document', :locals=>{:f=>f} %>
+<br/>
+<span style='float:left'>
+<%= f.submit 'Create' ,:class=>bt_class%> |<%= link_to 'Cancel', 'javascript:window.location.reload()'%>
+</span>
+<% end %>
+<div class="clear">
+	
+</div>
+</div>

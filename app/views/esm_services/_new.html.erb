@@ -1,0 +1,14 @@
+<div style="width:100%;border:0px solid">
+<h1 id="new_service">New Service</h1>	
+<%= form_for(:service,:url=>{:action=>"new",:id=>@project},:remote=>true) do |f| %>
+<br/>
+<%= hidden_field_tag :id, @service.id %>
+<%= render :partial=> 'service', :locals=>{:f=>f} %>
+<br/>
+<span style='float:left'>
+<%= f.submit 'Create' ,:confirm=>'Are you sure?',:class=>bt_class%> | <%= link_to 'Cancel', :action=>'project',:id=>@project%> 
+</span>
+<% end %>
+<div class="clear">
+</div>
+</div>

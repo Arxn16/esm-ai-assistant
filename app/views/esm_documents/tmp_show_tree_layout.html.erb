@@ -1,0 +1,563 @@
+<link href="/gebo/img/splashy/splashy.css" media="screen" rel="stylesheet" />
+<link href="/cmjs/contextMenu.css" media="screen" rel="stylesheet" />
+<script src="/cmjs/contextMenu.js" type="text/javascript" charset="utf-8"></script>
+
+
+<div id="javascript-spinner" style="color:white;position:absolute;top:0px;bottom:0px;left:0px;right:0px;background:#666;opacity: 0.6;filter: alpha(opacity=60); z-index: 999;padding:300px">
+<h1><center>Loading...</center></h1>
+</div>
+
+<%  @edit = false
+	@prefix = ''
+
+	@super_record = @record
+
+	root_data_node, root_fields_node, map, fmap = @document.get_root_format_node @record
+	
+%>
+
+<% if false %>
+<h1>Map</h1>
+<pre>
+	<%= map.to_yaml%>
+</pre>
+
+
+<h1>FMap</h1>
+<pre>
+	<%= fmap.to_yaml%>
+</pre>
+<% end %>
+
+<script type="text/javascript" charset="utf-8">
+	
+	
+	var cmap = <%=map.to_json.html_safe%>
+	var cfmap = <%=fmap.to_json.html_safe%>
+    var cmaster = <%=@document.get_mapping_master().to_json.html_safe %>;
+	esm_helper.push('<%=@record.id%>',{'map':cmap,'fmap':cfmap,'master':cmaster})
+	esm = esm_helper.get('<%=@record.id%>')
+	
+	
+	
+	
+	// alert(esm.map)
+	
+	
+</script>
+
+<%#map.inspect  %>
+
+<%
+	fields = @document.fields
+	
+	@width = 145
+						
+    vt =     %w{tab section clear html}
+
+%>
+<style type="text/css" media="screen">
+	.tab{
+		border:1px solid;
+		border-bottom:0px;
+		padding:5px;
+		margin:5px;
+		margin-bottom:0px;
+		overflow:hidden;
+		display:inline-block;
+	}
+	.tab:link{
+		    text-decoration: none;
+		
+	}
+	.tab-selected{
+		background:#ccc;
+	}
+</style>
+		
+<div id="name" style="border:0px solid blue">
+	
+	<br/>
+	<br/>
+                <div class="tabbable">
+				<ul class="nav nav-tabs">
+					<li class="active"><a href="#tab-chart" data-toggle="tab"><%=@document.title%> Form</a></li>
+					<li><a href="#tab-report" data-toggle="tab"><%=@document.title%> Report</a></li>
+					<li><a href="#tab-data" data-toggle="tab"><%=@document.title%> Data</a></li>
+				</ul>
+				<div class="tab-content">
+					<div class="tab-pane active" id="tab-chart">
+						
+						
+						<div  style="border:0px solid;;display:inline-block;padding:0px;display:table; margin: 0 auto;" class="tab-pane active " id="a-form">
+								
+							<table>
+								
+								<tr><td valign="top">
+								<div style="width:720px;padding:0px;">
+								
+								<span style="display:block;background:#eee;padding:5px" class="">
+														
+													
+														<%= link_to "Back",  "\#" , :id=>'back-section', :class=>'btn  btn-small' %>
+														
+												
+														<%= link_to "Next",  "\#" , :id=>'next-section', :class=>'btn  btn-small' %>
+														
+														
+														<span style="float:right">
+														<%= submit_tag "Save & Exit", :id=>'finish-section', :class=>'btn  btn-small btn-success',:confirm=>'Are you sure?' %>	
+														</span>
+														
+														
+								</span>
+										<%= root_data_node[0][:items].collect{|i| link_to(i[:text],"javascript:select_section_by_id('#{i[:id]}')",:class=>'tab tab-content',:id=>"T#{i[:id]}")}.join('').html_safe
+
+										%>
+									<div class="clear">	</div>
+								<div style="width:720px;padding:0px;padding:5px;" class=" alert alert-info">
+								
+						
+						<% 
+						    if true
+						    for i in fields 
+							f = i
+						%>
+						<%= render :partial=>'/esm_documents/render_field',:locals=>{:field=>f,:hidden=>true}%>
+						<% end %>
+						<% else %>
+						<%= render :partial=>'/esm_documents/render_fields',:locals=>{:fields=>fields,:hidden=>true}%>
+						<% end %>
+						<div class='clear'></div>
+						
+					
+						</div>
+						
+						<span style="display:block;background:#eee;padding:5px" class="">
+								<%= link_to "Back",  "\#" , :id=>'back-section-2', :class=>'btn  btn-small' %>
+
+								<%= link_to "Next",  "\#" , :id=>'next-section-2', :class=>'btn  btn-small' %>
+									<span style="float:right">
+								<%= submit_tag "Save & Exit",   :id=>'finish-section', :class=>'btn  btn-small btn-success' ,:confirm=>'Are you sure?' %>	
+								</span>
+								
+								</span>
+						</div>
+						
+                    	</td>
+						<td id="report-site-2-td"valign="top">
+						<div id="report-site-2" style="padding-left:20px;position:fixed;top:50px;bottom:0px;overflow:scroll">
+						</div>
+						</td></tr>
+						</table>
+						</div>
+						
+				    </div>
+					<div class="tab-pane" id="tab-report">
+					   <div id="report-site-1">
+							<div id="report" class="alert alert-warn" style="width:720px;border:0px solid;;display:inline-block;padding:0px;display:table; margin: 0 auto;">
+								<%
+									s = @current_project.get_service(@document.name)
+									context = s.prepare(params,self,request)
+									ss = s.load context	
+								%>
+								<%=render :inline=> ss.display_script.html_safe,:locals=>{:document_name=>@document.name} %>
+							</div>
+						</div>
+			
+					</div>
+					<div class="tab-pane " id="tab-data">
+							<div id="treeview">
+							</div>
+					</div>
+				</div>
+	
+			  </div>
+	
+	
+	<div id="horizontal" style="xheight:590px; width: 100%;display:none">
+		
+						
+                        <div id="left-pane">
+                            <div class="pane-content">
+      						</div>
+                        </div>
+                        <div id="center-pane">
+							<div class="pane-content">
+							</div>
+						</div>
+						
+	 	<div id="right-pane" >
+			<div class="pane-content alert alert-warn">
+			
+			</div>
+			</div>
+
+	
+</div>
+
+<div class='clear'></div>
+<style type="text/css" media="screen">
+	.blue{ color:blue;}
+</style>
+<script id="treeview-template" type="text/kendo-ui-template">
+            #: item.text #   <span id='V#: item.id #' class='blue'></span>
+</script>
+<script>
+
+ 		function select_section_by_id(id){
+	
+				var tree = esm_helper.get('<%=@record.id%>-tree').tree;
+	
+				var treeView = $("#treeview").data("kendoTreeView");
+				
+				node = treeView.select();
+				
+						var siblings = $(node).siblings();
+					    for (var i = 0; i < siblings.length; i++) {
+							
+					        if ($(siblings[i]).find("ul.k-group").length > 0) {
+							    n = treeView.dataItem(siblings[i])
+								console.log(n);
+								if(n['id']==id)
+								node = siblings[i]
+					            treeView.collapse(siblings[i]);
+					        }
+					    }
+						$('.portlet').hide()
+						$('.field').hide()
+						tree.openParentNode(node)
+						tree.openNode(node)
+						treeView.select(node);
+		
+					
+					d = treeView.dataItem(node)
+					$('.tab-content').removeClass('tab-selected')
+					$('#T'+d['id']).addClass('tab-selected')
+				
+		}
+           
+	
+			$(document).ready(function() {
+				
+				 function select_section(treeView, node){
+						var tree = esm_helper.get('<%=@record.id%>-tree').tree;
+					
+						var siblings = $(node).siblings();
+					    for (var i = 0; i < siblings.length; i++) {
+					        if ($(siblings[i]).find("ul.k-group").length > 0) {
+					            treeView.collapse(siblings[i]);
+					        }
+					    }
+						$('.portlet').hide()
+						$('.field').hide()
+						tree.openParentNode(node)
+						tree.openNode(node)
+						treeView.select(node);
+						prev_node = node.prev();
+						next_node = node.next();
+						
+						if(prev_node.length==0){
+							$('#back-section').hide()
+							$('#back-section-2').hide()	
+						}else{
+							$('#back-section').show()
+							$('#back-section-2').show()
+						}
+						
+						
+						if(next_node.length==0){
+							$('#next-section').hide()
+							$('#next-section-2').hide()	
+						}else{
+							$('#next-section').show()
+							$('#next-section-2').show()
+						}
+						
+						d = treeView.dataItem(node)
+						$('.tab-content').removeClass('tab-selected')
+						$('#T'+d['id']).addClass('tab-selected')
+						
+						
+				
+				}
+			
+	             function back_section(e){
+
+						var treeView = $("#treeview").data("kendoTreeView");
+						var selectedNode = treeView.select();
+
+						if(selectedNode.length>0){
+					    node = selectedNode
+						node = node.prev()
+				    	}else{
+						var root = $('.k-item:first');
+						treeView.select(root);
+						node = treeView.select();
+						}
+
+
+					    select_section(treeView,node)
+						if(typeof(e)!='undefined')
+						e.preventDefault();
+				}
+	        	function next_section(e){
+
+						var treeView = $("#treeview").data("kendoTreeView");
+						var selectedNode = treeView.select();
+						if(selectedNode.length>0){
+					    	node = selectedNode
+							node = node.next()
+				    	}else{
+							var root = $('.k-item:first');
+							treeView.select(root);
+							node = treeView.select();
+						}
+						
+						select_section(treeView,node)
+						if(typeof(e)!='undefined')
+						e.preventDefault();
+
+						// var siblings = $(node).siblings();
+						// 					    for (var i = 0; i < siblings.length; i++) {
+						// 					        if ($(siblings[i]).find("ul.k-group").length > 0) {
+						// 					            treeView.collapse(siblings[i]);
+						// 					        }
+						// 					    }
+						// 						$('.portlet').hide()
+						// 						$('.field').hide()
+						// 						openParentNode(node)
+						// 						openNode(node)
+						// 						treeView.select(node);
+						// 						updateReport();
+						// 						if(typeof(e)!='undefined')
+						// 						e.preventDefault();
+				}
+			
+			$('#next-section').click(next_section);
+			$('#back-section').click(back_section);
+			$('#next-section-2').click(next_section);
+			$('#back-section-2').click(back_section);
+	
+	       
+			function onSelect(e) {
+				// closeNode()
+				var tree = esm_helper.get('<%=@record.id%>-tree').tree;
+			
+					
+				// closeNode()
+				var treeView = $("#treeview").data("kendoTreeView");
+				current_active = e.node
+				d = treeView.dataItem(e.node)
+				if(d.items.length>0){
+				$('.portlet').hide()
+				$('.field').hide()
+				tree.openParentNode(e.node)
+				tree.openNode(e.node)
+				}
+				updateReport();
+				
+			}
+         
+ 						 //                 $("#horizontal").kendoSplitter({
+ 						 //                      panes: [
+ 						 //                          { collapsible: true, size: "200px" ,collapsed:true},
+ 						 //                          { collapsible: false },
+ 						 // { collapsible: true, size: "450px" }
+ 						 //                      ]
+ 						 //                  });
+
+				 $("#treeview").kendoTreeView({dragAndDrop: false,  dataValueField: "id",
+				        dataSource: <%= root_data_node[0][:items].to_json.html_safe %>,
+						select: onSelect, 
+						template: kendo.template($("#treeview-template").html())
+						
+				});
+
+	      	next_section();
+
+						
+             });
+</script>
+
+
+<style scoped>
+            .demo-section {
+                width: 200px;
+            }
+
+            #treeview .k-sprite {
+                background-image: url("/kendoui/examples/content/web/treeview/coloricons-sprite.png");
+            }
+
+            .rootfolder { background-position: 0 0; }
+            .folder { background-position: 0 -16px; }
+            .pdf { background-position: 0 -32px; }
+            .html { background-position: 0 -48px; }
+            .image { background-position: 0 -64px; }
+			.rowx{
+			background-color:#c9dde7;
+			border-bottom:0px solid #d9edf7;
+			}
+</style>
+<script type="text/javascript" charset="utf-8">
+
+
+	<%
+	  	subtree = []
+		for f in fields
+			fparams = {}
+			fparams.merge! eval("{#{f.params}}") if f.params!=''
+			if fparams[:subtree]
+				subtree << f
+			end
+		end
+	%>
+	
+	function init_document_func(){
+
+		<%
+		
+		    
+			for field in subtree
+			
+			if field.lov_type and field.lov_type!=''
+			options = nil
+
+			    if field.lov_type == 'plain'
+					options = field.lov.split("\n").collect{|i| [i.strip,i.strip]}.compact
+					keys = options
+			    elsif field.lov_type == 'pair'
+					options = field.lov.split("\n").compact.collect{|i| t =  i.strip.split('|').reverse ; t if t.size==2}.compact
+					keys = options.collect{|i| i[1]}
+		    	end
+		    
+		   
+		
+		   begin
+		
+		
+			
+			
+			options.each_with_index do |i,index| 
+			if map["#{field.id}|#{i[1]}"][:items] and map["#{field.id}|#{i[1]}"][:items].size>0
+			
+			end
+			end
+			
+			rescue
+			 puts "XXXX "+field.column_name+ " "+options.inspect
+			end
+			
+			
+			options.each_with_index do |i,index| 
+			if map["#{field.id}|#{i[1]}"][:items] and map["#{field.id}|#{i[1]}"][:items].size>0
+		%>
+		
+		subtree = map['<%=field.id%>|<%=i[1]%>']
+		if(typeof subtree['items']!='undefined' && subtree['items'].length>0){
+	  	
+			// alert('<%=field.column_name%> <%=i[0]%> <%=i[1]%> '+subtree['items'].length)
+	    
+				obj = $("#update_<%=field.column_name%>_item_<%=index%>")
+				obj.parent().parent().append("<div  style='margin-left:20px;margin-top: 0px;border:0px solid' id='panel_<%=field.column_name%>_item_<%=index%>'>&nbsp;</div>")
+				
+				<% if index%2==0 %>
+				obj.parent().parent().addClass('rowx')
+				<% end %>
+			
+			
+			    target = $('#panel_<%=field.column_name%>_item_<%=index%>');
+			    for(var i in subtree['items']){
+					fid = subtree['items'][i]['id']
+					obj = $('#'+fmap[fid])
+					$(obj).appendTo(target);
+				}
+				target.append("<div class='clear'></div>");
+	
+	
+		}
+		
+		<% end %>
+		<% end %>
+	
+		<% else %>
+		// when no lov true or false
+		
+		subtree = map['<%=field.id%>']
+		if(typeof subtree['items']!='undefined' && subtree['items'].length>0){
+	  	
+				obj = $("#data-<%=field.column_name%>")
+				obj.parent().parent().append("<td  style='margin-left:20px;margin-top: 0px;padding:0px;border:0px solid' id='panel_<%=field.column_name%>'>&nbsp;</td>")
+			    target = $('#panel_<%=field.column_name%>');
+			    for(var i in subtree['items']){
+					fid = subtree['items'][i]['id']
+					obj = $('#'+fmap[fid])
+					$(obj).appendTo(target);
+				}
+				target.append("<div class='clear'></div>");
+	
+	
+		}
+		
+		<% end %>
+	
+		<% end %>
+	
+		
+		
+	}
+ 	var mode = 0
+	function unify_size(){
+		
+			if($( window ).width()>=1024){
+				if(mode==0){
+					mode=1
+					$('#report').appendTo($('#report-site-2'));
+					$('#report-site-2-td').css('width','600px')
+					// alert('change mode '+mode)
+				}
+			}else{
+			    if(mode==1){
+					mode=0
+					$('#report').appendTo($('#report-site-1'));
+					//alert('change mode '+mode)
+				}
+			}
+		
+		
+		
+				// console.log('w'+$(this).scrollTop())
+				// console.log('a'+$('#report-site-2-td').offset().top)
+				var a = parseInt(''+$('#report-site-2-td').offset().top);
+				w = $(window).scrollTop()
+				if(a-80>w)
+					y=a-w;
+				else
+					y=80;
+
+				// alert(t)
+				$('#report-site-2').css('top',''+(y)+'px')
+	}
+	
+	
+	$(document).ready(function() {
+	   $('.k-sprite').removeClass("k-sprite");
+	   <%=yield :script %>
+		init_document_func();
+		$('#javascript-spinner').hide();
+		unify_size();
+	});
+	
+	$( window ).resize(function() {
+		unify_size()  	
+	});
+	
+    $( window ).scroll(function() {
+	      unify_size()
+	})
+</script>
+
+<div id="clear">
+</div>
+

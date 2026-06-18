@@ -1,0 +1,126 @@
+<%
+json = [
+{
+    "text"=> "Services", 
+    "cls"=> "folder",
+	:action=>"/esm_services?id=#{@project.id}",
+    "expanded"=> true,
+    :children=> @project.services.collect{|i| 
+	    name = i.to_s
+	    name += " (#{i.extended})" if i.extended and i.extended!=''
+	   {
+	        "text"=>name,
+	        "leaf"=> false,
+			"expanded"=> false,
+	        "checked"=> false,
+			:action=>"/esm_services/#{i.id}",
+			:action_type=>'remote',
+			:children=>i.operations.all.collect{|j|
+				{
+					:text=>"#{j} (#{j.script_template})",
+					:leaf=>true,"checked"=> false,
+					:action=>"/esm_services/#{i.id}?op_id=#{j.id}",
+					:action_type=>'remote'
+				}
+			}
+	    }
+	}
+	
+
+
+},
+
+{
+	:text=>'Content',
+	:cls=>'folder',
+	:expanded=>true,
+	:action=>"/esm_services?id=#{@project.id}",
+	:children=>[
+		{
+			:text=>'Documents',
+			:cls=>'folder',
+			:action=>"/esm_documents?id=#{@project.id}",
+			:expanded=>true,
+			:children=> @project.documents.collect{|i| 
+			   {
+			    :text=>"#{i.name}",
+				:leaf=>true,"checked"=> false,
+				:action=>"/esm_documents/#{i.id}",
+				:action_type=>'remote'
+	
+				}
+			}
+
+		},
+			{
+				:text=>'Tables',
+				:cls=>'folder',
+				:action=>"/esm_tables?id=#{@project.id}",
+				:expanded=>false,
+				:children=> @project.get_schema.tables.collect{|i| 
+				   {
+				    :text=>"#{i.name}",
+					:leaf=>true,"checked"=> false,
+					:action=>"/esm_tables/#{i.id}",
+					:action_type=>'remote'
+		
+					}
+				}
+			}
+
+
+# ,
+# 	{
+# 		:text=>'Reports',
+# 		:cls=>'folder',
+# 		:action=>"report?id=#{@project.id}",
+# 		:expanded=>false
+# 	}
+
+]	
+},
+{
+	:text=>'CMS',
+	:cls=>'folder',
+	:expanded=>true,
+	:children=>[
+				{
+					:text=>'Menus',
+					:cls=>'folder',
+					:action=>"/esm_menus?id=#{@project.id}",
+					:expanded=>false,
+					:children=> @project.menu_actions.collect{|i| 
+					   {
+					    :text=>"#{i.name.humanize}",
+						:leaf=>true,"checked"=> false,
+						:action=>"/esm_menus/#{i.id}/edit",
+						:action_type=>'remote'
+						}
+					}
+				    },
+					{
+						:text=>'Roles',
+						:cls=>'folder',
+						:action=>"/esm_roles?id=#{@project.id}",
+						:expanded=>false,
+						:children=> @project.roles.collect{|i| 
+						   {
+						    :text=>"#{i.name}",
+							:leaf=>true,"checked"=> false,
+							:action=>"/esm_roles/#{i.id}",
+							:action_type=>'remote'
+							}
+						}
+					},
+					{
+						:text=>'Content',
+						:cls=>'folder',
+						:action=>"/esm_content/#{@project.id}",
+						:leaf=>true
+				
+					}	
+		
+]}
+
+]	%>
+<%=json.to_json.html_safe%>

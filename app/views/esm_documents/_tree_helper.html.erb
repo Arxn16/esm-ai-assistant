@@ -1,0 +1,96 @@
+<style>
+    v{ color:blue}
+    li.v{list-style-type: none}
+</style>
+ 
+<script id="default" type="text/x-kendo-template">
+<v> #= values_text.join(",") # </v>
+</script>
+
+<script id="subtree" type="text/x-kendo-template">
+
+# 
+var text_template = ''
+   for(var i in values){
+   
+    v = values[i]
+   t = values_text[i]
+
+
+  node_id = vlocal[label+"_"]
+  //   items = map[]
+//   alert(node_id)
+  node = map[node_id+"|"+v]
+  if(typeof(node)!='undefined'){
+  items = node['items']
+  var mlist = []
+
+  for(var j in items){
+      it = items[j]
+      vlabel = it['text']
+      col_name = fmap[it['id']]
+      v = object.get_value(col_name)
+      if(typeof(v)!='undefined'){
+      // console.log(col_name + " = "+v)
+      v = v.split("|")
+      vl = []
+      for(var k in v){
+          var vk = v[k].trim()
+        //   alert(col_name+ ' = '+ vk)
+          var vx = vk
+          if(typeof(vlocal[col_name])!='undefined')
+          vx = vlocal[col_name][vk]
+
+          vl.push(vx)
+      }
+      // console.log("F "+col_name+" "+vl)
+      text_template = vl.join(",")
+
+      if(text_template!='false'&&text_template!='SKIP'&&text_template!=''){
+        if(text_template!='true'){
+            mlist.push(vlabel + " : <v>"+ text_template+"</v>")
+        }else{
+
+            xnode_id = vlocal[col_name+'_']
+            xnode = map[xnode_id]
+            xitems = xnode['items']
+			if(typeof(xitems)!='undefined')
+            for(var k in xitems){
+                xit = xitems[k]
+                xlabel = xit['text']
+				xl = xlabel.split(' ')
+                xv = object.get_value(fmap[xit['id']])
+                mlist.push(""+xl[0]+" : <v>"+xv+" "+xl[1]+"</v>")  
+
+            }
+			else{
+				mlist.push(vlabel)
+			}
+
+        }
+
+
+      }
+
+
+        //   splashy-gem_okay when values
+        //   splashy-application_windows_edit when object
+
+
+      }
+    //   alert(col_name+ ' = '+vl.join(",")+' = '+vk)
+  }
+
+ text_template =  mlist.join(", ")    
+  }
+
+
+//  <ul><li>test</li><li>test</li></ul> 
+//   alert(node['text'])
+if(typeof(t)!='undefined'){
+#
+<li class="v"><v>- #=t#</v> #=text_template# </li> 
+#
+}
+}# 
+</script>

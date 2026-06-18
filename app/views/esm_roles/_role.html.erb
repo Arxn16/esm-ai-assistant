@@ -1,0 +1,22 @@
+<%
+	@menu_actions= @project.menu_actions
+%>
+
+<div class="field">
+  <%= f.label :name %>
+  <%= f.text_field :name ,:class=>tb_class %>
+</div>
+
+<div class="field">
+  <%= f.label :description %>
+  <%= f.text_area :description,:class=>tb_class  %>
+</div>
+
+
+<div class="field">
+  <%= f.label :default_home %>
+  <%= f.text_field :default_home,:class=>tb_class  %>
+</div>
+
+<%= f.hidden_field :esm_id, :value=>@project.esm.id%>
+<%= f.hidden_field :project_id, :value=>@project.id%>

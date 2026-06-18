@@ -1,0 +1,44 @@
+<div id="field-control" style="display:none">
+
+<div class="box" style="width:100%;border:0px solid">
+Field form
+	
+<%= form_for(:field,:url=>{:action=>"field_new",:id=>@document,:index=>-1,:update=>'layout'},:remote=>true) do |f| %>
+<%= render :partial=> 'field', :locals=>{:f=>f} %>
+<span style='float:left'>
+<%= f.submit 'Create' %> | <%= link_to 'Cancel', {:action=>'refresh_layout',:id=>@document},:remote=>true %> 
+</span>
+<% end %>
+
+</div>
+</div>
+<div class="clear">
+	
+</div>
+<%
+	id = @field.id
+	id = 'new' unless id
+%>
+<script type="text/javascript" charset="utf-8">
+	$('#components').hide('normal');
+	$('#field-control').show('normal');
+
+	    var tabs = Ext.createWidget('tabpanel', {
+	        activeTab: 0,
+			width:210,
+			frame:false,
+			plain:false,
+			renderTo: 'field-tab-<%=id%>',
+	        defaults :{
+	            bodyPadding: 0
+	        },
+	        items: [{
+	            contentEl:'field-<%= id %>', 
+	            title: 'Data Field'
+	        },{
+	            contentEl:'style-<%= id %>', 
+	            title: 'Style'
+	        }
+	]
+	    });
+</script>

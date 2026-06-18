@@ -1,0 +1,22 @@
+<%
+unless @document.service
+   service = @document.project.services.create :name=>@document.name.downcase.split.join('_'),:title=>@document.name,:extended=>'system.util.Document'
+   operation = service.operations.build :name=>'document_name', :command=>"'#{@document.name}'",:template_id=>ScriptTemplate.find_by_name('ServiceTemplate').id
+   operation.save
+   @document.service = service
+   @document.save
+ end
+
+%>
+	<h1><%= @document.name %> Analysis</h1>
+	<span style="float:right;">
+	<%# link_to "Submission", @document.service.url(request.domain)  if @document.service %> |
+	<%= link_to "Refresh", {:controller=>'esm_report',:action => "analysis",:id=>@document} ,:remote=>true %> |
+	</span>
+ <div class="clear">
+ 	
+ </div>
+<hr/>
+<div id="layout">
+<%= yield%>
+</div>

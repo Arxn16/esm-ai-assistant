@@ -1,0 +1,554 @@
+
+<%
+
+	if defined? @selector_key_options
+		if v = @selector_key_options[@document.name]
+			@selector_options = v
+			%>
+			<%#	@document.name%>  
+			<%
+		end
+	end
+
+%>
+
+<div style="width:100%;border: 0px solid blue;padding-top:0px;padding-bottom:0px" id="form-data">
+	
+<div  style="margin-left:auto;margin-right:auto;padding:1px;" class="form-data-content">
+
+<%
+
+# puts "Class4 #{@record.class} Doc #{@document.name} "
+
+	@width = 165
+	# @width = 220
+	unless @edit
+	cmode = ''	
+	else
+	cmode = 'edit'
+	end
+	
+	unless @prefix
+		@prefix = ''
+	end
+%>
+<%#YAML::load(@document.data)%>
+
+<%
+ 
+# puts "selctor #{@selector.inspect}"
+     
+	unless @selector
+	@fields = @document.fields
+	
+	else
+	field_selector = @document.find_by_column_name @selector
+	
+	# puts "XXXXX0 #{@document.name}"
+	root_data_node, root_fields_node, map, fmap = @document.get_root_format_node 
+		# unless map["#{field_selector.id}|#{@selector_value}"][:items]
+		# puts ""
+		# puts map.inspect
+		# puts 
+		
+	%>
+	<script>
+
+	var map = <%=map.to_json.html_safe%>
+	var fmap = <%=fmap.to_json.html_safe%>
+    var master = <%=@document.get_mapping_master().to_json.html_safe %>;
+	var model = '<%=@document.name%>'
+
+	tree = new ESMTree('<%=@document.name%>',model, map, fmap, master);
+
+	esm_helper.push('<%=@document.name%>',tree)
+	// alert('<%=@document.name%>')
+	</script>
+	<%	
+
+	# puts
+	@fields = []
+	
+	
+	def add_field_subtree document, map, node_name
+		
+			fieldx = []
+			if map[node_name]
+			items = map[node_name][:items]
+			if items
+				for i in items
+					f = document.find_field(i[:id])
+					fieldx << f
+					node = map[i[:id]]
+					if node[:items]
+						for j in node[:items] 
+						
+							fieldx += add_field_subtree document, map, "#{f.id}|#{j[:id]}"
+							
+						end
+					
+					end
+					
+				end
+				# fieldx += items.collect{|i| document.find_field( i[:id] ) }.compact
+			end
+			else
+				puts "XXX #{node_name}"
+			end
+		    return fieldx
+	end
+	
+	# if @selector_value and @selector_options == nil
+	# 	@selector_options = "*#{@selector_value}"
+	# end
+
+	
+	
+	for i in root_data_node[0][:items]
+		# puts "ID #{i[:id]} == #{field_selector.id}"
+		if i[:id] == field_selector.id
+			
+			@fields << field_selector
+		
+			# else
+				
+				if !@selector_options 
+					
+					for j in @selector_value.split('|')
+
+					@fields += add_field_subtree @document, map, "#{field_selector.id}|#{j}"
+	
+					end
+					
+				else
+				
+				
+				f = @document.find_field(i[:id])
+				lov = f.get_lov_options
+			
+				if 	@selector_options
+					m = {}
+					@selector_options[1..-1].split('|').each {|i|
+						m[i] = true
+					}
+					
+					for x in lov
+						
+						if m[x[0]]
+						
+						items = map["#{field_selector.id}|#{x[0]}"][:items]
+						if items
+					
+							@fields += items.collect{|i| @document.find_field( i[:id] ) }.compact
+							
+						end
+						
+						end
+						
+					end
+					
+				else	
+					
+					for x in lov
+						items = map["#{field_selector.id}|#{x[0]}"][:items]
+						if items
+							@fields += items.collect{|i| @document.find_field( i[:id] ) }.compact
+						end
+					end
+				end
+			end
+		else
+			@fields <<  @document.find_field( i[:id] )
+		end	
+	end
+
+	%>
+	
+	
+	<%
+	
+	
+	
+	
+	
+	end
+	
+	
+	@fields.compact!
+	
+	# puts "XXXXX2-s #{ @fields.size}"
+	
+	unless @edit
+		# puts 'XXXXX3'
+		
+		list = []
+		current_tab = nil
+		tab_group = nil
+		@fields.each_with_index do |field,index|
+			
+		
+			if field.field_type == 'tab'
+				if current_tab
+					# new tab
+					# list<<current_tab
+					current_tab=[]
+					tab_group<<{:name=>field.label,:id=>field.id,:list=>current_tab}
+				else
+					
+					unless tab_group
+						tab_group = []
+						list<<tab_group
+					end
+					unless current_tab
+						current_tab = []
+						tab_group<<{:name=>field.label,:id=>field.id,:list=>current_tab}
+					end
+				end	
+			else
+				if current_tab
+					current_tab<<field
+				else
+					list<<field
+				end
+			end
+				
+
+		end
+		
+		@fields = list
+		
+	end
+	# puts "YYYYY"
+	
+%>
+
+<div id="sortable" class=" connectedSortable document <%= cmode %> " style="font-size:14px; border: 0px solid orange;padding:0px;width:100%;margin:0px;min-height:50px" >
+	<% if @fields.size==0 %>
+	<div class="alert alert-block alert-info">
+		Drop a component here.
+	</div>
+	<% end %>
+<% 
+	c=0
+
+	# puts "Class3 #{@record.class} Doc #{@document.name} #{@fields.inspect}"
+   
+	@fields.each_with_index do |field,index|
+	# puts "XXXXrender field #{field.name}"
+    
+	
+		
+	if field.instance_of? Array
+		
+		f_id = "#{@prefix}#{@document.id}-#{field[0][:id]}"
+	
+		%>
+		
+		<div class="clear"></div>
+			
+		<div id="<%=f_id%>" class=" tabbable tabbable-bordered" style="margin-left:-5px;width:738px">
+			<ul class="nav nav-tabs">
+				<% field.each_with_index do |i,idx|  %>
+				<li <%='class="active"'.html_safe if idx == 0 %>  id="tab-<%=i[:id]%>-tab" > <a href="#tab-<%=i[:id]%>" style="font-size:1em" data-toggle="tab">
+					<i class="splashy-warning_triangle notification-tab" id="tab-<%=i[:id]%>-status" style="display:none"></i>
+					<%= i[:name] %></a> </li>
+				<% end %>
+			</ul>
+			<div class="tab-content" style="padding:0px;">
+				<% field.each_with_index do |i,idx|  %>
+				<div class="tab-pane <%='active' if idx==0 %>" id="tab-<%=i[:id]%>" style="padding:5px;margin:0px;border:0px solid blue">
+					
+						<% 
+							tmp_selector = @selector
+							@selector = nil
+						
+						for f in i[:list]%>	
+						<%= render :partial=>'/esm_documents/render_field',:locals=>{:field=>f,:doc=>@document}%>
+						<% end %>
+						
+						<% 
+							@selector = tmp_selector
+						%> 
+						<div class="clear">	</div> 
+						<br/>
+						<%
+							next_id = nil
+							back_id = nil
+							
+							next_id = field[idx+1][:id] if field[idx+1]
+							back_id = field[idx-1][:id] if field[idx-1]
+						%>
+						<table class= "notification-tab" border="0" cellspacing="5" cellpadding="5" style="border-top:1px solid #dddddd;width:100%; display:none">
+							<tr>
+							<td width="30"><%= link_to "Back", "javascript:select_tab('#{i[:id]}','#{back_id}')", :class=>'btn btn-mini'  if back_id %></td>
+							<td width="600"><%= link_to "Next", "javascript:select_tab('#{i[:id]}','#{next_id}')", :class=>'btn btn-mini'  if next_id %></td>
+							<td><%= link_to "Top", 'javascript:$("html, body").animate({ scrollTop: 0 }, "slow");', :class=>'btn btn-mini' %></td>
+							</tr>
+						</table>
+						
+				</div>
+				<% end %>
+				
+			</div>
+		
+			</div>
+			<script type="text/javascript" charset="utf-8">
+				$(function(){
+					select_tab('<%=field[0][:id]%>','<%=field[0][:id]%>')
+				
+				});
+			</script>
+		
+		
+	<%	
+	else
+	%>
+	<%= render :partial=>'/esm_documents/render_field',:locals=>{:field=>field,:doc=>@document}%>
+	<% end %>
+
+<% end %>
+
+<div class="clear">	</div>	
+
+</div>
+
+<% if @edit %>
+<div class='clear'></div>
+<br/>
+<%= submit_tag 'Update' ,:id=>'document_update',:style=>'width:100px;margin-left:0px',:class=>bt_class%>
+
+
+<div style="margin-top:20px">
+	<%= tabular :model=>%w{name column_name field_type mandatory search list_show},:data=>@document.fields do |row,out|
+		id = "fields[#{row.id}]"
+		unless Document.visual_types.index row.field_type
+		out[-3]=hidden_field_tag("#{id}[mandatory]",0)+check_box_tag("#{id}[mandatory]",1,row.mandatory=="1")
+		out[-2]=hidden_field_tag("#{id}[search]",0)+check_box_tag("#{id}[search]",1,row.search=="1")
+		out[-1]=hidden_field_tag("#{id}[list_show]",0)+check_box_tag("#{id}[list_show]",1,row.list_show=="1")	
+		else
+		out[-3]=out[-2]=out[-1]='&nbsp;'
+		end
+		out
+	end %>
+</div>
+<% end %>
+
+
+<% if @edit%>
+<script>
+	$(function() {
+		
+		$( "#components, #sortable" ).sortable({
+			connectWith: ".connectedSortable",
+			stop:function(event,ui){
+				$('#document_update').click();
+			}	
+		}).disableSelection({
+		});	
+	});
+</script>
+<% end %>
+
+<% unless @partial %>
+<script type="text/javascript" charset="utf-8">
+<%=yield :script %>
+</script>
+<% end %>
+<div class="clear"></div>
+
+
+</div>
+</div>
+<div class="clear"></div>
+<script>
+       $(document).ready(function() {
+      	var validator = $("#form-data").kendoValidator().data("kendoValidator");
+           $("button").click(function() {
+	
+               if (validator.validate()) {
+                   } else {
+					return false;
+               }
+
+           });
+
+		<% if @selector and @selector_value!=nil and @selector_value!=''and @selector_options==nil %>
+		
+		$('#<%=@selector_f_id%>').hide()
+		
+		<% end %>
+       });
+
+
+	
+   </script>
+<%=hidden_field_tag "object[id]", @record.id if @record%>
+
+<%
+
+
+if  @selector   # and @selector_value != nil 
+  # puts "selector 2 #{@selector}"
+%>
+
+<script>
+
+$(document).ready(function() {
+	
+		var tree = esm_helper.get('<%=@document.name%>')
+	   // alert('subtree')
+	<%
+     	fields = @document.fields
+
+	  	subtree = []
+		for f in fields
+			fparams = {}
+			fparams.merge! eval("{#{f.params}}") if f.params!=''
+			if fparams[:subtree]  
+				subtree << f
+			end
+		end
+		
+		for field in subtree
+		# puts field.inspect 
+		%>
+		// console.log('ONE <%=field.column_name%>')
+		<%
+			if field.lov_type and field.lov_type!=''
+				options = nil
+		    	if field.lov_type == 'plain'
+					options = field.lov.split("\n").collect{|i| i.strip}.compact
+					keys = options
+			    elsif field.lov_type == 'pair'
+					options = field.lov.split("\n").compact.collect{|i| i.strip.split('|').reverse }
+					keys = options.collect{|i| i[1]}
+		    	end
+				options.each_with_index do |i,index| 
+				
+			fidx = 	"update_#{@prefix.gsub('-','_')}#{field.column_name}_item_#{index}"
+				# puts map.inspect
+					if map["#{field.id}|#{i[1]}"] and map["#{field.id}|#{i[1]}"][:items] and map["#{field.id}|#{i[1]}"][:items].size>0
+	%>
+	
+	
+		subtree = tree.map['<%=field.id%>|<%=i[1]%>']
+		// console.log(subtree)
+		if(typeof subtree['items']!='undefined' && subtree['items'].length>0){
+	  		// console.log('ONE <%=field.column_name%> + <%=i.inspect %>')
+		
+			// alert('<%=field.column_name%> <%=i[0]%> <%=i[1]%> '+subtree['items'].length)
+			
+	    		obj = $("#<%=fidx%>")
+				// console.log("object found "+"<%=fidx%>")
+				// console.log(obj)
+	
+				obj.parent().parent().append("<div  style='margin-left:20px;margin-top: 0px;border:0px solid red;height:0px;' id='panel_<%=fidx%>'></div>")
+				
+				<% if index%2==0 %>
+				obj.parent().parent().addClass('rowx')
+				<% end %>
+				 	
+				  target = $('#panel_<%=fidx%>');
+				    for(var i in subtree['items']){
+						fid = subtree['items'][i]['id']
+						// console.log("search for <%=@prefix%>"+tree.fmap[fid])
+						obj = $('#<%=@prefix%>'+tree.fmap[fid])
+						// console.log(obj)
+						$(obj).appendTo(target);
+	
+						
+					}
+					target.append("<div class='clear'></div>");
+			
+	
+		}
+	       			<% end %>
+		        <% end %>
+		<% else %>
+		
+		// when no lov true or false
+		
+		subtree = map['<%=field.id%>']
+		if(typeof subtree['items']!='undefined' && subtree['items'].length>0){
+	  			
+	
+				obj = $("#data-<%=field.column_name%>")
+				obj.parent().parent().append("<td  style='margin-left:20px;margin-top: 0px;padding:0px;border:0px solid;height:0px' id='panel_<%=field.column_name%>'></td>")
+			    target = $('#panel_<%=field.column_name%>');
+	
+				for(var i in subtree['items']){
+					fid = subtree['items'][i]['id']
+					obj = $('#'+tree.fmap[fid])
+					
+					$(obj).appendTo(target);
+					
+				}
+				target.append("<div class='clear'></div>");
+				
+				
+	
+		}
+			<% end %>
+			<%
+			  i = field
+		
+			    if i.column_name and i.column_name!='' and !Document.visual_types.index(i.field_type)
+
+				
+				
+			  %>
+			
+			  // console.log("vv <%=i.column_name%> <%=@selector%> <%=@selector_options%> <%=options.inspect%>")
+			
+			  tree.changeValue('<%=@prefix%><%=i.id%>',$('#<%=i.column_name%>'),'<%=@record[i.column_name] %>','')
+			  
+			  <%  
+				if i.column_name == @selector and @selector_options
+				
+					m = {}
+					@selector_options[1..-1].split('|').each {|i|
+						m[i] = true
+					}
+					options.each_with_index do |j,index|
+						fidx = 	"update_#{@prefix.gsub('-','_')}#{field.column_name}_item_#{index}"
+					unless m[j[1]]
+			  %>
+				// conosole.log("xxxx <%=fidx%>")
+			   $('#<%=fidx%>').parent().parent().hide()
+			
+			  <% end %>
+			  <% end %>
+			   
+			
+			  <% end %>
+
+			
+			  <% end %>
+			
+		<% end %>
+	
+	
+});		
+
+
+</script>
+<% end %>
+	<% unless @edit %>
+<script type="text/javascript" charset="utf-8">
+	function select_tab(current_id, new_id){
+		$('\#tab-'+current_id+'-tab').removeClass('active');
+		$('\#tab-'+current_id).removeClass('active');
+		$('\#tab-'+new_id+'-tab').addClass('active');
+		$('\#tab-'+new_id).addClass('active');
+		$('\#tab-'+new_id+'-status').removeClass('splashy-warning_triangle');
+		$('\#tab-'+new_id+'-status').addClass('splashy-check');
+	}
+
+	$('a[data-toggle="tab"]').on('shown', function (e) {
+		t = $(e.target).attr('href').split('-')
+		t2 =   $(e.relatedTarget).attr('href').split('-')
+	    select_tab(t2[t2.length-1],t[t.length-1])
+	});	
+</script>
+
+<% end %>

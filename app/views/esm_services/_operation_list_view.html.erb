@@ -1,0 +1,25 @@
+<table style="border:0px solid">
+<%
+	ScriptTemplate.all.each do |c|
+	operations = service.operations.where('template_id=?',c.id).order('name').all().to_a
+	if operations.size>0
+	operations.sort!(){|a,b| a.name<=>b.name}	
+%>
+<tr>
+<td valign="top"><%=c.name[0..-9]%></td>
+<td>
+<% for row in operations %>
+		<div style="float:left;display:inline-block">
+		<label style="">&nbsp;
+			<%= link_to(row.name,{:controller=>'esm_operations',:action=>'edit',:id=>row,:sid=>@service.id},:remote=>true) %>
+		</label>
+		</div>
+<% end %>
+</td>
+<% end %>
+</tr>
+<% end %>
+</table>
+
+<div class="clear"></div>
+

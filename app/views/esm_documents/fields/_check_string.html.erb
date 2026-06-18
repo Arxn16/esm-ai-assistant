@@ -1,0 +1,157 @@
+
+<%
+	values = []
+	values = value.split('|') if value
+	func = "update_#{@prefix.gsub('-','_')}#{field.column_name}"
+%>
+<% if field.lov_type and field.lov_type!=''
+
+    if field.lov_type == 'plain'
+	options = field.lov.split("\n").collect{|i| i.strip}.compact
+	keys = options
+   elsif field.lov_type == 'pair'
+	options = field.lov.split("\n").compact.collect{|i| i.split('|').reverse }
+	keys = options.collect{|i| i[1]}
+   end
+	
+%>
+<script type="text/javascript" charset="utf-8">
+
+    function <%= func %>_rev_func(){
+		v = $('#<%=fid%>').val();
+    	if(v!=''){
+			values = v.split("|")
+			<%
+				hash = {}
+				options.each_with_index do |op,index| 
+					if field.lov_type=='pair'
+					hash[op[1]]=index
+					else
+				    hash[op]= index
+					end
+				
+				end
+
+			%>
+			n = <%=options.size%>
+			hash = <%=hash.to_json.html_safe%>;
+			for(var i=0;i<n;i++){
+					$("#<%=func%>_item_"+i).attr('checked',false);
+			}
+			for(var i in values){
+				vi = values[i]
+				vx = hash[vi]
+				if(typeof(vx)!='undefined'){
+					$("#<%=func%>_item_"+vx).attr('checked',true);
+				}
+			}
+			
+		}
+	}
+	function <%= func %>_func(){
+		// console.log(v)
+		options = <%=keys.to_json.html_safe%>;
+		<%
+			hash = {}
+			for op in options
+				hash[op[1]]=op[0].strip
+			end
+
+		%>
+		var values = <%=hash.to_json.html_safe%>;
+		var t = new Array()
+	    var s = new Array()
+	    for(var i in options)
+	    {
+		
+		
+			jQuery("#<%=func%>_item_"+i).each(function(ind,obj){
+			      //do stuff;
+			
+			
+				 // console.log(""+i+" ");
+				// console.log(obj)
+				
+			});
+			
+		   input = $("#<%=func%>_item_"+i)
+		  
+		
+		    if(input.attr('checked')=='checked' || input.is(":checked")){
+				s.push(options[i])
+				t.push(values[options[i]])
+				
+			}
+		}
+		
+		
+		
+	
+		if(typeof(esm_helper)!=='undefined'){
+		
+		var tree = esm_helper.get('<%=@document.name%>');
+		// alert('change')
+		
+		if(tree){
+			
+			tree.changeValue("<%=@prefix%><%=field.id%>",this,s.join('|'),t.join(','))
+			tree.updateReport()
+		}
+		}
+		
+		$('#<%=fid%>').val(s.join('|')).trigger('change');;
+	}
+</script>
+
+<%
+	if params[:opt]=='print'
+		options.each_with_index do |i,index|
+		   k = 0 
+		   v = ''
+		   if field.lov_type == 'plain'
+			k = i 
+			v = i
+		   elsif field.lov_type == 'pair'
+			k = i[1]
+			v = i[0]
+		   end	
+
+%>
+<value><%= v if values.index(k)%></value>
+
+<% end %>
+<% else %>		
+
+<%= hidden_field_tag name, value,:id=>fid,:required=>(@field.mandatory=='1' and !@edit),:validationMessage=>"Please check one" %>
+<table><tr>
+<%
+cols = 1
+cols = fparams[:cols] if fparams[:cols]
+options.each_with_index do |i,index|
+   k = 0 
+   v = ''
+   if field.lov_type == 'plain'
+	k = i 
+	v = i
+   elsif field.lov_type == 'pair'
+	k = i[1]
+	v = i[0]
+   end	
+	
+%><td><% if v.strip!='' %>
+<label><%= check_box_tag '', k, values.index(k),:id=>"#{func}_item_#{index}", :onclick=>"javascript:#{func}_func()" ,:style=>'margin:5px;display:inline-block' %> <span><%= v %></span></label>
+<% else %>&nbsp;
+<% end %>
+</td>
+<%='</tr><tr>'.html_safe if (index+1)%cols==0   %>
+<% end %>
+</tr>
+</table>
+
+<% end %>
+
+<% else %>
+<%= hidden_field_tag name, 'false'  %>
+<%= check_box_tag name, 'true', value=='true',:style=>'margin:5px' ,:id=>fid %>
+
+<% end %>

@@ -1,0 +1,31 @@
+<%
+	name = @link_field.label
+	name = @record_name if @record_name
+	
+	# puts "Class2 #{@record.class} Doc #{@document.name}"
+	
+%>
+<div id="<%=@record.id%>" style="border:1px solid #ccc;margin-bottom:5px;">
+	<div style="background:#eee">&nbsp;<%= @i %><%=name%>
+	<%= link_to " Remove&nbsp;".html_safe,  {:controller=>'esm_document', :action=>'relation_has_many_remove',:id=>@record.id} ,:confirm=>'Are you sure?',:class=>'right',:remote=>true unless @show %>
+	</div>
+	<div style="padding-left:5px;">
+		<% 
+	    puts "Call render_containers Record #{@record.id} (#{@record.class}) for Doc #{@document.name}"
+		begin %>
+		<%= render :partial=>'/esm_documents/render_containers' %>
+		<%
+		
+			@selector = nil
+		
+		%>
+		<% rescue Exception=>e
+		puts "ERROR #{e.message}"
+		%>
+		<pre><%= "Record #{@record.class} Doc #{@document.name}" %>
+<%= e.message %>
+<%= e.backtrace[0..100].join %></pre>
+		<% end %>
+		
+	</div>
+</div>

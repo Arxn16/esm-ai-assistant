@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+  <title>ESM Home</title>
+
+<%= stylesheet_link_tag    "application" %>
+<%= javascript_include_tag "application" %>
+<%= csrf_meta_tag %>
+
+<link rel="stylesheet" type="text/css" href="/extjs/resources/css/ext-all.css"/>
+<script type="text/javascript" src="/extjs/ext-all.js"></script>
+
+<script type="text/javascript" charset="utf-8">
+    
+		Ext.Loader.setConfig({
+		    enabled: true
+		});
+		Ext.Loader.setPath('Ext.ux', '/extjs/examples/ux');
+</script>
+
+
+<%= stylesheet_link_tag "/stylesheets/esm_home" %>
+
+</head>
+
+
+<% 
+  screen = 'screen1024'
+  screen = session[:screen] if session[:screen]
+  case screen
+	when 'fullscreen' 
+		screen='100%';@logo=700;@width=1280;@height=800
+	when 'screen800'
+		screen="780px";@logo=400;@width=780;@height=500
+	when 'screen1024' 
+		screen= "1000px";@logo=500;@width=1000;@height=700
+	else
+  end
+%>
+
+<body  >
+
+<div class="background" >
+
+<div  class="wrapper" style="width:<%=screen%>;">	
+		Mobile<%=image_tag '/esm/logo.png',:height=>30,:style=>'vertical-align:middle;float:left;margin:5px'%>	
+<div style= "padding-left:10px;font-size:1em;width:99%;height:40px;padding-top:12px">
+ &nbsp;E.S.M.
+	<%= link_to '800x600', :controller=>'home', :action=>'change_screen_size',:screen=>'screen800', :return=>request.url%> | 
+	<%= link_to '1024x768', :controller=>'home', :action=>'change_screen_size', :screen=>'screen1024' , :return=>request.url%> | 
+	<%= link_to 'Full Screen', :controller=>'home', :action=>'change_screen_size',:screen=>'fullscreen' , :return=>request.url%> |
+	<%= link_to 'New Window', request.fullpath, :target=>'_blank'%>
+<span style="float:right;padding-right:10px">
+<% if @current_user%>
+<%= @current_user.login %> (<%=@current_user.role if @current_user.role%>) | <%=link_to 'change password', '/user/change_password'%> | <%= link_to 'logout','/user/logout' %>
+| <%= @context.name if @context%>
+<% else %>
+<%= link_to 'Login','/user/login'%>
+<% end %>
+</span>
+</div>
+
+<%= render :partial=>File.join( @theme_path ,'header') %>
+
+<div id="header-session" style="padding:0px">
+<%= render :partial=>File.join( @theme_path ,'menu') %>
+</div>
+<div class="clear">
+	
+</div>	
+
+<div class="content_panel">	
+<%= yield :content %>
+<div class="clear"></div>
+</div>
+
+<script type="text/javascript" charset="utf-8">
+<%= yield :script %>	
+</script>
+
+
+<div class="footer" style="width:<%=screen%>;">
+<% if @current_user %>
+&nbsp;&nbsp;User : <font color="#379b37"><%= @current_user.login  %></font> 
+<span style="float:right;padding-right:10px">Login at : <%= @current_user.last_accessed.strftime("%A, %e %B %Y %H:%M:%S") if @current_user.last_accessed%></span>
+<% else %>
+You are not login
+<% end %>
+<hr />
+&nbsp;&nbsp;Copyright @ 2010 <font color="#4747fe">E.S.M.Solution Co.,Ltd.</font> All rights reserved.
+<span style="float:right;padding-right:10px;color:#e88c29"><%= Time.now.strftime("%d-%m-%Y")%></span>
+<div class="clear"></div>
+</div>
+
+</div>
+</div>	
+
+</body>
+</html>

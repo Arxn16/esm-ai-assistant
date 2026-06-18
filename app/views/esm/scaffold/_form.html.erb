@@ -1,0 +1,137 @@
+
+<style type="text/css" media="screen">
+	input,textarea{
+		font-size:1.2em;
+	}
+</style>
+
+<%
+	@target = "#{@pathname}/"
+	if @record.id 
+		@target+="#{@record.id}/update"
+		
+	else
+		@target+='create'
+	end
+
+%>
+
+<div id="form" class="x-hide-display">
+
+<%= form_for(@record,:url=>@target) do |f| %>
+  <% if @record.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@record.errors.count, "error") %> prohibited this setting from being saved:</h2>
+
+      <ul>
+      <% @record.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <% 
+	cols = @classname.columns_hash
+	for i in @config[:columns] 
+    c = cols[i.to_s]
+  	type = c.type if c
+
+    
+
+	type = @config[:fields][i.to_sym][:type] if @config[:fields] and @config[:fields][i.to_sym]
+
+	case type
+	when :string,:integer,:float 
+  %>
+  <div class="field">
+    <%= f.label i %>
+    <%= f.text_field i %>
+  </div>
+  <% when :text %>
+  <div class="field">
+    <%= f.label i %>
+    <%= f.text_area i %>
+  </div>
+  <% when :boolean %>
+  <div class="field">
+    <%= f.label i %>
+    <%= f.check_box i %>
+  </div>
+  <% when :datetime %>
+  <div class="field">
+    <%= f.label i %>
+    <%= f.datetime_select i, :order=>[:day,:month,:year] %>
+  </div>
+  <% when :date %>
+  <div class="field">
+    <%= f.label i %>
+    <%= f.date_select i, :order=>[:day,:month,:year] %>
+  </div>
+  <% when :time %>
+  <div class="field">
+    <%= f.label i %>
+    <%= f.time_select i %>
+  </div>
+  <% when :password_field %>
+  <div class="field">
+    <%= f.label i %>
+    <%= f.password_field i %>
+  </div>
+  <% when :select %>
+  <div class="field">
+    <%= f.label i %>
+<%
+	list = @config[:fields][i.to_sym][:list] 
+	list = list.collect{|j| [j.to_s,j.id] } if list.size>0 and list[0].kind_of? ActiveRecord::Base  
+%>
+
+    <%= f.select i,list %>
+  </div>
+<% else %>
+<div class="field">
+  <%= f.label i %><br />
+  <%= 'Does not support!! '+c.type.to_s %>
+</div>
+<% end %>
+  
+
+<% end %>
+<br/>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
+</div>
+
+
+<div id="form-panel">
+	
+</div>
+
+
+
+<script type="text/javascript" charset="utf-8">
+	Ext.onReady(function(){
+
+	    Ext.QuickTips.init();
+
+	var simple = new Ext.Panel({
+	        labelWidth: 75, // label settings here cascade unless overridden
+	        url:'<%=@pathname%>',
+	        frame:true,
+	        title: '<%=@classname%>',
+	        bodyStyle:'padding:5px 5px 0',
+	        width: 400,
+	        defaults: {width: 230},
+	        defaultType: 'textfield',
+			contentEl: 'form',
+			scroll:true
+        });
+
+	    simple.render('form-panel');
+	});
+</script>
+
+
+

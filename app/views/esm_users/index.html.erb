@@ -1,0 +1,7 @@
+<h1>ESM User Management</h1>
+<%=tabular :model=>%w{login email role},:data=>@users do |row,out| 
+	
+	out << link_to('Delete',:action=>"destroy",:id=>row.id)
+	out
+	end
+	%>

@@ -1,0 +1,20 @@
+
+<div class="field">
+  <%= f.label :title %>
+  <%= f.text_field :title, :onkeyup=>methodize("service_name"),:class=>tb_class%>
+</div>
+
+<div class="field">
+  <%= f.label :name %>
+  <%= f.text_field :name ,:class=>tb_class%>
+</div>
+
+<div class="field">
+  <%= f.label :extended %>
+  <%= f.text_field :extended ,:class=>tb_class%>
+</div>
+
+<div class="field">
+  <%= f.label :acl %>
+  <%= f.text_field :acl,:class=>tb_class %>
+</div>

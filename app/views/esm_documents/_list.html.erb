@@ -1,0 +1,11 @@
+<h1>Documents</h1>
+
+<%= tabular :model=>%w{id name document_type user_id project_id}, :data=>@project.documents do |row,out|
+	
+	out<<link_to("Show",{:action=>'show',:id=>row},:remote=>true)
+	out<<link_to("Edit",{:action=>'edit',:id=>row},:remote=>true)
+	out<<link_to("Delete",{:action=>'destroy',:id=>row},:remote=>true,:confirm=>'Are you sure?')	
+	out
+end %>
+
+<%= link_to "New Document", {:action => "new",:id=>@project},:remote=>true,:class=>bt_class %>

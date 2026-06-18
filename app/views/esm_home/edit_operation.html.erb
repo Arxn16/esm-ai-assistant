@@ -1,0 +1,8 @@
+
+<h1>Edit Operation</h1>
+<%= form_for(:operation,:url=>"edit_operation?id=#{@operation.id}") do |f| %>
+<br/>
+<%= hidden_field_tag :id, @operation.id %>
+<%= render :partial=> 'operation.html', :locals=>{:f=>f} %>
+<%= f.submit 'Update' %> | <%= link_to 'Cancel', :action=>'service',:id=>@service%>
+<% end %>

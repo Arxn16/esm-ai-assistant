@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0" />
+
+<link rel="stylesheet" href="/starlight/css/style.css" type="text/css" />
+
+<link rel="stylesheet" href="/starlight/css/style.gray.css" type="text/css" />
+
+
+<!--[if IE 9]>
+    <link rel="stylesheet" media="screen" href="/starlight/css/ie9.css"/>
+<![endif]-->
+<!--[if IE 8]>
+    <link rel="stylesheet" media="screen" href="/starlightcss/ie8.css"/>
+<![endif]-->
+
+<!--[if IE 7]>
+    <link rel="stylesheet" media="screen" href="/starlightcss/ie7.css"/>
+<![endif]-->
+
+<script type="text/javascript" src="/starlight/js/plugins/jquery-1.7.min.js"></script>
+<script type="text/javascript" src="/starlight/js/plugins/jquery.flot.min.js"></script>
+<script type="text/javascript" src="/starlight/js/plugins/jquery.flot.resize.min.js"></script>
+<script type="text/javascript" src="/starlight/js/plugins/jquery-ui-1.8.16.custom.min.js"></script>
+<script type="text/javascript" src="/starlight/js/custom/general.js"></script>
+<link rel="stylesheet" href="/dragdrop/opt.css">
+<script src="/dragdrop/dragdrop.js"></script>
+<!-- Google Map -->
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+
+<!--[if lt IE 9]>
+	<script src="http://css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script>
+<![endif]-->
+<meta charset="UTF-8">
+
+
+
+	<%= javascript_include_tag "application"  %>
+	<%= stylesheet_link_tag    "application" ,"elfinder","elfinder-theme" %>
+    
+	<%= csrf_meta_tag %>
+
+
+<%= render :partial=>'/layouts/kendoui'%>
+<!-- Content -->
+<%
+	p = {}
+	project_params = @current_project.get_params if @current_project 
+	p = project_params if project_params
+	title = (p['app_title']and p['app_title']!='')?p['app_title']:"ESM:Innovation as a Service"
+	bg = (p['app_bg_style']and p['app_bg_style']!='')?p['app_bg_style']:"#eee"
+	logo = (p['app_logo_url']and p['app_logo_url']!='')?p['app_logo_url']:'/esm/banner.png'
+	theme = (p['app_theme']and p['app_theme']!='')?p['app_theme']:'default'
+	
+%>
+<link href="/kendoui/source/styles/kendo.<%=theme%>.css" rel="stylesheet"/>
+
+<title><%= title %></title>
+
+</head>
+
+<body class="loggedin" style="background:<%=bg%>">
+
+
+                <div class="content k-content" style="padding-left:10px" >
+				<div id="content_panel" style="padding-left:0px" >
+			
+          	    <%= yield %><%= yield :content%>
+		
+		     	</div>
+                </div><!--content-->
+
+
+</body>
+</html>

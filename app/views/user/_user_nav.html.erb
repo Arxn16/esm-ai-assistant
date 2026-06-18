@@ -1,0 +1,21 @@
+
+
+<% if @current_user %>
+Howdy, 
+<%= link_to @current_user.login, :controller =>'user', :action => "profile" %>
+					
+			<!-- (
+					<%= link_to "Services", :controller => "services" %> |
+						<%= link_to "Project", :controller => "projects" %> |
+						<%= link_to "Group", :controller => "groups" %> |
+						<%= link_to "Account", :controller => "accounts" %> |
+						<%= link_to "Operations", :controller => "operations" %> | 
+						<%= link_to "Templates", :controller=> "templates" %> ) 
+						-->
+					|
+		<% if @current_project %>
+		<%= link_to @current_project, @current_project %> |
+		<% end %>				
+		<%= link_to "Logout",:controller=>'user' , :action=>'logout'%> 
+<% else %>
+<% end %>

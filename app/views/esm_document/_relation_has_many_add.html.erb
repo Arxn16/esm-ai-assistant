@@ -1,0 +1,191 @@
+<%
+    
+	has_one_model = Fields::RelationOne.new @document,@field,@record
+	table  = has_one_model.related_table
+	fields = has_one_model.related_fields
+	doc = has_one_model.related_document
+    # @index = params[:index]
+    @index = rand(999)
+	doc_name = doc.name
+	tmprecord = @record
+	@record = table.new		
+	tmpdoc = @document
+	tmpfield = @field
+	@prefix = "#{@document.name}-#{@field.column_name}-#{@record.id}-"
+	@prefix2 = "#{@field.id}-#{@record.id}-"
+	@document = doc
+	@document.project_id = tmpdoc.project_id
+	@selector = nil
+	
+	if @document.tree_data and @document.tree_data!=''
+	@tree = true
+	if params[:s_id]
+	
+	@selector = params[:s_id] 
+	@selector_value = params[:s_v]
+	
+	@record[@selector] = @selector_value
+	record = @record
+	
+	fid = tmpfield.id
+	
+	append_map = {}
+	append_fmap = {}
+	
+	selector = @selector
+            	
+            	related_map = {}
+            	selector_field = nil
+            	selector_field = doc.find_by_column_name selector
+            	if selector_field
+            	        selector_field.get_lov_options.each do |k|
+    	                related_map[k[0]]=k[1]
+    	                end
+    	        end
+    	
+            	related_data_node, related_fields_node, map, fmap = doc.get_root_format_node 
+
+
+									
+                                    id = @record.id
+                                    name = id
+                                    sublist = []
+                                    # record
+                                    # nmap = Marshal.load(Marshal.dump(map))
+                                    # nmap =  map
+                                    
+                                    if selector_field
+                                            selected_value = @selector_value
+                                            name = related_map[selected_value]
+											@record_name = name
+                                            
+                                            related_data_node[0][:items].each do |k|
+                                               if k[:id]==selector_field.id and map["#{k[:id]}|#{selected_value}"][:items]
+                                               sublist += (map["#{k[:id]}|#{selected_value}"][:items].collect{|i| map[i[:id]]}).deep_dup      
+                                               else
+                                               sublist << k.deep_dup
+                                               end
+                                            end
+                                          
+                                            
+                                            
+                                            # relocation
+                                            
+                                            for k in sublist
+                                            old = k[:id]
+                                            k[:id] = "#{fid}-#{id}-#{k[:id]}"
+                                            
+                                            append_map[k[:id]] =  map[old]
+                                            
+                                            append_fmap[k[:id]] = "#{tmpdoc.name}-#{tmpfield.column_name}-#{id}-#{fmap[old]}"        
+                                            
+                                            end
+                                            
+        
+                                    end
+                                    # count += 1 
+                                    # gastro-esophagus_abnormal-0-mass_site
+                                    
+                                    # append_fmap["#{i.id}-#{id}"] = "#{i.id}"        
+                                    
+                                    
+                                  obj = {text: name.strip, id: "#{fid}-#{id}" , spriteCssClass: "splashy-gem_okay",items:sublist}
+                                    
+								  append_map["#{fid}-#{id}"] = obj
+                                 
+                            
+                     # end
+	
+	else
+	 	
+		
+        # #######################################
+		# with out selector 
+        # ####################################### 	
+	
+	
+		fid = tmpfield.id
+
+		append_map = {}
+		append_fmap = {}
+
+	    related_map = {}
+    	
+		related_data_node, related_fields_node, map, fmap = doc.get_root_format_node 
+        id = @record.id
+	    name = id
+	    sublist = []
+	     
+              name =  doc.title
+
+              related_data_node[0][:items].each do |k|
+                 sublist << k.deep_dup
+              end
+
+
+
+              # relocation
+
+              for k in sublist
+        
+      		  old = k[:id]
+              k[:id] = "#{fid}-#{id}-#{k[:id]}"
+
+              append_map[k[:id]] =  map[old]
+
+              append_fmap[k[:id]] = "#{tmpdoc.name}-#{tmpfield.column_name}-#{id}-#{fmap[old]}"        
+
+              end
+
+
+
+              # puts "Append map = =============================="
+              # puts append_map.to_yaml
+              # puts "Append fmap = =============================="
+              # puts append_fmap.to_yaml
+
+      # count += 1 
+      # gastro-esophagus_abnormal-0-mass_site
+
+      # append_fmap["#{i.id}-#{id}"] = "#{i.id}"        
+
+
+    obj = {text: name.strip, id: "#{fid}-#{id}" , spriteCssClass: "splashy-gem_okay",items:sublist}
+
+    append_map["#{fid}-#{id}"] = obj
+
+
+	
+	
+		
+     end
+  	
+end
+	
+%><%= render :partial=>'/esm_documents/has_many_record' %>
+<% if @tree %>
+<script type="text/javascript" charset="utf-8">
+	$(document).ready(function() {
+		   
+	// append id of new record
+    vobj = $('#data-<%=tmpfield.column_name%>');
+	var v = eval(vobj.val())
+	v.push('<%=id%>')
+	vobj.val(JSON.stringify(v));
+	
+	// extend mapping value
+	jQuery.extend(map, <%=append_map.to_json.html_safe%>)
+	jQuery.extend(fmap, <%=append_fmap.to_json.html_safe%>)
+	
+	
+	// update data structure
+	fid = '<%=tmpfield.id%>'
+	field = map[fid]
+	div_id = fmap[fid]
+	if(div_id)
+	eval('data_'+div_id.replace(/-/g,'_')+"_update()")
+	
+	
+});
+</script>
+<% end %>

@@ -1,0 +1,18 @@
+<script>try{
+<%
+params[:update]=p[0][:update] if p[0][:update]
+unless params[:position]
+%>$('#<%=params[:update]%>').html("<%= escape_javascript(render(*p)) %>");
+<% else
+if params[:position].to_s=='after' %>
+$('#<%=params[:update]%>').append("<%= escape_javascript(render(*p)) %>");
+<% end %><% end %>
+<%= "alert('#{flash[:notice]}');" if flash[:notice] 
+flash[:notice]=nil if flash[:notice]
+%>
+}catch(err)
+{
+alert(err)
+}
+refresh_remote();
+</script>

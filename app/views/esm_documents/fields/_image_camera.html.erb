@@ -1,0 +1,1343 @@
+
+<link rel= "stylesheet" href = "/dragdrop/opt.css" type="text/css" />
+<%= hidden_field_tag name, value.to_json ,:id=>fid  unless @show %>
+<%
+ip="camera_image_#{field.id}"
+pip= "gallery_#{field.id}"
+p = {:alt=>'No images', :width=>220,:height=>160,:style=>"background-color:\#fff"}.merge(fparams)
+p[:id] = "#{ip}_img"
+record_id = "/#{Time.now.strftime('%Y-%m-%d')}-#{@record.id if @record}" if @record
+record_name = ''
+record_name = "/#{params[:record_name].gsub /\//, "-"}" if params[:record_name]
+
+path = "esm/#{@current_solution.name}/#{@document.project.name}#{record_name}/#{@document.name}#{record_id}/#{field.column_name}"
+
+%>
+<% if !@show 
+	
+	options = ''
+	options = "&ref_2=#{params[:ref_2]}" if params[:ref_2]
+	  	
+%>
+<div style="padding:8px">
+<table border='0' style="width:100%;">
+	<tr><td style='width:100px'>
+	
+		<span style="float:left"><%= link_to("Sort ", '#',:class=>'btn sort_btn') %></span>
+		
+		<span class="extra" style="float:left">&nbsp;|&nbsp;Select :&nbsp; </span>
+		<span class="extra" style="float:left"><%= link_to("All ", "javascript:select_all_image('#{field.id}',1)") %></span>
+		<span class="extra" style="float:left">&nbsp;,&nbsp;</span>
+		<span class="extra" style="float:left"><%= link_to("None", "javascript:select_all_image('#{field.id}',0)") %></span>
+		
+		<span style="float:right"><%= link_to('<i class="splashy-movie_play"></i>Snap Pictures'.html_safe, "/esm_image/#{@document.id}/snap?field_id=#{field.id}&p_id=#{@document.project.id}&path=#{path}&ref=#{record_name[1..-1]}#{options}",:target =>'_blank', :class=>'btn') %></span>
+		<span style="float:right" ><%= link_to('<i class="splashy-folder_classic_add"></i>Upload Pictures'.html_safe, "javascript:openUploadWindow()" ,:class=>'btn') %> &nbsp; </span>
+		<span style="float:right" ><%= link_to('<i class="splashy-image_modernist"></i>Take Picture (iOS)'.html_safe, "javascript:openUploadWindowCamera()" ,:class=>'btn') %> &nbsp; </span>
+		
+		<div class="clear"></div>
+</td></tr></table>
+</div>
+
+<% else %>
+
+<table border='0' style="width:100%;">
+	<tr><td style='width:100px'>
+		<span style="float:right">
+		<%= link_to("Download", "/esm_image/#{@document.id}/download?record_id=#{@record.id}&field_id=#{field.id}&p_id=#{@document.project.id}&path=#{path}&ref=#{record_name[1..-1]}" ,:target =>'_blank')%></span>	
+		<div class="clear"></div>
+</td></tr></table>
+
+<% end %>
+<div style="width:100%;border:0px solid yellow;">
+	
+	<%
+	
+	if value and value!=''
+	 		model = @document.project.load_model[:attachment]
+			t=value
+			@attachments=t.collect{|i| model.find(i)}.compact
+		 	@field = field
+	
+	unless @show 
+		
+		k = (@attachments.size.to_f / 4).ceil
+		if k <=2
+			n = k
+			m=0
+		else
+			n = 2
+			m = k-2
+			m = 7 if m > 7 
+		end
+			
+		
+		
+		
+	%>
+	
+	
+	<style type="text/css" media="screen">
+		#container {
+		    position: relative;
+
+		}
+
+		#infoi {
+		    width: 0px;
+		    height: 100%;
+		    position: absolute;
+		    top: 15px;
+		    left: 5px;
+			overflow:hidden;
+
+		}
+		#infoi2 {
+		    width: 0px;
+		    height: 100%;
+		    position: absolute;
+		    top: <%=15+130*n%>px;
+		    left: 5px;
+			overflow:hidden;
+		}
+		#infoi {
+		    z-index: 10;
+		}
+	</style>
+	
+	
+	<div id="container">
+	    <div id="infoi" style="height:<%=130*n %>px;border:2px solid #f99;z-index:1;"></div>
+		<% if m >0 %><div id="infoi2" style="height:<%=130*m %>px;border:2px solid #99f;z-index:1;"></div><% end %>
+	</div>
+	<% end %>
+	
+	<img src='/dragdrop/images/down16.png' id='indicator'/>
+	<div id='pictzone' class='<%=tb_class%>' style="border:1px solid #aaa;width:700px" >
+	    
+		<%
+		
+			@name = "#{@document.name}[#{@field.column_name}]"		
+		%><%= render :partial=>'/esm_documents/fields/image_camera_item'%>
+	
+	</div>
+	<% end %>
+	<div class="clear"></div>
+	
+	
+	
+
+<% if !@show %>
+	<div id='bottombar'>
+		
+	<span class="right">
+	
+	<%= link_to("Recover Pictures", "/esm_image/#{@document.id}/recover?field_id=#{field.id}&p_id=#{@document.project.id}&path=#{path}",:target =>'_blank') %>
+	</span>
+	
+	
+	<a href='javascript:remove_image("<%=field.id%>")' class="right">
+	<div style="float:left" id='trash' ondragover='traskOver()' ondragleave='trashOut()' ondrop='trashDrop()'>&nbsp;
+	</div>
+	</a>
+	
+	
+	
+	<span style="float:left;padding:10px;">
+		<%= link_to("Sort", "\#",:style=>"",:class=>'btn sort_btn') %>	
+	</span>
+	
+
+	<div class="clear"></div>
+	</div>
+<% end %>
+
+
+
+<!-- Upload window -->
+<div id="search-<%=fid%>" style="display:none">	
+<% unless @show %>
+	<input name="upload[file]" id="_<%=fid%>" type="file" accept="image/*" capture="camera"/>
+<% end %>
+</div>
+<div id="search-<%=fid%>-camera" style="display:none">	
+<% unless @show %>
+	<input name="upload[file]" id="_<%=fid%>_camera" type="file" accept="image/*" capture="camera"/>
+<% end %>
+</div>
+
+
+</div>
+
+<script type="text/javascript" charset="utf-8">
+	
+	function update_image(){
+		console.log('not defined');
+	}
+	
+    function remove_image(fid){
+		var list = []
+		$('.img_library_'+fid+"").each(function(index){
+		   list.push($(this))
+		});
+		for(var i=list.length-1;i>=0;i--){
+		
+		 obj = list[i];
+		    pictzone = $('#pictzone')
+		    if(obj.attr('checked')=='checked'){
+				j = $(obj.parent().parent().parent())
+				//alert(''+index+' '+j.attr('id'))
+				obj.removeAttr('checked')
+				j.remove();
+			}
+			
+		}
+	   window.scrollTo(0,$('#pictzone').offset().top-100);
+	}
+	
+	function compareImage(a, b) {
+		
+	  return a[0] - b[0];
+	  
+	}
+	
+	function sort_image(fid){
+		var list = []
+		$('.img_library_'+fid+"").each(function(index){
+			
+			v = parseInt($(this).val())
+			if(v>0){
+				list.push([v,$(this)])
+			}
+			
+		});
+		
+		sorted = list.sort(compareImage)
+		
+		for(var i=sorted.length-1;i>=0;i--){
+		
+		 obj = sorted[i][1];
+		    pictzone = $('#pictzone')
+		    // if(obj.attr('checked')=='checked'){
+				j = $(obj.parent().parent().parent())
+				//alert(''+index+' '+j.attr('id'))
+				// obj.removeAttr('checked')
+				pictzone.prepend(j)
+			// }
+			
+		}
+	   window.scrollTo(0,$('#pictzone').offset().top-100);	
+	   update_image();
+	}
+	
+	function sort_image_old(fid){
+		var list = []
+		$('.img_library_'+fid+"").each(function(index){
+		   list.push($(this))
+		});
+		for(var i=list.length-1;i>=0;i--){
+		
+		 obj = list[i];
+		    pictzone = $('#pictzone')
+		    if(obj.attr('checked')=='checked'){
+				j = $(obj.parent().parent().parent())
+				//alert(''+index+' '+j.attr('id'))
+				// obj.removeAttr('checked')
+				pictzone.prepend(j)
+			}
+			
+		}
+	   window.scrollTo(0,$('#pictzone').offset().top-100);	
+	}
+	
+	
+	
+
+
+
+
+
+	function select_all_image(fid,all){
+		var list = []
+		$('.img_library_'+fid+"").each(function(index){
+		   list.push($(this))
+		});
+		
+		for(var i= 0;i<list.length;i++){
+		
+		 	obj = list[i];
+			
+			// if(all=='1')
+	// 		obj.attr('checked','checked');
+	// 		else
+	// 		obj.removeAttr('checked')
+			
+			if(all=='1'){
+				
+				obj.val(i+1)
+				obj.addClass("btn-success")
+				iid = obj.attr('iid')
+				$("#val-img-"+iid).val("1")
+				
+			}else{
+				
+				obj.val(" ")
+				obj.removeClass("btn-success")
+				iid = obj.attr('iid')
+				$("#val-img-"+iid).val("")
+				
+			}
+			
+				
+				
+		}
+	   window.scrollTo(0,$('#pictzone').offset().top-100);	
+	   update_image();
+	}
+
+
+<% unless @show
+	
+	ssid = rand(99999999)
+	ssid = Time.now.to_i
+	ref = params[:ref]
+	ref = params[:record_name] if params[:record_name]
+%>
+
+
+function onSuccess(e) {
+ 	alert("Status: " + e.response.status);
+}
+
+
+
+
+ $(document).ready(function() {
+		 
+
+	console.log("define upload 1")
+		
+     $("#_<%=fid%>").kendoUpload({
+		multiple:true,
+         async: {
+             saveUrl: "/esm_attachments/<%=@document.id%>/upload.json?p_id=<%=@document.project.id%>&field_id=<%=@field.id%>&ssid=<%=ssid %>&ref=<%=ref%>",
+             removeUrl: "/esm_attachments/<%=@document.id%>/remove.json?field_id=<%=@field.id%>&value=<%=value%>",
+             autoUpload: true
+         },
+		success: function(e){
+			//alert(e.response.id)
+			
+		$.ajax({
+                url: '/esm_image/<%=@document.id%>/attach_to_gallery?p_id=<%=@document.project.id%>&field_id=<%=@field.id%>&upload=true&a_id='+e.response.id,
+                data: [],
+                // dataType: 'script',
+                type: 'GET',
+                error: function (xhr, status, error) {
+					alert(error);
+                }
+            }).done(function(data){
+				console.log(data)
+				$(data).appendTo('#pictzone');
+				
+				// doc = document;
+	// 			ele = doc.getElementById('pictzone');
+	// 			newn = doc.createElement("div");
+	// 			newn.innerHTML = data;
+	//
+	// 			for(var i=0 ; i < newn.childNodes.length; i++){
+	// 				console.log(newn.childNodes[i])
+	// 				// alert(newn.childNodes[i].textContent)
+	// 				// alert(newn.childNodes[i])
+	// 				ele.insertBefore(newn.childNodes[i],ele.lastChild);
+	// 			}
+				 // document.body.appendChild(newn)
+			});
+		}
+	});
+
+
+     $("#_<%=fid%>_camera").kendoUpload({
+		multiple:false,
+         async: {
+             saveUrl: "/esm_attachments/<%=@document.id%>/upload.json?p_id=<%=@document.project.id%>&field_id=<%=@field.id%>&ssid=<%=ssid %>",
+             removeUrl: "/esm_attachments/<%=@document.id%>/remove.json?field_id=<%=@field.id%>&value=<%=value%>",
+             autoUpload: true
+         },
+		success: function(e){
+			//alert(e.response.id)
+			
+		$.ajax({
+                url: '/esm_image/<%=@document.id%>/attach_to_gallery?p_id=<%=@document.project.id%>&field_id=<%=@field.id%>&upload=true&a_id='+e.response.id,
+                data: [],
+                type: 'GET',
+                error: function (xhr, status, error) {
+					alert(error);
+                }
+            }).done(function(data){
+					$(data).appendTo('#pictzone');
+			});
+		}
+	});
+
+
+
+   });
+<% end %>
+   
+   
+   
+   
+</script>
+
+<script type="text/javascript" charset="utf-8">
+
+	function openUploadWindow(){
+		$(document).ready(function(){
+		    var window = $("#search-<%=fid%>").kendoWindow({
+		        height: "100px",
+		        title: "<%=field.name%> Attachment",
+		        visible: true,
+		        width: "300px"
+		    }).data("kendoWindow");
+		});
+		var window = $("#search-<%=fid%>").data("kendoWindow");
+	    window.center();
+	    window.open();
+		$("#search-<%=fid%>").css("display", "block")
+	}
+	
+	function openUploadWindowCamera(){
+		$(document).ready(function(){
+		    var window = $("#search-<%=fid%>-camera").kendoWindow({
+		        height: "100px",
+		        title: "<%=field.name%> Camera",
+		        visible: true,
+		        width: "300px"
+		    }).data("kendoWindow");
+		});
+		var window = $("#search-<%=fid%>-camera").data("kendoWindow");
+	    window.center();
+	    window.open();
+		$("#search-<%=fid%>-camera").css("display", "block")
+	}
+	function addAttachment(ssid){
+		//alert(ssid);
+		$('#test').html('ssid is '+ssid)
+		
+		$.ajax({
+                url: '/esm_image/<%=@document.id%>/attach_to_gallery?p_id=<%=@document.project.id%>&field_id=<%=field.id%>&upload=true&ssid='+ssid,
+                data: [],
+                type: 'GET',
+                error: function (xhr, status, error) {
+					alert(error)
+                }
+            }).done(function(data){
+				$(data).appendTo('#pictzone');
+			});
+	}
+	$('.sort_btn').click(function(event){
+		// alert('sort')
+		sort_image('<%=field.id%>')
+		 event.preventDefault();
+	})
+</script>
+ 
+
+
+<style>
+.modal{
+        z-index:200
+}
+.modal-backdrop{
+        z-index:100
+}
+</style>
+
+<div class="modal hide" id="select-image-modal" style="width:660px" >
+<div class="modal-header">
+<h3>Select Images 
+
+<a href="#"  style="float:right" class="btn" data-dismiss="modal">Close</a><span style="float:right">&nbsp;&nbsp;</span>
+<a href="#"  style="float:right" class="btn  btn-info" data-dismiss="modal"  onclick="doSelect()">Submit</a><span style="float:right">&nbsp;&nbsp;</span>
+<a href="#" id="select-btn" style="float:right" class="btn" data-dismiss=""  onclick="doAdd()">Add Image</a> 
+<a href="#" id="remove-btn" style="float:right" class="btn" data-dismiss=""  onclick="doRemove()">Remove Image</a> 
+<a href="#" id="reset-btn" style="float:right" class="btn" data-dismiss=""  onclick="doReset()">Reset</a> 
+
+
+</h3>
+</div>
+
+<div class="modal-body" id="modal-selection-x" style="border-bottom:1px solid #ccc;">
+
+	<ul id="picmodal-selection"  style="list-style-type: none; margin: 0; padding: 0;">
+		
+		
+	</ul>
+</div>
+
+
+<div class="modal-body" id="modal-body" style="height:300px;overflow:scroll;" >
+
+</div>
+<div class="modal-footer">
+<span style="float:left">* Double clicks to zoom the image</span>
+</div>
+
+</div>
+
+<style>
+.navitem
+{
+         
+    width: 150px;
+    /* padding: 5px; */
+}
+
+.selected
+{
+    border: 1px solid red;
+    width: 146px;
+    /* padding: 4px */
+}
+#picmodal-selection li{
+	width:150px;
+}
+
+</style>
+
+<script type="text/javascript" charset="utf-8">
+ 
+field_idx =""; 
+
+function pressKey(){
+alert("press")
+ }
+
+function doSelect(){
+   list = []
+   
+   body = $("#piczone-"+field_idx);
+   body.empty();
+   	
+   active_list = [];
+    $('.image-selected').each(function(){
+		active_list.push($(this).attr('idx'));
+    })
+
+
+   for(i in active_list){
+      id = active_list[i]
+	  path =  path = main_path+id+".jpg"
+      // body.append('<div style="width:150px;float:left;margin:5px"><center><img id="partial-'+id+'" src="'+path+'" border="0"   height="90px" align="absmiddle" ></center></div>');
+
+		
+		template = $("#esm-select-tempalte").clone();
+		template.css('display','block')
+		
+		template.attr("id",'choicc-'+id)
+		
+		img = template.find('img')
+		
+		img.attr('id','choice-s-'+id)
+		
+		img.attr('src',path+"?thumb=1")
+		img.attr('idx',id)
+		img.click(function(){
+			doSelectObj2($(this).attr('idx'));
+		});
+		
+		txt = template.find('input')
+		
+		old = $('#img_comment_ui_'+id).val()
+		txt.val(old)
+		txt.attr('idx',id)
+		txt.change(function(){
+			 $('#img_comment_ui_'+$(this).attr('idx')).val($(this).val())
+			 $('#img_comment_ui_'+$(this).attr('idx')).kendoComboBox();
+			 $('#img_comment_'+$(this).attr('idx')).val($(this).val())
+			
+		})
+		
+		body.append(template);
+
+
+    }
+
+
+
+   $('#'+field_idx).val(JSON.stringify(active_list))
+    
+  
+}
+
+last_idx = -1;
+last_select = null;
+
+function getImg(list, index){
+  for(i in list){
+   if(list[i]==index)
+	return i	
+  }
+}
+
+
+
+opt = null;
+full_list = null
+current_list = null
+active_list = null
+main_path = ''
+<% if @current_project %>
+main_path = '/content/esm/<%=@current_project.esm.name%>/<%=@current_project.name%>/content/<%=@document.name%>/<%=@field.column_name%>/'
+<% end %>
+
+function buildCurrentList(){
+	
+	
+	body = $("#modal-body")
+    body.empty();
+    
+    for(i in current_list){
+        id = current_list[i]
+	
+        path =  path = main_path+id+".jpg"
+		body.append("<a href='"+path+"' ondblclick='return hs.expand(this)' onclick='return false' id='choicc-"+id+"'  ><img id='choice-c-"+id+"' src='"+path+"?thumb=1' class='navitem' style='margin:1px'  onclick='doSelectObj(\""+id+"\")'  /></a>");
+    }
+}
+
+
+
+function doList(fid){
+	
+  //array= eval($('#'+field_idx).val())
+  
+  field_idx = fid;
+  array = $("#"+field_idx).val()
+  active_list = []  
+  if(array){
+	active_list = eval(array)
+  }
+// reset active list
+  $("#picmodal-selection").empty()
+ 
+
+ if(full_list == null){
+  full_list = []
+  current_list = []  
+
+  $('.eachpicimg').each(function(i,obj){
+    full_list.push(obj.id)
+    // alert(getImg(active_list,obj.id))
+    if(getImg(active_list,obj.id)==null)
+    current_list.push(obj.id)
+  });
+  }else{
+  
+  list = []
+  for(i in active_list){
+	if(getImg(current_list,active_list[i]))
+	 current_list.splice(getImg(current_list,active_list[i]),1)
+  } 
+  
+  	
+}
+buildCurrentList();
+buildActiveList();
+}
+
+function doSelectObj(idx){
+	   
+		 last_idx = idx
+		 obj = $('#choice-c-'+idx)
+		 obj.addClass('navitem selected')  
+		 if(last_select!=null){
+          last_select.removeClass('selected');
+         }
+         last_select = obj;
+        $('#select-btn').addClass('btn-info')
+        $('#remove-btn').removeClass('btn-info')
+         opt=0
+}
+
+function doSelectObj2(idx){
+	 last_idx = idx
+	 obj = $('#choice-s-'+idx)
+	 obj.addClass('navitem selected')  
+	 if(last_select!=null){
+      last_select.removeClass('selected');
+     }
+     last_select = obj;
+     $('#select-btn').removeClass('btn-info')
+    $('#remove-btn').addClass('btn-info')
+    opt=1
+}
+
+
+function doAdd(){
+  if(last_select!=null&&opt==0){
+      active_list.push(last_idx)
+	  buildActiveList();
+	  current_list.splice(getImg(current_list,last_idx),1)
+	  last_select.remove()
+ 	  $('#select-btn').removeClass('btn-info')
+      last_select=null
+  	  last_idx=null
+}        
+}
+function doRemove(){
+  if(last_select!=null&&opt==1){
+      current_list.unshift(last_idx)
+	  buildCurrentList();
+	  active_list.splice(getImg(active_list,last_idx),1)
+	  buildActiveList();
+	  last_select.remove()
+ 	  $('#remove-btn').removeClass('btn-info')
+      last_select=null
+  	  last_idx=null
+}        
+}
+function doReset(){
+	
+	full_list = null
+	
+	doList(field_idx)
+}
+
+
+
+function buildActiveList(){
+	
+	
+	body = $("#picmodal-selection")
+   
+    list = [];
+    
+    for(i in active_list){
+        id = active_list[i]
+	
+        path =  path = main_path+id+".jpg"
+
+	// body.append("<a href='"+path+"' ondblclick='return hs.expand(this)' onclick='return false' id='choicc-"+id+"'  ><img id='choice-s-"+id+"' src='"+path+"?thumb=1' class='navitem' style='margin:1px'  onclick='doSelectObj2(\""+id+"\")'  /></a>");
+		
+		template = $("#esm-select-tempalte").clone();
+		template.css('display','block')
+		
+		template.attr("id",'choicc-'+id)
+		template.addClass("image-selected");
+		
+		template.attr('idx',id)
+		
+		img = template.find('img')
+		
+		img.attr('id','choice-s-'+id)
+		
+		img.attr('src',path+"?thumb=1")
+		img.attr('idx',id)
+		img.click(function(){
+			doSelectObj2($(this).attr('idx'));
+		});
+		
+		txt = template.find('input')
+		
+		old = $('#img_comment_ui_'+id).val()
+		txt.val(old)
+		txt.attr('idx',id)
+		txt.change(function(){
+			 $('#img_comment_ui_'+$(this).attr('idx')).val($(this).val())
+			 $('#img_comment_ui_'+$(this).attr('idx')).kendoComboBox();
+			 $('#img_comment_'+$(this).attr('idx')).val($(this).val())
+		})
+		
+		list.push(template)
+
+
+    }
+
+    body.empty();
+
+    for(i in list){
+        o = list[i];
+	    body.append(o)
+	}
+
+
+
+
+}
+
+
+ $(document).ready(function() {
+	// $('#select-image-modal').show();
+    $('#select-image-modal').appendTo($('body'));
+	
+
+	
+});
+
+$( function() {
+  $( "#picmodal-selection" ).sortable();
+  $( "#picmodal-selection" ).disableSelection();
+} );
+
+</script>
+
+<li id="esm-select-tempalte" style="width:155px;border:0px solid;display:none;float:left">
+	<center >	<a href='' ondblclick='return hs.expand(this)' onclick='return false' id='choicc-""'  ><img id='choice-s-"+id+"' src='' class='navitem eachpicimgx'   align='absmiddle' style='margin:1px'  /></a>
+<%=text_field_tag "title","", :style=>'width:100px'%></center>
+	
+</li>
+
+
+
+
+<div class="modal hide fade" id="esm-img-editor" aria-hidden="true" style="display: none;z-index:2000">
+<div class="modal-header">
+	<button class="close" data-dismiss="modal">×</button>
+	<h3>Image Editor</h3>
+</div>
+<div class="modal-body">
+<div class="row-fluid">
+	<div class="span12">	
+			<div id="esm-image-editor" style="">
+	</div>
+			<div id="esm-image-editor-buffer" style="display:none" >
+	</div>
+</div>
+<div class="row-fluid">
+	<div class="span12">
+	<div id="sidebarx">
+		
+		<div class="colorButtons">
+		
+			<input type="color" id="colorpicker" value="#337dfe" class="colorpicker">
+		</div>
+		
+		<div class="buttonSize">
+				<span>Size (<span id="showSize">3</span>)</span>
+			<input type="range" min="1" max="10" value="2" step="1" id="controlSize" style="margin:0px">
+		</div>
+		
+		
+		<div class="colorButtons" style="display:none" >
+			<input type="color" value="#ffffff" id="bgcolorpicker" class="colorpicker">
+		</div>
+		
+		<div class="toolsButtons">
+
+			<button id="eraser"   style="display:none" class="btn btn-default"><span class="glyphicon glyphicon-erase" aria-hidden="true"></span></button>
+		</div>
+
+	
+
+		<div class="canvasSize" style="display:none">
+
+			<div class="input-group">
+				<span class="input-group-addon">X</span>
+				<input type="number" id="sizeX" class="form-control" placeholder="sizeX" value="1920" class="size">
+			</div>
+			<div class="input-group">
+				<span class="input-group-addon">Y</span>
+				<input type="number" id="sizeY" class="form-control" placeholder="sizeY" value="1080" class="size">
+			</div>
+			<input type="button" class="updateSize btn btn-success" value="Update" id="canvasUpdate">
+		</div>
+		<div class="Storage" style="display:none">
+			<h3>Storage</h3>
+			<input type="button" value="Save" class="btn btn-warning" id="save">
+			<input type="button" value="Load" class="btn btn-warning" id="load">
+			<input type="button" value="Clear" class="btn btn-warning" id="clearCache">
+		</div>
+		<div class="extra">
+	
+		</div>
+		
+	</div>
+
+		</div>
+	
+</div>
+  
+
+	</div>
+	<div class="modal-footer">
+		<a id="emr-editor-save" class="btn btn-warning">Download</a>
+		
+		<a id="esm-editor-clear" href="#" class="btn btn-danger" style="float:left"> 
+		<span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>Reset
+		</a>
+		<a id="esm-editor-restore" href="#" class="btn btn-danger" style="float:left"> 
+		<span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>Restore
+		</a>
+		<a id="emr-editor-finish" class="btn btn-info">Finish</a>
+		
+		<a href="#" class="btn" style="float:left" data-dismiss="modal">Close</a>
+	</div>
+</div> 
+</div>
+
+  
+  <style>
+
+
+
+	  	/* hs.wrapperClassName = 'colored-border' */
+	  	.colored-border {
+	  		background: white;
+	  	}
+	  	.colored-border .highslide-image {
+	  		border: 0px solid green;
+	  	}
+	  	.colored-border .highslide-caption {
+	  		border: 2px solid green;
+	  		padding:5px;
+	  		border-top: none;
+	  	}
+	
+	
+	  
+	  .colorButtons {
+			display: inline-block;
+		
+		}
+
+		canvas {
+			cursor: crosshair;
+		}
+
+		div#sidebarx {
+/*			position: absolute;*/
+		
+			width: 100%;
+			
+		
+		}
+		
+		 .sidebarx input{
+
+			height:40px;
+			width:50px;
+		}
+
+		canvas#canvas {
+			width:100%;
+			 background:transparent;
+		}
+		
+		canvas#canvas_bg {
+			width:100%;
+		}
+		canvas#canvas_final {
+			width:100%;
+		}
+			
+	   .buttonSize {
+	 	   		display: inline-block;
+				width:100px;
+				margin-right:10px;
+	   }
+	   
+	   .buttonSize input{
+	 	   	
+				width:100px;
+				
+	   }
+	   
+	   
+	   .toolsButtons {
+	   		display: inline-block;
+	   }
+		.toolsButtons .btn {
+			height:35px;
+			width:50px;
+		}
+
+		.sizeButtons .btn {
+			display: inline-block;
+		}
+
+		.colorpicker {
+			background: transparent;
+			width: 50px;
+			height:35px;
+			margin:0px;
+		}
+		
+		.extra{
+			display: inline-block;
+		}
+		
+		</style>
+		<script>
+			
+		// SETTING ALL VARIABLES
+
+			var isMouseDown=false;
+			
+			var canvas_final = document.createElement('canvas');
+			var canvas_bg = document.createElement('canvas');
+			var canvas = document.createElement('canvas');
+			
+			var body = document.getElementById("esm-image-editor");
+			// document.getElementById("demo");
+			
+			var w = 517
+			
+			var ctx_final = canvas_final.getContext('2d');
+			var ctx_bg = canvas_bg.getContext('2d');
+			var ctx = canvas.getContext('2d');
+			
+			
+			var linesArray = [];
+			currentSize = 3;
+			var currentColor = "#337dfe";
+			var currentBg = "white";
+
+			var editor_img_id = "";
+
+			// INITIAL LAUNCH
+
+			// createCanvas();
+
+			// BUTTON EVENT HANDLERS
+
+			document.getElementById('canvasUpdate').addEventListener('click', function() {
+				createCanvas();
+				redraw();
+			});
+			document.getElementById('colorpicker').addEventListener('change', function() {
+				currentColor = this.value;
+			});
+			document.getElementById('bgcolorpicker').addEventListener('change', function() {
+				ctx.fillStyle = this.value;
+				ctx.fillRect(0, 0, canvas.width, canvas.height);
+				redraw();
+				currentBg = ctx.fillStyle;
+			});
+			document.getElementById('controlSize').addEventListener('change', function() {
+				currentSize = this.value;
+				document.getElementById("showSize").innerHTML = this.value;
+			});
+			document.getElementById('emr-editor-save').addEventListener('click', function() {
+				downloadCanvas(this, 'canvas-final', 'edited.jpg');
+			}, false);
+			document.getElementById('eraser').addEventListener('click', eraser);
+			document.getElementById('esm-editor-clear').addEventListener('click', esm_editor_clear);
+			document.getElementById('esm-editor-restore').addEventListener('click', esm_editor_restore);
+			document.getElementById('save').addEventListener('click', save);
+			document.getElementById('load').addEventListener('click', load);
+			document.getElementById('clearCache').addEventListener('click', function() {
+				localStorage.removeItem("savedCanvas");
+				linesArray = [];
+				// console.log("Cache cleared!");
+			});
+
+			// REDRAW 
+
+			function redraw() {
+					for (var i = 1; i < linesArray.length; i++) {
+						ctx.beginPath();
+						ctx.moveTo(linesArray[i-1].x, linesArray[i-1].y);
+						ctx.lineWidth  = linesArray[i].size;
+						ctx.lineCap = "round";
+						ctx.strokeStyle = linesArray[i].color;
+						ctx.lineTo(linesArray[i].x, linesArray[i].y);
+						ctx.stroke();
+					}
+			}
+
+			// DRAWING EVENT HANDLERS
+
+			canvas_final.addEventListener('mousedown', function() {mousedown(canvas_final, event);});
+			canvas_final.addEventListener('mousemove',function() {mousemove(canvas_final, event);});
+			canvas_final.addEventListener('mouseup',mouseup);
+
+			// CREATE CANVAS
+			// const image = document.getElementById('img');
+
+			function esm_editor_clear(){
+				// var img = document.getElementById("img");
+	
+				ctx.clearRect(0,0,1920,1080)	
+				ctx_final.drawImage(canvas_bg, 0, 0,w, w/1920*1080);
+				
+				return false;
+				
+			}
+			
+		
+
+			function createCanvas() {
+				
+			
+				
+				// alert($('#esm-image-editor').width())
+				
+				s = 1920.0/w
+				
+				canvas_final.id = "canvas_final";
+				canvas_final.width = parseInt(document.getElementById("sizeX").value);
+				canvas_final.height = parseInt(document.getElementById("sizeY").value);
+				canvas_final.style.zIndex = 1;
+				ctx_final.scale(s, s)
+				
+				canvas_bg.id = "canvas_bg";
+				canvas_bg.width = parseInt(document.getElementById("sizeX").value);
+				canvas_bg.height = parseInt(document.getElementById("sizeY").value);
+				canvas_bg.style.zIndex = 5;
+				ctx_bg.scale(s, s)
+				
+				canvas.id = "canvas";
+				canvas.width = parseInt(document.getElementById("sizeX").value);
+				canvas.height = parseInt(document.getElementById("sizeY").value);
+				canvas.style.zIndex = 8;
+				canvas.style.position = "";
+				canvas.style.border = "0px solid";
+				
+				canvas_final.style.position = "";
+				canvas_final.style.border = "1px solid";
+				
+				// ctx.fillStyle = 'blue';
+				// ctx.fillRect(0, 0, canvas.width, canvas.height);
+				ctx_final.fillStyle = 'white';
+				ctx_final.fillRect(0, 0, canvas.width, canvas.height);
+				// ctx.globalAlpha = 0.1;
+				ctx.scale(s, s)
+				
+				// ctx_final.drawImage(canvas_bg, 0, 0);
+  			  // ctx_final.drawImage(canvas, 0, 0,532, 532/1920*1080);
+					body.appendChild(canvas_final);
+			
+				
+				// body.appendChild(canvas);
+				
+				if(editor_img_id.length>0){
+					
+				
+					image = document.getElementById(editor_img_id);
+				    var img = new Image(); 
+				    img.src =  image.src.replace("&thumb=1","") 
+					
+					document.getElementById('esm-image-editor-buffer').appendChild(img); 
+					
+					img.addEventListener('load', e => {
+						
+					  ctx_bg.drawImage(img,0,0,w,w/1920*1080);
+	    			  ctx_final.drawImage(canvas_bg, 0, 0,w, w/1920*1080);
+					  
+					});		  
+							  
+					// image = document.getElementsByClassName(highslide-image)[0];
+					
+					
+				}
+				
+				
+  			 
+				
+				
+				
+			}
+
+			// DOWNLOAD CANVAS
+
+			function downloadCanvas(link, canvas, filename) {
+				link.href = document.getElementById('canvas_final').toDataURL('image/jpeg', 0.8);
+				link.download = filename;
+			}
+
+			// SAVE FUNCTION
+
+			function save() {
+				localStorage.removeItem("savedCanvas");
+				localStorage.setItem("savedCanvas", JSON.stringify(linesArray));
+				// console.log("Saved canvas!");
+			}
+
+			// LOAD FUNCTION
+
+			function load() {
+				if (localStorage.getItem("savedCanvas") != null) {
+					linesArray = JSON.parse(localStorage.savedCanvas);
+					var lines = JSON.parse(localStorage.getItem("savedCanvas"));
+					for (var i = 1; i < lines.length; i++) {
+						ctx.beginPath();
+						ctx.moveTo(linesArray[i-1].x, linesArray[i-1].y);
+						ctx.lineWidth  = linesArray[i].size;
+						ctx.lineCap = "round";
+						ctx.strokeStyle = linesArray[i].color;
+						ctx.lineTo(linesArray[i].x, linesArray[i].y);
+						ctx.stroke();
+					}
+					// console.log("Canvas loaded.");
+				}
+				else {
+					console.log("No canvas in memory!");
+				}
+			}
+
+			// ERASER HANDLING
+
+			function eraser() {
+				currentSize = 50;
+				currentColor =  "blue";
+			}
+
+			// GET MOUSE POSITION
+
+			function getMousePos(canvas, evt) {
+				var rect = canvas.getBoundingClientRect();
+				return {
+					x: evt.clientX - rect.left,
+					y: evt.clientY - rect.top
+				};
+			}
+
+			// ON MOUSE DOWN
+
+			function mousedown(canvas, evt) {
+				var mousePos = getMousePos(canvas, evt);
+				isMouseDown=true
+				var currentPosition = getMousePos(canvas, evt);
+				ctx_final.moveTo(currentPosition.x, currentPosition.y)
+				ctx_final.beginPath();
+				ctx_final.lineWidth  = currentSize;
+				ctx_final.lineCap = "round";
+				ctx_final.strokeStyle = currentColor;
+
+			}
+
+			// ON MOUSE MOVE
+
+			function mousemove(canvas, evt) {
+				
+				if(isMouseDown){
+					var currentPosition = getMousePos(canvas, evt);
+					// console.log('move '+currentPosition.x+", "+currentPosition.y)
+					ctx_final.lineTo(currentPosition.x, currentPosition.y)
+					ctx_final.stroke();
+					store(currentPosition.x, currentPosition.y, currentSize, currentColor);
+	
+					
+				}
+				
+			}
+
+			// STORE DATA
+
+			function store(x, y, s, c) {
+				var line = {
+					"x": x,
+					"y": y,
+					"size": s,
+					"color": c
+				}
+				linesArray.push(line);
+			}
+
+			// ON MOUSE UP
+
+			function mouseup() {
+				isMouseDown=false
+				store()
+			}
+			
+			<%
+			p_id = @document.project.id
+			doc_id = @document.id
+
+			%>
+	
+	
+	function esm_editor_restore(){
+				// var img = document.getElementById("img");
+	
+				att_id  = editor_img_id
+			    // Sending the image data to Server
+			    $.ajax({
+			        type: 'POST',
+			        url: '/esm_image/<%=doc_id%>/snap_restore?p_id=<%=p_id%>&&att_id='+att_id,
+			        contentType: 'application/json; charset=utf-8',
+			        dataType: 'json',
+			        success: function (msg) {
+			            // alert("Done, Picture Restore.");
+						$('#esm-img-editor').modal('hide');
+				   
+					  
+						$('.highslide-image').each(function(){
+						    var url = $(this).attr("src");
+						    $(this).attr("src", url + `?v=${new Date().getTime()}`);
+						})   
+					   
+					   
+						$('#'+editor_img_id).each(function(){
+						    var url = $(this).attr("src");
+						    $(this).attr("src", url + `?v=${new Date().getTime()}`);
+						}) 
+					
+						$('#F'+editor_img_id).each(function(){
+						    var url = $(this).attr("href");
+						    $(this).attr("href", url + `?v=${new Date().getTime()}`);
+						})        
+			        }
+			    });
+				
+				return false;
+				
+			}
+	
+	function esm_editor_finish(){
+		
+	// Generate the image data
+		if(editor_img_id.length>0){
+			
+		    var Pic = document.getElementById("canvas_final").toDataURL("image/jpeg", 1.0);
+		    Pic = Pic.replace(/^data:image\/(png|jpeg);base64,/, "")
+		
+			att_id  = editor_img_id
+		    // Sending the image data to Server
+		    $.ajax({
+		        type: 'POST',
+		        url: '/esm_image/<%=doc_id%>/snap_update?p_id=<%=p_id%>&&att_id='+att_id,
+		        data: '{ "image" : "' + Pic + '" }',
+		        contentType: 'application/json; charset=utf-8',
+		        dataType: 'json',
+		        success: function (msg) {
+		            // alert("Done, Picture Uploaded.");
+					$('#esm-img-editor').modal('hide');
+				   
+					  
+					$('.highslide-image').each(function(){
+					    var url = $(this).attr("src");
+					    $(this).attr("src", url + `?v=${new Date().getTime()}`);
+					})   
+					   
+					   
+					$('#'+editor_img_id).each(function(){
+					    var url = $(this).attr("src");
+					    $(this).attr("src", url + `?v=${new Date().getTime()}`);
+					}) 
+					
+					$('#F'+editor_img_id).each(function(){
+					    var url = $(this).attr("href");
+					    $(this).attr("href", url + `?v=${new Date().getTime()}`);
+					})        
+		        }
+		    });
+		}
+	    
+	}
+			
+		$('#emr-editor-finish').click(esm_editor_finish)
+	
+		function image_editor(att_id){
+			
+			editor_img_id = att_id
+			
+			$('#esm-img-editor').modal()
+			
+			
+			createCanvas();
+			return false;
+		}
+	
+	</script>
+		

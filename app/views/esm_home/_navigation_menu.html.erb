@@ -1,0 +1,84 @@
+<% if @current_project %>
+<div id="side-menu" class="side-menu" style="width:100%;margin-right:10px;border:0px solid;min-height:500px">
+<div  id="nav-div" style="width:100%;border:0px solid;margin-right:10px;height:100%">
+</div>
+</div>
+<script type="text/javascript" charset="utf-8">
+	Ext.require([
+	    'Ext.tree.*',
+	    'Ext.data.*',
+	    'Ext.window.MessageBox'
+	]);
+	
+	Ext.onReady(function() {
+		
+		
+	    var store = Ext.create('Ext.data.TreeStore', {
+	        proxy: {
+	            type: 'ajax',
+				nodeParam: 'id',
+	            url: 'project.json?id=<%=@current_project.id%>'
+	        }
+	    });
+
+	
+	    var tree = Ext.create('Ext.tree.Panel', {
+	        store: store,
+	        rootVisible: false,
+	        useArrows: true,
+	        frame: false,
+	        renderTo: 'nav-div',
+			autoScroll:true,
+			height:600,
+		    listeners: {
+		        itemclick: function(view,rec,item,index,eventObj) {       
+		            var record = rec;
+				
+		            // alert(record.raw['op_id']);
+					jQuery.ajax({
+						url:record.raw['action'],
+						script:true,
+						success: function(script){
+							$('#workspace').fadeIn(200);
+							eval(script);
+							
+						},
+						beforeSend: function( xhr ) {
+						$('#workspace').fadeOut(200);
+						}
+						
+					});
+		            // alert(record.data['text']);
+		            
+		        }
+		    },
+	        dockedItems: [{
+	            xtype: 'toolbar',
+	            items: {
+	                text: 'Refresh',
+	                handler: function(){
+						window.location.reload();
+	                    // var records = tree.getView().getChecked()
+	                    //     names = [];
+	                    // 	
+	                    // Ext.Array.each(records, function(rec){
+	                    //     names.push(rec.get('text'));
+	                    // });
+	                    // 	
+	                    // Ext.MessageBox.show({
+	                    //     title: 'Selected Nodes',
+	                    //     msg: names.join('<br />'),
+	                    //     icon: Ext.MessageBox.INFO
+	                    // });
+	                }
+	            }
+	        }]
+	    });
+	
+	
+	
+	
+	});
+</script>
+
+<% end %>

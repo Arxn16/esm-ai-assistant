@@ -1,0 +1,45 @@
+<div id="name">
+	<span style=""><%=@project.name.camelize%> Project (<%=@project.package%>)
+	<%=link_to('Edit',:action=>'edit_project',:id=>@project)%> |
+	<%=link_to('Back',:action=>'index')%>
+	<span style='float:right'>
+
+	<%=link_to @context,'/esm_home' %> > <%= @project %> 
+	</span>	
+	</span>
+	<div class="clear">
+		
+	</div>
+</div>
+<hr/>
+<h2>Service List</h2>
+<br/>
+<%= tabular :model=>[:name, :package,:extended,:user_id], :data=> @project.services,:id=>'serivces',:extjs=>true do |row,out| 
+	out<<link_to('Show',:action=>'service',:id=>row)
+	out<<link_to('Edit',:action=>'edit_service',:id=>row)
+	out<<link_to('Delete',:action=>'delete_service',:id=>row)
+	out
+end
+%>
+<br/>
+<%= link_to 'New Service', :action=>'new_service',:id=>@project %>
+
+
+<%
+	
+	schema = @project.get_default_schema
+	
+%>
+
+<hr/>
+<h2>Model List</h2>
+<br/>
+<%= tabular :model=>Table, :data=> schema.tables ,:id=>'tables',:extjs=>true do |row,out| 
+	out<<link_to('Show',:action=>'table',:id=>row)
+	out<<link_to('Edit',:action=>'edit_table',:id=>row)
+	out<<link_to('Delete',:action=>'delete_table',:id=>row)
+	out
+end
+%>
+<br/>
+<%= link_to 'New Table', :action=>'new_table',:id=>@project %>

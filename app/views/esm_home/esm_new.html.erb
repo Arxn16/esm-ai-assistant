@@ -1,0 +1,7 @@
+<h1>New Solution</h1><br/>
+<%= form_for :esm  do |f| %>
+<%= render :partial=>'esm.html',:locals=>{:f=>f}%>
+
+<br/>
+<%= f.submit :submit,:confirm=>'Are you sure?', :class=>bt_class%> | <%= link_to "Cancel", :action => "index" %>	
+<% end %>

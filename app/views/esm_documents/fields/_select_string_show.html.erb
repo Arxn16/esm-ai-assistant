@@ -1,0 +1,12 @@
+<% if field.lov_type == 'plain' %>
+<%= value %>
+<% elsif field.lov_type == 'pair'
+    options = {}
+	field.lov.split("\n").compact.collect{|i| i.split('|') }.each do |i|
+	options[i[0]]=i[1]
+    end
+%>
+<%= options[value] %>
+<% else %>
+Not available.
+<% end %>

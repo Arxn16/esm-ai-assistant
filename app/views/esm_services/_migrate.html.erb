@@ -1,0 +1,12 @@
+
+<b>Import &amp; Export</b>
+
+<%= link_to 'Refresh', {:action=>'migrate',:id=>@service},:remote=>true %><br/>
+<br/>
+<%= form_for :script,:url=>"/esm_services/#{@service.id}/migrate",:remote=>true do |f| %>
+<%= text_area_tag 'service[data]',@service.to_xml(Service.export_options),:cols=>150,:rows=>60 %>
+<br/><br/>
+<%= f.submit :import,:class=>bt_class %>
+<% end %>
+
+<%= REXML::Document.new(params[:service][:data]) if params[:service] %>

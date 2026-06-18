@@ -1,0 +1,54 @@
+
+<div style="float:left;right:20px;border:0px solid;width:100%">
+	<header style="display:inline-block;"><h1><%=@service.display_name %> Service </h1></header>(<%=@service.package%>) 
+	 
+    <div class="clear"></div>
+
+	<span style='float:left' >API key = user_id=<%=@current_user.id%>&amp;api_key=<%=@current_user.hashed_password%></span>
+	
+	<div style="float:right">
+		<%=link_to('Edit',{:action=>'edit',:id=>@service,:update=>'operation'},:remote=>true)%> |
+		<%=link_to('Back',:action=>'project',:id=>@project)%> |
+		<%=link_to('Import&Export',{:action=>'migrate',:id=>@service,:update=>'operation'},:remote=>true)%> |
+		
+		<%= link_to('New Operation',{:controller=>'esm_operations',:action=>'new',:id=>@service,:update=>'operation_panel'},:remote=>true) %> | 
+		<%=link_to('Show Index',@service.url(request.server_name),:remote=>false,:target=>'_blank')%>
+	</div>
+
+	<hr/>
+	<div class="clear">
+	</div>
+<div class="row-fluid" style="border:0px solid;">	
+<% for s in  @service.extended_list.reverse %>
+
+<div id="operation" class="span4" style="">
+	<b><%=s.name.humanize %> (<%= s.package%>)</b><br/>
+	<%= render :partial=>'/esm_services/operation_list_view',:locals=>{:service=>s}%>
+</div>
+
+<% end %>
+
+<div id="operation" class="span4" style="border:0px solid;padding:0px">
+	<b><%=@service.name.humanize %> (<%= @service.package%>) </b><br/>
+	<%= render :partial=>'/esm_services/operation_list_view',:locals=>{:service=>@service}%>
+</div>
+</div>
+
+<br/>
+
+<div id="operation_panel">
+	<% if params[:op_id]
+	%>
+	<%= remote_function :controller=>'esm_operations',:action=>'edit',:id=>params[:op_id],:sid=>@service.id %>
+	<% end %>
+</div>
+
+<% content_for :header do %>
+	<script src="/ace/src/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/ace/src/theme-clouds.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/ace/src/mode-html.js" type="text/javascript" charset="utf-8"></script>
+<% end %>	
+</div>
+
+<div class="clear">
+</div>

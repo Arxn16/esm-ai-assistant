@@ -1,0 +1,8 @@
+<h1>Edit ESM</h1>
+<br/>
+<%= form_for(:esm) do |f| %>
+<%= hidden_field_tag :id, @esm.id %>
+<%= render :partial=> 'esm', :locals=>{:f=>f} %>
+<br/>
+<%= f.submit 'Update' , :class=>bt_class %> | <%= link_to 'Cancel', :action=>'index'%>
+<% end %>

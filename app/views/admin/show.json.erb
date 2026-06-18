@@ -1,0 +1,82 @@
+<%
+json = [
+
+
+
+{
+	:text=>'Tables',
+	:cls=>'folder',
+	:action=>"/esm_home/table?id=#{@project.id}",
+	:expanded=>true,
+	:children=> @project.schema.tables.collect{|i| 
+	   {
+	    :text=>"#{i.name.humanize}",
+		:leaf=>true,"checked"=> false,
+		:action=>"/esm_home/table_edit?id=#{i.id}",
+		:action_type=>'remote'
+		
+		}
+	}
+}	,
+
+{
+	:text=>'Documents',
+	:cls=>'folder',
+	:action=>"/esm_home/document?id=#{@project.id}",
+	:expanded=>true,
+	:children=> @project.documents.collect{|i| 
+	   {
+	    :text=>"#{i.name.humanize}",
+		:leaf=>true,"checked"=> false,
+		:action=>"/esm_document/show?id=#{i.id}",
+		:action_type=>'remote'
+		
+		}
+	}
+
+},
+{
+	:text=>'CMS',
+	:cls=>'folder',
+	:expanded=>true,
+	:children=>[
+	{
+		:text=>'Menus',
+		:cls=>'folder',
+		:action=>"/esm_home/menu?id=#{@project.id}",
+		:expanded=>false,
+		:children=> @project.menu_actions.collect{|i| 
+		   {
+		    :text=>"#{i.name.humanize}",
+			:leaf=>true,"checked"=> false,
+			:action=>"/esm_home/menu_edit?id=#{i.id}",
+			:action_type=>'remote'
+			}
+		}
+	    },
+		{
+			:text=>'Roles',
+			:cls=>'document',
+			:action=>"/esm_home/role?id=#{@project.id}",
+			:expanded=>false,
+			:children=> @project.roles.collect{|i| 
+			   {
+			    :text=>"#{i.name.humanize}",
+				:leaf=>true,"checked"=> false,
+				:action=>"/esm_home/role_view?id=#{i.id}",
+				:action_type=>'remote'
+				}
+			}
+		},
+		{
+			:text=>'Contents',
+			:cls=>'folder',
+			:action=>"/esm_home/content?id=#{@project.id}",
+			:expanded=>false,
+			:children=> @project.contents
+		}
+		
+]}
+
+]	%>
+<%=json.to_json.html_safe%>

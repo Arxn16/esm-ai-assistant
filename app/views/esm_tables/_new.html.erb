@@ -1,0 +1,17 @@
+<div style="width:100%;border:0px solid">
+	
+<%= form_for(:table,:url=>{:action=>"new",:id=>@project},:remote=>true) do |f| %>
+<br/>
+<%= hidden_field_tag :id, @table.id %>
+<%= render :partial=> 'table', :locals=>{:f=>f} %>
+<br/>
+<span style='float:left'>
+<%= f.submit 'Create' %> | <%= link_to 'Cancel', 'javascript:window.location.reload()'%>
+</span>
+<% end %>
+
+</div>
+
+<div class="clear">
+	
+</div>

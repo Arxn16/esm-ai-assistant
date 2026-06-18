@@ -1,0 +1,59 @@
+<%
+ table_name = ''
+ table_name = @document.table.name if @document and @document.table
+
+%>
+<style type="text/css" media="screen">
+	.left{
+/*		float:left;*/
+		margin-right:5px;
+	}
+</style>
+
+<div class="field ">
+  <%= f.label :title %>
+  <%= f.text_field :title ,:class=>tb_class,:onkeyup=>methodize("document_name","table_name") %>
+</div>
+
+<div class="field ">
+  <%= f.label :name %>
+  <%= f.text_field :name ,:class=>tb_class%>
+</div>
+
+<div class="field ">
+  <%= f.label :table_name %>
+  <%= text_field_tag :table_name,table_name,:class=>tb_class,:size=>30,:id=>'table_name' %>
+</div>
+
+<div class="field ">
+ Select table <br/>
+  <%= select_tag :table_id, options_for_select(@project.schema.tables.collect{|i| [i.name,i.name]},table_name),:include_blank=>true,:class=>'k-dropdown',:onchange=>'javascript:$("#table_name").val(this.value);'%>
+</div>
+<div class="clear">
+	
+</div><br/>
+
+<div class="field">
+  <%= f.label :Structure %>
+<div id="editor" style="display:block;position:relative;min-height:450px;height:80%;border:1px solid #aaa"><%=@document.data%></div>
+
+<%= f.text_area :data ,:style=>"display:none"%>
+	<script>
+	    var editor = ace.edit("editor");
+		var editor_input = 	document.getElementById('document_data');
+	   		editor.setShowPrintMargin(false);
+			editor.setShowInvisibles(false);
+			editor.setDisplayIndentGuides(true);
+		    editor.setTheme("ace/theme/twilight");
+		    editor.getSession().setMode("ace/mode/ruby");
+		editor.getSession().on('change', function(){
+		  editor_input.value=editor.getSession().getValue();
+		});
+		
+	
+	</script>
+
+</div>
+
+
+

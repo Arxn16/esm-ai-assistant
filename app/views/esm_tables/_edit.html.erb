@@ -1,0 +1,18 @@
+<strong>Table</strong>
+<hr/>
+<div style="width:100%;border:0px solid">
+<%= form_for(:table,:url=>{:action=>'edit',:update=>'update'},:remote=>true) do |f| %>
+
+<%= render :partial=> 'table', :locals=>{:f=>f} %>
+<br/>
+<span style='float:left'>
+<%= f.submit 'Update',:class=>bt_class,:disable_with=>'loading..'%> | <%= link_to 'Cancel', 'javascript:window.location.reload()'%> | <%= link_to 'Delete', {:action=>'delete_service',:id=>@service},:remote=>true,:confirm=>'Are you sure?' %>
+</span>
+<% end %>
+</div>
+<div id="update">
+	
+</div>
+<div class="clear">
+	
+</div>

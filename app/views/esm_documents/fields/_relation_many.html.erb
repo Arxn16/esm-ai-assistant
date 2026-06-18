@@ -1,0 +1,660 @@
+<%
+
+	@stack = [] unless @stack
+
+%>
+
+<% if fparams[:relation] and fparams[:relation][:type] == nil
+	
+	values = []
+	
+	# @document = @current_project.get_document @document.name
+	
+	has_one_model = Fields::RelationOne.get_instance @document,@field,@record
+
+	table  = has_one_model.related_table
+	fields = has_one_model.related_fields
+	doc = has_one_model.related_document
+	
+	doc_name = doc.name
+	
+	if value 
+		values = value.collect{|i| table.find(i)}.compact
+	end
+  
+
+
+
+# 	application mode
+
+unless @edit
+	
+	
+		tmpdoc = @document
+		tmprec = @record
+		tmpedit = @edit
+		tmpprefix = @prefix
+		tmpprefix2 = @prefix2
+		tmpfield = @field
+		tmpshow=@show
+		
+		
+		tmp = {:doc=>tmpdoc, :record=>tmprec, :show=>tmpshow, :edit=>tmpedit, :prefix=>tmpprefix,:prefix2=>tmpprefix2, :field=>tmpfield}
+		
+		@stack<<tmp
+		
+		@link_field = tmpfield
+	
+		@fid = @field.id
+		@document = doc	
+		@document.project_id = tmpdoc.project_id
+		
+			if fparams[:relation][:selector]
+			@selector = fparams[:relation][:selector]
+			end
+
+begin
+
+
+		# partial document
+		if fparams[:relation][:partial] 
+			tmpshow=@show
+			@show = nil
+			@partial = true
+			@records = values
+			
+			if tmprec and tmprec.id
+	    		@ref_tag = "#{@current_project.package}|#{tmpdoc.name}|#{tmprec.id}|#{tmpfield.id}"
+		%>
+		<div id="<%=tmpfield.id%>">
+		<% if tmpshow %>
+			<%= render :partial=>'/esm_documents/partial_list' %>
+		<% else %>
+			Required reference object.
+		<% end %>
+		</div>		
+		<%	
+			else
+		%>
+			Require reference model	
+		<%
+			end
+		else  # many non partial
+			@partial = true
+	
+			%>
+			
+			
+			<div id="<%=tmpfield.id%>">
+			<%
+			if values.size==0
+				default = 0
+			
+				default.times do |i|	
+					@record = table.new		
+					@prefix = "#{tmpdoc.name}-#{tmpfield.column_name}-#{i}-" 
+					@prefix2 = "#{tmpfield.id}-#{i}-" 
+					%>
+					@i = "#{i+1}. "
+					<%= render :partial=>'/esm_documents/has_many_record' %>
+				<% end %>
+				
+			 <%	else 
+			
+			
+					%>
+					<%# values%>
+					<%
+					
+			%>
+			
+				<% values.each_with_index do |i,index|
+					
+					if @selector
+						@selector_value = i[@selector]
+					end
+					
+					@record = i
+					@i = "#{index+1}. "
+					
+					@prefix = "#{tmpdoc.name}-#{tmpfield.column_name}-#{i.id}-"
+					@prefix2 = "#{tmpfield.id}-#{i.id}-" 
+					@record_name = "#{@document.title}"
+					%>
+					<%# "Record #{@record.class} Doc #{@document.name}"%>
+					<%= render :partial=>'/esm_documents/has_many_record' %>
+				
+				<% 
+				
+				end %>
+			<% end %>
+			</div>
+		<%
+			
+			if fparams[:relation] and fparams[:relation][:selector]
+			
+			
+		    selector = @document.find_by_column_name fparams[:relation][:selector]
+		
+			# puts "XXXX #{@document.name} #{fparams[:relation][:selector]} #{selector.inspect}"
+			options = selector.get_lov_options
+		
+			if fparams[:relation][:select_list]
+				select_list = fparams[:relation][:select_list] 
+				options.collect!{|i| i if select_list.index(i[0])}.compact!
+			end
+		
+			if options
+				
+			for i in options
+		  %>
+		   <%=link_to "#{i[1]}", {:controller=>'esm_document', :action=>'relation_has_many_add',:p_id=>@current_project,:id=>tmpdoc.name,:f_id=>tmpfield.id,:r_id=>@record.id,:s_id=>fparams[:relation][:selector],:s_v=>i[0]} ,:class=>'btn btn-small',:disable_with=>'loading..',:remote=>true unless @show or !@record%>		
+		  <% end %>
+		<% else %>	
+		There is no LOV defined.
+		<% end %>
+		<% else %>	
+			<%=link_to "Add #{field.label}", {:controller=>'esm_document', :action=>'relation_has_many_add',:p_id=>@current_project,:id=>tmpdoc.name,:f_id=>tmpfield.id,:r_id=>@record.id}, :id=>"#{tmpdoc.name}-#{tmpfield.column_name}-add-action" ,:class=>'btn btn-small',:remote=>true unless @show or !@record%>		
+		<% end %>
+		
+		
+	<%  unless @edit %>
+		
+		<script>
+		<%
+
+			if  fparams[:relation][:default_row] and values.size==0
+
+			r = fparams[:relation][:default_row].to_i
+			r.times do |rr| 
+		%>
+		$('#<%="#{tmpdoc.name}-#{tmpfield.column_name}-add-action"%>').click()
+		<% end %>
+			<% end %>
+		</script>
+	<% end %>	
+		<% 
+		@partial = false
+		end %>
+<% rescue Exception => e %>
+		<%= e.message %>
+	<%
+end
+
+		tmp = {:doc=>tmpdoc,:record=>tmprec,:edit=>tmpedit,:prefix=>tmpprefix,:prefix2=>tmpprefix,:field=>tmpfield}
+		tmp = @stack[-1]
+		@stack[-1]=nil
+		@stack.compact!
+		
+		tmpdoc = tmp[:doc]
+		tmpshow = tmp[:show]
+		tmpedit = tmp[:edit]
+		tmpprefix = tmp[:prefix]
+		tmpprefix2 = tmp[:prefix2]
+		tmpfield = tmp[:field]
+		tmprec = tmp[:record]
+		
+		
+
+		@show = tmpshow
+		@document  = tmpdoc 
+		@edit = tmpedit
+		@record = tmprec
+		@prefix = tmpprefix
+		@prefix2 = tmpprefix2
+		@field = tmpfield 
+		@edit = false 
+		@partial = false		
+	%>
+<% else %>
+	Has many value of <%= doc_name %>
+<% end %>
+<% elsif  fparams[:relation] and fparams[:relation][:type] == 'map_value'
+
+  has_one_model = Fields::RelationOne.get_instance @document,@field,@record
+	table  = has_one_model.related_table
+	fields = has_one_model.related_fields
+	doc = has_one_model.related_document
+	id = @field.id
+  group ="#{@document.name}-#{@field.column_name}"
+  group ="#{fparams[:relation][:group]}"  if fparams[:relation][:group]
+  list = table.where(:group=>group).all
+  if @record
+%>
+<div class="<%='hide' if @show %>">
+Search : <%=text_field_tag :search, "",:class=>'k-textbox k-textbox-txt', :id=>"many-search-#{id}"%> 
+<a class="btn btn-small" href="javascript:add_many_<%=id%>()">+</a>
+<a data-toggle="modal" data-backdrop="static" class="btn btn-small hide" href="#many-search-panel-<%=id%>">…</a>
+</div>
+<div id="many-result-<%=id%>" class="alert hide">
+
+</div>
+<table class="table">
+<tbody id="many-value-<%=id%>">
+</tbody>
+</table>
+	<%  unless @edit %>
+<script>
+	var map_<%=id%> = <%=list.compact.to_json.html_safe%>
+	
+	function search_many_<%=id%>(){
+		q = $(this).val()
+		res = []
+	
+		reg = new RegExp(q, 'gi')
+		for(ix = 0; ix <  map_<%=id%>.length;ix++){
+			
+			i = map_<%=id%>[ix]
+		
+			if(i['name'].match(reg)||i['title'].match(reg)){
+				res.push(i)
+			}
+		}
+		html = $("#many-result-<%=id%>")
+		html.html("") 
+		for(ix = 0 ;ix < res.length;ix++){
+			i = res[ix]
+		
+			html.append('<div><a href="javascript:select_many_<%=id%>('+"'"+i['id']+"'"+')" name="'+i['id']+'"><span class="span2">'+i['name']+'</span><span class="">'+i['title']+'</span></a></div><div class="clear"></div>');
+			
+		}
+		if(q.length==0){
+			 $(this).val("")
+			$("#many-result-<%=id%>").html("")
+			$("#many-result-<%=id%>").hide()
+		}else{
+				$("#many-result-<%=id%>").show()
+		}
+		
+		
+	}
+	function select_many_<%=id%>(id){
+		// obj = $(this).attr("name")
+	    
+		l = eval($('#data-<%=@field.column_name%>').val())
+		res = []
+		for(ix in map_<%=id%>){
+				i = map_<%=id%>[ix]
+				if(i['id']==id||l.indexOf(i['id'])!=-1){
+					
+					if(l.indexOf(id)==-1)l.push(id)
+					
+					res.push(i)
+				}
+		}
+		$('#data-<%=@field.column_name%>').val(JSON.stringify(l))
+		
+		update_many_<%=id%>()
+
+		$('#many-result-<%=id%>').html("")
+		$("#many-search-<%=id%>").val("")
+		$("#many-result-<%=id%>").hide()
+	}
+	function update_many_<%=id%>(){
+		res = []
+		
+		l = eval($('#data-<%=@field.column_name%>').val())
+		for(ix=0;ix< map_<%=id%>.length;ix++){
+				i = map_<%=id%>[ix]
+				if(l.indexOf(i['id'])!=-1){
+					res.push(i)
+				}
+		}
+		html = $("#many-value-<%=id%>")
+		html.html("") 
+		for(ixd=0;ixd<res.length;ixd++){
+			i = res[ixd]
+			
+			
+			row = $('#template-<%=id%>').clone();
+			
+			ix = i['id']
+
+			row.attr("id",ix);
+
+			html.append(row)
+
+			$('#'+ix).children('td').each(function(){
+				$(this).children('input').each(function(){
+					t = $(this).attr('name')
+					tx = '<%=@document.name%>'+t.replace(new RegExp('-', 'g'), ix );
+					
+					if(tx.indexOf('name')>0){
+						$(this).val(i['name'])
+					}else if(tx.indexOf('title')>0){
+							$(this).val(i['title'])
+					}
+					
+					$(this).attr('name',tx)
+				});
+			});
+		
+			row.append('<td class=""> <a href="javascript:remove_many_<%=id%>('+"'"+i['id']+"'"+')" class="<%= 'hide' if @show%>" name="'+i['id']+'"><span class="btn btn-small btn-danger">Del</span></a></td>');
+			
+			
+		
+		}
+	}
+	function remove_many_<%=id%>(id){
+		res = []
+		l = eval($('#data-<%=@field.column_name%>').val())
+
+		for(ix=0;ix<l.length;ix++){
+			i = l[ix]
+			if(i!=id){
+				res.push(i)
+			}
+		}
+		$('#data-<%=@field.column_name%>').val(JSON.stringify(res))
+		
+		update_many_<%=id%>();
+		
+	}
+	
+	function add_many_<%=id%>(){
+		html = $("#many-value-<%=id%>")
+		
+		row = $('#template-<%=id%>').clone();
+		
+		ix = Math.floor((Math.random() * 100000) + 1).toString();
+	
+		row.attr("id",ix);
+		
+		html.append(row)
+		
+		$('#'+ix).children('td').each(function(){
+			$(this).children('input').each(function(){
+				t = $(this).attr('name')
+				tx = '<%=@document.name%>'+t.replace(new RegExp('-', 'g'), ix );
+				$(this).attr('name',tx)
+			});
+		});
+		
+	
+		
+		
+	}
+	
+	
+
+	$("#many-search-<%=id%>").keyup(search_many_<%=id%>);
+	
+	$('#many-search-panel-<%=id%>').appendTo($(document))
+	
+</script>
+<% end %>
+
+<table class="hide" >
+<tr id="template-<%=id%>" class="row-fluid">
+	<td width="20%"><%=text_field_tag "[#{@field.column_name}][-][name]" ,'',:class=>"span12",:disabled=>@show %></td>
+	<td width="80%"><%=text_field_tag "[#{@field.column_name}][-][title]" ,'',:class=>"span12",:disabled=>@show%></td>
+	<td><%=hidden_field_tag "[#{@field.column_name}][-][group]", group,:disabled=>@show %></td>
+</tr>
+</table>
+
+<% end %>
+<% elsif fparams[:relation][:type]== 'column' 
+
+
+
+has_one_model = Fields::RelationOne.get_instance @document,@field,@record
+
+table  = has_one_model.related_table
+fields = has_one_model.related_fields
+doc = has_one_model.related_document
+
+doc_name = doc.name
+
+if value 
+	values = value.collect{|i| table.find(i)}.compact
+end
+
+
+
+
+tmpdoc = @document
+tmprec = @record
+tmpedit = @edit
+tmpprefix = @prefix
+tmpprefix2 = @prefix2
+tmpfield = @field
+tmpshow=@show
+
+
+tmp = {:doc=>tmpdoc, :record=>tmprec, :show=>tmpshow, :edit=>tmpedit, :prefix=>tmpprefix,:prefix2=>tmpprefix2, :field=>tmpfield}
+
+@stack<<tmp
+
+@link_field = tmpfield
+
+@fid = @field.id
+@document = doc	
+@document.project_id = tmpdoc.project_id
+
+@record = table.new
+
+
+values = [] unless values
+
+
+
+%>
+
+<% unless @show 
+	
+	new_record = @record
+	%>
+<div style="width:720px;overflow:scroll" id="<%=tmpfield.id%>">
+<table class="table"  border="0" cellspacing="5" cellpadding="5">
+	<thead>
+	<tr>
+		<th>&nbsp;</th>
+		<% for v in values %>
+		<th class="<%=v.id%>">
+			<a class="btn btn-small" href="javascript:remove_many_<%=tmpfield.column_name%>('<%=v.id%>')">Del</a>
+		</th>
+		<% end %>
+		<th class="last hide" id="header">
+			<a class="btn btn-small" href="javascript:remove_many_<%=tmpfield.column_name%>()">Del</a>
+		</th>
+		<th class="" width="60%">
+			<a class="btn btn-small" href="javascript:add_many_<%=tmpfield.column_name%>()">+</a>
+		</th>
+	</tr>
+	</thead>
+	<% for f in doc.fields %>
+	<% if Document.visual_types.index(f.field_type)==nil %>
+	<tr><th><%=f.label%></th>
+	<% for v in values 
+	   @prefix = "#{tmpdoc.name}-#{tmpfield.column_name}-#{v.id}-"
+	   @record = v
+	
+	%>
+	<td class="<%=v.id%>">
+	<%= render :partial=>'/esm_documents/render_field',:locals=>{:field=>f,:doc=>doc,:no_label=>true}%>
+	</td>
+	<% end %>
+	<td class="last hide ">
+	<%
+	# t = @prefix.split("-")
+	# name = "#{t[0]}[#{t[1]}][#{t[2]}][#{field.column_name}]"
+	# ve_record[ve_test][587b808d833a552b5300007a][comment]
+
+	   @prefix = "#{tmpdoc.name}-#{tmpfield.column_name}-0-"
+	   @record = new_record
+	%>	
+
+	<%= render :partial=>'/esm_documents/render_field',:locals=>{:field=>f,:doc=>doc,:no_label=>true}%>
+	
+	</td>
+	<td>
+	</td>
+	
+	</tr>
+	
+	<% end %>
+	<% end %>
+	
+</table>
+</div>
+
+	<%  unless @edit %>
+<script type="text/javascript" charset="utf-8">
+	function add_many_<%=tmpfield.column_name%>(){
+		
+		rand = Math.round(Math.random()*999999);
+		
+		$('.last').each(function(){
+			obj = $(this)
+			o = obj.clone()
+			c = "C"+rand
+			o.addClass(c)
+			o.removeClass("last")
+			o.removeClass("hide")
+			o.find("input").each(function(){
+				
+				i = $(this)
+				
+				n = i.attr('name')
+				
+				i.attr('name', "<%=tmpdoc.name%>[<%=tmpfield.column_name%>]["+c+"]"+n);
+				
+				
+			})
+			
+			o.find("select").each(function(){
+
+				i = $(this)
+
+				n = i.attr('name')
+
+				i.attr('name', "<%=tmpdoc.name%>[<%=tmpfield.column_name%>]["+c+"]"+n );
+
+
+			})
+			
+			if(o.attr('id')=='header'){
+				o.attr('id',c)
+				o.find("a").attr("href","javascript:remove_many_<%=tmpfield.column_name%>('"+c+"')")
+			}
+			obj.before(o)
+		})
+		
+		$('#<%=tmpfield.id%>').scrollLeft(1000000);
+		
+	}
+	function remove_many_<%=tmpfield.column_name%>(id){
+		$('.'+id).remove();
+	}
+	
+	$('.last').each(function(){
+				o = $(this)
+			o.find("input").each(function(){
+				
+				i = $(this)
+				
+				n = i.attr('name').split("[0]")
+				
+				i.attr('name', n[1] );
+				
+				
+			})
+			
+			o.find("select").each(function(){
+
+				i = $(this)
+
+				n = i.attr('name').split("[0]")
+
+				i.attr('name', n[1] );
+
+
+			})
+	});
+</script>
+<% end %>
+<% else %>
+<% if values %>
+<div style="width:720px;overflow:scroll" id="<%=tmpfield.id%>">
+<table class="table"  border="0" cellspacing="5" cellpadding="5">
+	<thead>
+	<tr>
+		<th>&nbsp;</th>
+		<% for v in values %>
+		<th class="<%=v.id%>">
+		</th>
+		<% end %>
+		<th class="last hide" id="header">
+			<a class="btn btn-small" href="javascript:remove_many_<%=tmpfield.column_name%>()">Del</a>
+		</th>
+		<th class="hide" width="60%">
+			<a class="btn btn-small" href="javascript:add_many_<%=tmpfield.column_name%>()">+</a>
+		</th>
+	</tr>
+	</thead>
+	<% for f in doc.fields %>
+	<% if Document.visual_types.index(f.field_type)==nil %>
+	<tr><th><%=f.label%></th>
+	<% for v in values 
+	   @prefix = "#{tmpdoc.name}-#{tmpfield.column_name}-#{v.id}-"
+	   @record = v
+	
+	%>
+	<td class="<%=v.id%>">
+	<%= render :partial=>'/esm_documents/render_field',:locals=>{:field=>f,:doc=>doc,:no_label=>true}%>
+	</td>
+	<% end %>
+	<td class="last hide">
+	<%
+	# t = @prefix.split("-")
+	# name = "#{t[0]}[#{t[1]}][#{t[2]}][#{field.column_name}]"
+	# ve_record[ve_test][587b808d833a552b5300007a][comment]
+
+	   @prefix = "#{tmpdoc.name}-#{tmpfield.column_name}-0-"
+	
+	%>	
+
+	<%= render :partial=>'/esm_documents/render_field',:locals=>{:field=>f,:doc=>doc,:no_label=>true}%>
+	
+	</td>
+	<td>
+	</td>
+	
+	</tr>
+	
+	<% end %>
+	<% end %>
+	
+</table>
+</div>
+
+<% end %>
+
+
+<% end %>
+<% 
+	@document = tmpdoc
+	@record = tmprec
+ %>
+<% else %>
+
+
+Not configured
+
+
+<% end %>
+
+<%= hidden_field_tag name, value.to_json ,:id=>"data-#{@field.column_name}" %>
+
+<% 
+if !@edit and  fparams[:relation] and fparams[:relation][:type] == 'map_value' 
+%>
+<script>
+if( typeof update_many_<%=id%>!=='undefined'){
+update_many_<%=id%>();
+}
+</script>
+<% end %>
+
+
+

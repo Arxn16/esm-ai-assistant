@@ -1,0 +1,13 @@
+<h1>Services</h1>
+
+<%= tabular :model=>[:id, :name, :package,:extended,:user_id],:data=> @services,:id=>'serivces',:extjs=>false do |row,out| 
+	out<<link_to('Show',{:controller=>'esm_services',:action=>'show',:id=>row},:remote=>true,:class=>'')
+	out<<link_to('Edit',{:controller=>'esm_services',:action=>'edit',:id=>row},:remote=>true,:class=>'')
+	out<<link_to('Delete',{:controller=>'esm_services',:action=>'destroy',:id=>row},:remote=>true,:class=>'',:confirm=>'Are you sure?')
+	out
+end
+%>
+
+<%= link_to 'New Service', {:controller=>'esm_services',:action=>'new',:id=>@project},:remote=>true,:class=>bt_class%>
+
+  

@@ -1,0 +1,9 @@
+<h1>Tables</h1>
+<%= tabular :model=>%w{id schema_id name}, :data=> @tables ,:id=>'tables',:extjs=>false do |row,out| 
+	out<<link_to('Show',{:action=>'show',:id=>row},:remote=>true)
+	out<<link_to('Edit',{:action=>'edit',:id=>row},:remote=>true)
+	out<<link_to('Delete',{:action=>'destroy',:id=>row},:remote=>true,:confirm=>'Are you sure?')
+	out
+end
+%>
+<%= link_to 'New Table', {:action=>'new',:id=>@project},:remote=>true ,:class=>bt_class%>

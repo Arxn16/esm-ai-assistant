@@ -1,0 +1,63 @@
+<div id="field-control" style="border:0px solid;font-size:1em;width:270px" >
+<div  style="width:100%">
+<%= form_for(:field,:url=>{:action=>"field_edit",:id=>@document,:field_id=>@field.id,:update=>'layout'},:remote=>true) do |f| %>
+<%= render :partial=> 'field', :locals=>{:f=>f} %>
+
+<span style='float:left;margin-top:5px'>
+<p>
+	<%= f.submit 'Update' ,:style=>'width:100px',:class=>bt_class%>
+	<%= link_to 'Delete', {:action=>'field_delete',:id=>@document,:update=>'layout',:field_id=>@field.id},:remote=>true,:confirm=>'Are you sure?' %>&nbsp;
+	<%= link_to 'Cancel', "javascript:$('\#field-control').hide('normal');$('\#components').show('normal');" %> <br/><br/>
+	
+<p/> 
+<br/>
+
+</span>
+<% end %>
+</div>
+<div class="clear">
+</div>
+
+</div>
+<%
+	id = @field.id
+	id = 'new' unless id
+%>
+<style type="text/css" media="screen">
+
+</style>
+<script type="text/javascript" charset="utf-8">
+	$('#components').hide('normal');
+	$('#field-control').show('normal');
+	$('#<%=id%>').css('border','2px solid blue');
+	
+			// 	    var tabs = Ext.createWidget('tabpanel', {
+			// 	        activeTab: 0,
+			// width:210,
+			// frame:false,
+			// plain:false,
+			// renderTo: 'field-tab-<%=id%>',
+			// 	        defaults :{
+			// 	            bodyPadding: 0
+			// 	        },
+			// 	        items: [{
+			// 	            contentEl:'field-<%= id %>', 
+			// 	            title: 'Properties'
+			// 	        },{
+			// 	            contentEl:'style-<%= id %>', 
+			// 	            title: 'Visual'
+			// 	        }]
+			// 	    });
+                $(document).ready(function() {
+	
+                    $("#tabstrip").kendoTabStrip({
+						animation:	{
+							open: {
+								effects: "fadeIn"
+							}
+						}
+					
+					});
+                });
+            </script>
+        </div>

@@ -1,0 +1,30 @@
+
+<% if field.lov_type == 'plain'
+	options = [['&nbsp;'.html_safe,nil]]+field.lov.split("\n").compact.collect{|i| i.strip.html_safe}
+%>
+<% unless @show %>
+<%= select_tag name, options_for_select(options,value),:style=>'width:100%;height:2.0em;background:#eee;border:1px solid #bbb',:class=>'',:id=>fid,:required=>(!@edit and field.mandatory=='1'),:validationMessage=>"Please select one" %>
+<% else %>
+<value><%= value %></value>
+<% end %>
+<% elsif field.lov_type == 'pair' 
+unless @show 
+	options = [['&nbsp;'.html_safe,nil]]+field.lov.split("\n").compact.collect{|i| t = i.split('|').reverse; [t[0].html_safe,t[1]] }
+%>
+<%= select_tag name, options_for_select(options,value),:style=>'width:100%;height:2.0em;background:#eee;border:1px solid #bbb',:class=>'',:id=>fid,:required=>(!@edit and field.mandatory=='1'),:validationMessage=>"Please select one"%>
+<% else 
+    options = {}
+	field.lov.split("\n").compact.collect{|i| i.split('|') }.each do |i|
+	options[i[0].to_s]=i[1]
+    end
+%>
+<value><%= options[value.to_s] if value %></value>
+<% end %>
+<% else %>
+Not available.
+<% end %>
+<% content_for :script do %>
+//    $(document).ready(function(){
+//       $("#<%=fid%>").kendoDropDownList();
+//    });
+<% end %>

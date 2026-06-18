@@ -1,0 +1,8 @@
+<h1>New Project</h1>
+<br/>
+<%= form_for(:project) do |f| %>
+
+<%= render :partial=> 'project', :locals=>{:f=>f} %>
+<br/>
+<%= f.submit 'Create' , :class=>bt_class%> | <%= link_to 'Cancel', :action=>'index'%>
+<% end %>

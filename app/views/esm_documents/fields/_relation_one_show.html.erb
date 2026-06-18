@@ -1,0 +1,50 @@
+<% if fparams[:relation] 
+	
+	record = nil
+
+
+	if value
+		
+	
+	has_one_model = Fields::RelationOne.new @document,@field,@record
+
+	table  = has_one_model.related_table
+	fields = has_one_model.related_fields
+	
+	
+	
+	
+	# path = fparams[:relation][:document].to_s.split('#')
+	# doc_tag = path.split('.')
+	# 
+	# 
+	# if path.size==1 # local document   ex : patient
+	# 	doc_name = path[-1]
+	# 	doc =@document.project.get_document doc_name
+	# 	table = @document.project.schema.load_model[doc.table.name.to_sym]
+	# 			
+	# elsif doc_tag.size==1 # other project document  ex : ehr#patient
+	# 	doc_name = path[-1]
+	# 	project = @document.project.esm.get_project doc_tag[0]
+	# 	doc = project.get_document doc_name
+	# 	table = project.load_model[doc.table.name.to_sym]
+	# 	
+	# 	
+	# end
+	
+	a= value
+
+	if table 
+	record = table.find(value)	
+	end
+
+    end
+	
+	if record
+	value = fields.collect{|i| record[i]}.join(' ')
+	else
+	value = 'N/A'
+	end
+%>
+<%= value %>
+<% end %>

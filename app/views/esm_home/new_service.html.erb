@@ -1,0 +1,8 @@
+<h1>New Service</h1>
+<br/>
+<%= form_for(:service) do |f| %>
+<%= hidden_field_tag :id, @project.id %>
+<%= render :partial=> 'service', :locals=>{:f=>f} %>
+<br/>
+<%= f.submit 'Create' %> | <%= link_to 'Cancel', :action=>'service',:id=>@service%>
+<% end %>

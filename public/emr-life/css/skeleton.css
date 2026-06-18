@@ -1,0 +1,215 @@
+/*
+* Skeleton V1.2
+* Copyright 2011, Dave Gamache
+* www.getskeleton.com
+* Free to use under the MIT license.
+* http://www.opensource.org/licenses/mit-license.php
+* 6/20/2012
+*/
+
+
+/* Table of Contents
+==================================================
+    #Base 960 Grid
+    #Tablet (Portrait)
+    #Mobile (Portrait)
+    #Mobile (Landscape)
+    #Clearing */
+
+
+
+/* #Base 960 Grid
+================================================== */
+	.container1                                  { position: relative; width: 930px; margin: 0 auto; padding: 0; }
+    .container1 .column,
+    .container1 .columns                         { float: left; display: inline; margin-right: 15px; }
+ 	
+	.sepclear 									{ height:1px; margin-top:-1px; clear:both; }
+
+    /* Nested Column Classes */
+    .column.alpha, .columns.alpha , .alpha      { margin-left: 0 !important; }
+    .column.omega, .columns.omega , .omega      { margin-right: 0 !important; }
+
+.comment-form-textarea { width:598px; }
+   /* Base Grid */
+    .container1 .one.column,
+    .container1 .one.columns                     { width: 50px;  }
+    .container1 .two.columns                     { width: 130px; }
+    .container1 .three.columns                   { width: 210px; }
+    .container1 .four.columns                    { width: 290px; }
+    .container1 .five.columns                    { width: 370px; }
+    .container1 .six.columns                     { width: 450px; }
+    .container1 .seven.columns                   { width: 530px; }
+    .container1 .eight.columns  ,.eight.columns  { width: 610px; }
+    .container1 .nine.columns                    { width: 690px; }
+    .container1 .ten.columns                     { width: 770px; }
+    .container1 .eleven.columns                  { width: 850px; }
+    .container1 .twelve.columns                  { width: 930px; }
+
+    .container1 .one-third.column                { width: 300px; }
+    .container1 .two-thirds.column               { width: 620px; }
+
+    /* Offsets */
+	.offset-navi 								{margin-left:340px !important; }
+    .offset-by-one                  			{ padding-left: 80px ;  }
+    .offset-by-two                   			{ padding-left: 160px; }
+    .offset-by-three                 			{ padding-left: 240px; }
+    .offset-by-four                  			{ padding-left: 320px ; }
+    .offset-by-five                  			{ padding-left: 400px ; }
+    .offset-by-six                   			{ padding-left: 480px; }
+    .offset-by-seven                 			{ padding-left: 560px; }
+    .offset-by-eight                 			{ padding-left: 640px; }
+    .offset-by-nine                  			{ padding-left: 720px; }
+    .offset-by-ten                   			{ padding-left: 800px; }
+    .offset-by-eleven                			{ padding-left: 880px; }
+    .offset-by-twelve                			{ padding-left: 960px; }
+
+
+
+
+/* #Tablet (Portrait)
+================================================== */
+
+    /* Note: Design for a width of 768px */
+
+    @media only screen and (min-width: 768px) and (max-width: 959px) {
+        .container1                                  { width: 714px; }
+.comment-form-textarea { width:454px; }
+	  /* Base Grid */
+	    .container1 .one.column,
+	    .container1 .one.columns                     { width: 32px;  }
+	    .container1 .two.columns                     { width: 94px;  }
+	    .container1 .three.columns                   { width: 156px; }
+	    .container1 .four.columns                    { width: 218px; }
+	    .container1 .five.columns                    { width: 280px; }
+	    .container1 .six.columns                     { width: 342px; }
+	    .container1 .seven.columns                   { width: 404px; }
+    .container1 .eight.columns  ,.eight.columns      { width: 466px; }
+	    .container1 .nine.columns                    { width: 528px; }
+	    .container1 .ten.columns                     { width: 590px; }
+	    .container1 .eleven.columns                  { width: 652px; }
+	    .container1 .twelve.columns                  { width: 714px; }
+
+	   /* Offsets */
+	   	.offset-navi 								{margin-left:248px !important; }
+	    .offset-by-one                  			{ padding-left: 80px ;  }
+	    .offset-by-two                   			{ padding-left: 160px; }
+	    .offset-by-three                 			{ padding-left: 240px; }
+	    .offset-by-four                  			{ padding-left: 320px ; }
+	    .offset-by-five                  			{ padding-left: 400px ; }
+	    .offset-by-six                   			{ padding-left: 480px; }
+	    .offset-by-seven                 			{ padding-left: 560px; }
+	    .offset-by-eight                 			{ padding-left: 640px; }
+	    .offset-by-nine                  			{ padding-left: 720px; }
+	    .offset-by-ten                   			{ padding-left: 800px; }
+	    .offset-by-eleven                			{ padding-left: 880px; }
+	    .offset-by-twelve                			{ padding-left: 960px; }
+    }
+
+
+/*  #Mobile (Portrait)
+================================================== */
+
+    /* Note: Design for a width of 320px */
+
+    @media only screen and (max-width: 767px) {
+        .container1 { width: 285px; }
+        .container1 .columns,
+        .container1 .column { margin-right: 0px; }
+		
+		.comment-form-textarea { width:273px; }
+        .container1 .one.column,
+        .container1 .one.columns,
+        .container1 .two.columns,
+        .container1 .three.columns,
+        .container1 .four.columns,
+        .container1 .five.columns,
+        .container1 .six.columns,
+        .container1 .seven.columns,
+   		.container1 .eight.columns  ,.eight.columns  ,
+        .container1 .nine.columns,
+        .container1 .ten.columns,
+        .container1 .eleven.columns,
+        .container1 .twelve.columns { width: 285px; }
+
+        /* Offsets */
+		.offset-navi 								{margin-left:30px !important; }
+        .container1 .offset-by-one,
+        .container1 .offset-by-two,
+        .container1 .offset-by-three,
+        .container1 .offset-by-four,
+        .container1 .offset-by-five,
+        .container1 .offset-by-six,
+        .container1 .offset-by-seven,
+        .container1 .offset-by-eight,
+        .container1 .offset-by-nine,
+        .container1 .offset-by-ten,
+        .container1 .offset-by-eleven,
+        .container1 .offset-by-twelve,
+        .container1 .offset-by-thirteen,
+        .container1 .offset-by-fourteen,
+        .container1 .offset-by-fifteen { padding-left: 0; }
+
+    }
+
+
+/* #Mobile (Landscape)
+================================================== */
+
+    /* Note: Design for a width of 480px */
+
+    @media only screen and (min-width: 480px) and (max-width: 767px) {
+        .container1 { width: 418px; }
+        .container1 .columns,
+        .container1 .column {margin-right: 0px; }
+
+ 		.comment-form-textarea { width:406px; }
+        .container1 .one.column,
+        .container1 .one.columns,
+        .container1 .two.columns,
+        .container1 .three.columns,
+        .container1 .four.columns,
+        .container1 .five.columns,
+        .container1 .six.columns,
+        .container1 .seven.columns,
+    	.container1 .eight.columns  ,.eight.columns  ,
+        .container1 .nine.columns,
+        .container1 .ten.columns,
+        .container1 .eleven.columns,
+        .container1 .twelve.columns { width: 418px; }
+    }
+
+/* #Clearing
+================================================== */
+
+    /* Self Clearing Goodness */
+    .container1:after { content: "\0020"; display: block; height: 0; clear: both; visibility: hidden; }
+
+    /* Use clearfix class on parent to clear nested columns,
+    or wrap each row of columns in a <div class="row"> */
+    .clearfix:before,
+    .clearfix:after,
+    .row:before,
+    .row:after {
+      content: '\0020';
+      display: block;
+      overflow: hidden;
+      visibility: hidden;
+      width: 0;
+      height: 0; }
+    .row:after,
+    .clearfix:after {
+      clear: both; }
+    .row,
+    .clearfix {
+      zoom: 1; }
+
+    /* You can also use a <br class="clear" /> to clear columns */
+    .clear {
+      clear: both;
+      display: block;
+      overflow: hidden;
+      visibility: hidden;
+      width: 0;
+      height: 1px;
+    }

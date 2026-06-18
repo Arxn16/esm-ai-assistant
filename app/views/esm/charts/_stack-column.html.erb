@@ -1,0 +1,205 @@
+<%
+
+
+   
+    map = {}
+    series = {}
+	scount = 0 
+    for i in data
+		key = i[0]
+		map[key]=[] unless map[key]
+		sub = "#{i[1]}|#{i[2]}"
+		unless j = series[sub]
+			series[sub] = scount
+			j = scount
+			scount+=1
+		end		
+		map[key][j] = 0 unless map[key][j]
+		map[key][j] += 1
+	end
+    
+    lane = {}
+	keys = map.keys.sort
+	
+	for i in series.keys
+		id = series[i]
+		lane[i] = [] 
+		for j in keys
+			v = map[j][id]
+			v = 0 unless v
+			lane[i] << v
+		end	
+	end
+	
+	series_lane = series.keys.sort.collect do |i|
+		{:name=>i,:data=>lane[i],:stack=>i.split('|')[0],:aggregate=> "sum"}
+	end
+
+
+%>
+<%# series.inspect %>
+
+<%# map.inspect %>
+
+<%# series_lane.inspect %>
+   <div id="example" class="k-content">
+            <div class="chart-wrapper">
+                <div id="chart"></div>
+            </div>
+            <script>
+                function createChart() {
+                    $("#chart").kendoChart({
+                        title: {
+                            text: "<%=title%>"
+                        },
+                        legend: {
+                            visible: false
+                        },
+                        seriesDefaults: {
+                            type: "column"
+                        },
+                        series: <%= series_lane.to_json.html_safe %>,
+                        seriesColors: <%=colors.to_json.html_safe%>,
+                        valueAxis: {
+                            labels: {
+                                template: "<%=value_axis.html_safe%>"
+                            },
+                            line: {
+                                visible: false
+                            }
+                        },
+                        categoryAxis: {
+							baseUnit: "months",
+                            categories: [<%= keys.collect{|i| "new Date('#{i}')" }.join(",").html_safe %>],
+                            majorGridLines: {
+                                visible: false
+                            }
+                        },
+                        tooltip: {
+                            visible: true,
+                            template: "<%=tooltip%>"
+                        }
+                    });
+                }
+
+                $(document).ready(function() {
+                    setTimeout(function() {
+                        // Initialize the chart with a delay to make sure
+                        // the initial animation is visible
+                        createChart();
+
+                        $("#example").bind("kendo:skinChange", function(e) {
+                            createChart();
+                        });
+                        
+                         $(".configuration-horizontal").bind("change", refresh);
+                        
+                    }, 400);
+                });
+                
+                function refresh() {
+                    var chart = $("#chart").data("kendoChart"),
+                        series = chart.options.series,
+                        categoryAxis = chart.options.categoryAxis,
+                        baseUnitInputs = $("input:radio[name=baseUnit]"),
+                        aggregateInputs = $("input:radio[name=aggregate]");
+
+                    for (var i = 0, length = series.length; i < length; i++) {
+                        series[i].aggregate = aggregateInputs.filter(":checked").val();
+                    };
+
+                    categoryAxis.baseUnit = baseUnitInputs.filter(":checked").val();
+
+                    chart.refresh();
+                }
+                
+            </script>
+        </div>
+
+
+<style>
+.config-section{
+float:left;
+width:200px;
+}
+ul.options {
+ list-style-type: none;
+}
+ul.options li{
+    border:0px solid;
+}
+ul.options input{
+float:left;
+border:1px solid;
+}
+.configHead{
+font-weight:bold;
+margin:10px
+}
+</style>
+  <hr/>
+<div class="configuration-horizontal">
+                <div class="config-section">
+                <span class="configHead">Base date unit</span>
+                <ul class="options">
+                    <li>
+                        <input id="baseUnitAuto" name="baseUnit"
+                                type="radio" value="" autocomplete="off" />
+                        <label for="baseUnitAuto">Automatic (default)</label>
+                    </li>
+                    <li>
+                        <input id="baseUnitYears" name="baseUnit"
+                                type="radio" value="years" autocomplete="off" />
+                        <label for="baseUnitYears">Years</label>
+                    </li>
+                    <li>
+                        <input id="baseUnitMonths" name="baseUnit"
+                                type="radio" value="months"  checked="checked" autocomplete="off" />
+                        <label for="baseUnitMonths">Months</label>
+                    </li>
+                    <li>
+                        <input id="baseUnitWeeks" name="baseUnit"
+                                type="radio" value="weeks" autocomplete="off" />
+                        <label for="baseUnitWeeks">Weeks</label>
+                    </li>
+                    <li>
+                        <input id="baseUnitDays" name="baseUnit"
+                                type="radio" value="days" autocomplete="off" />
+                        <label for="baseUnitDays">Days</label>
+                    </li>
+                </ul>
+                </div>
+                <div class="config-section">
+                <span class="configHead">Aggregate function</span>
+                <ul class="options">
+                    <li>
+                        <input id="aggregateMax" name="aggregate"
+                                type="radio" value="max" autocomplete="off" />
+                        <label for="aggregateMax">Max (default)</label>
+                    </li>
+                    <li>
+                        <input id="aggregateMin" name="aggregate"
+                                type="radio" value="min" autocomplete="off" />
+                        <label for="aggregateMin">Min</label>
+                    </li>
+                    <li>
+                        <input id="aggregateSum" name="aggregate"
+                                type="radio" value="sum"  checked="checked" autocomplete="off" />
+                        <label for="aggregateSum">Sum</label>
+                    </li>
+                    <li>
+                        <input id="aggregateAvg" name="aggregate"
+                                type="radio" value="avg"  autocomplete="off" />
+                        <label for="aggregateAvg">Avg</label>
+                    </li>
+                    <li>
+                        <input id="aggregateCount" name="aggregate"
+                                type="radio" value="count" autocomplete="off" />
+                        <label for="aggregateCount">Count</label>
+                    </li>
+                </ul>
+         
+                </div>
+<div class="clear"></div>
+
+</div>

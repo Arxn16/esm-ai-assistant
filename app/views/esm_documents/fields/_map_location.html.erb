@@ -1,0 +1,86 @@
+<%
+	value = '13.7522222,100.4938889' unless value
+	fd = fid.split('-').join('_')
+%>
+<% unless @show %>
+<%= text_field_tag name, value, :id=>fid,:class=>tb_class,:size=>50 %>
+<% end %>
+
+<div class="right" style="margin-bottom:10px">
+	
+     <input id="map-search-<%=fid%>" type="textbox" value="" class="<%= tb_class %>">
+     <input type="button" value="Search" onclick="codeAddress_<%=fd%>()" class="<%= bt_class %>">
+</div>
+
+<br/>
+<div id="map-canvas-<%=fid%>" style="border:1px solid;width:100%; height:400px;"></div>
+<div class="clear">
+</div>
+
+
+<script type="text/javascript">
+  var geocoder;
+  var map;
+  var marker;
+
+  function initialize_<%=fd%>() {
+    geocoder = new google.maps.Geocoder();
+    var latlng = new google.maps.LatLng(<%=value%>);
+    var myOptions = {
+      zoom: 8,
+      center: latlng,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    }
+
+    map = new google.maps.Map(document.getElementById("map-canvas-<%=fid%>"), myOptions);
+	marker = new google.maps.Marker({
+            map: map, 
+			draggable: true,
+	 	    position: latlng
+    });
+<% unless @show %>
+	google.maps.event.addListener(marker, 'dragend', function() {
+		geocodePosition(marker.getPosition());
+	});
+<% end %>
+	
+  }
+<% unless @show %>
+
+	function geocodePosition_<%=fd%>(pos) {
+          geocoder.geocode({
+              latLng: pos
+          }, function(responses) {
+              if (responses && responses.length > 0) {
+				  $('#<%=fid%>').val(""+pos.lat()+","+pos.lng());
+				  // updateMarkerAddress(responses[0].formatted_address);
+              } else {
+                  updateMarkerAddress('Cannot determine address at this location.');
+              }
+          });
+    }
+
+  function codeAddress_<%=fd%>() {
+    var address = $("#map-search-<%=fid%>").val();
+    geocoder.geocode( { 'address': address}, function(results, status) {
+      if (status == google.maps.GeocoderStatus.OK) {
+	  
+        map.setCenter(results[0].geometry.location);
+		if(marker)marker.setMap(null);
+        marker = new google.maps.Marker({
+            map: map, 
+			draggable: true,
+	 	    position: results[0].geometry.location
+        });
+		google.maps.event.addListener(marker, 'dragend', function() {
+			geocodePosition_<%=fd%>(marker.getPosition());
+		});
+		geocodePosition_<%=fd%>(results[0].geometry.location);
+      } else {
+        alert("Geocode was not successful for the following reason: " + status);
+      }
+    });
+  }
+<% end %>
+initialize_<%=fd%>() ;
+</script>

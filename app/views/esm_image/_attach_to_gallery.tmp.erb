@@ -1,0 +1,21 @@
+<%
+	puts @attachments.inspect  
+%>
+
+text = '<%=escape_javascript(render(:partial=>'/esm_documents/fields/image_camera_item'))%>';
+
+<% if params[:upload]%>
+doc = document;
+<% else %>
+doc = opener.document;
+<% end %>
+ele = doc.getElementById('pictzone');
+newn = doc.createElement("div");
+newn.innerHTML = text;
+for(var i=0 ; i < newn.childNodes.length; i++){
+	ele.insertBefore(newn.childNodes[i],ele.lastChild);
+} 
+<%= yield :script %>
+<% if params[:response] %>
+alert("<%=@attachments.size%> images has been added")	
+<% end %>

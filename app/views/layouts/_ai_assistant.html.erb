@@ -1,0 +1,256 @@
+<% if @current_user %>
+<%
+  # Allowlisted file lists for the Context dropdown (server-defined; see Ai::Context).
+  esmai_docs = []
+  esmai_code = []
+  begin
+    esmai_docs = Ai::Context.project_files
+    esmai_code = Ai::Context.code_files
+  rescue => _e
+    esmai_docs = []
+    esmai_code = []
+  end
+  # ACL-scoped list of hosted projects for the Project selector (definitions-only context).
+  esmai_projects   = []
+  esmai_current_pid = nil
+  begin
+    esmai_projects    = Ai::ProjectContext.options_for(@current_user, @current_solution)
+    esmai_current_pid = (@current_project && @current_project.id)
+  rescue => _e
+    esmai_projects = []
+  end
+%>
+<!-- AI Assistant: project-aware engineering assistant widget (ERB + jQuery; no frameworks). -->
+<div id="esmai-root">
+
+  <!-- Floating launcher button (fixed; stays visible while scrolling) -->
+  <button type="button" id="esmai-toggle" title="AI Assistant" aria-label="Open AI Assistant">
+    <span class="esmai-toggle-icon">AI</span>
+  </button>
+
+  <!-- Right slide-out panel -->
+  <div id="esmai-panel" role="dialog" aria-label="AI Assistant" aria-hidden="true">
+
+    <div class="esmai-header">
+      <span class="esmai-title">AI Assistant</span>
+      <button type="button" id="esmai-close" class="esmai-close" title="Close" aria-label="Close">&times;</button>
+    </div>
+
+    <!-- Mode selector -->
+    <div class="esmai-modes">
+      <button type="button" class="esmai-mode esmai-active" data-mode="chat">Chat</button>
+      <button type="button" class="esmai-mode" data-mode="project">Project</button>
+      <button type="button" class="esmai-mode" data-mode="code">Code</button>
+      <button type="button" class="esmai-mode" data-mode="agent">Agent</button>
+      <button type="button" class="esmai-mode" data-mode="documentation">Documentation</button>
+    </div>
+
+    <!-- Project selector (primary context for all modes; ACL-scoped) -->
+    <% if esmai_projects.any? %>
+    <div class="esmai-context" id="esmai-project-row">
+      <span class="esmai-context-label">Project:</span>
+      <select id="esmai-project" class="esmai-context-select">
+        <option value="">(none)</option>
+        <% esmai_projects.each do |pid, plabel| %>
+          <option value="<%= pid %>"<%= ' selected' if pid == esmai_current_pid %>><%= plabel %></option>
+        <% end %>
+      </select>
+    </div>
+    <% end %>
+
+    <!-- Context file selector (shown for modes that read files) -->
+    <div class="esmai-context" id="esmai-context-row" style="display:none">
+      <span class="esmai-context-label">Context:</span>
+      <select id="esmai-context" class="esmai-context-select"><option value="">(choose a file)</option></select>
+    </div>
+
+    <div id="esmai-body" class="esmai-body">
+      <div class="esmai-msg esmai-assistant">
+        <div class="esmai-bubble">Hi! Pick a Project and a mode above. I reason about architecture, code and docs &mdash; not real records. Runs locally (Ollama); first reply can be slow.</div>
+      </div>
+    </div>
+
+    <div class="esmai-footer">
+      <textarea id="esmai-input" class="esmai-input" rows="1" placeholder="Type a message..." autocomplete="off"></textarea>
+      <button type="button" id="esmai-send" class="esmai-send">Send</button>
+    </div>
+
+  </div>
+</div>
+
+<style type="text/css">
+  /* All selectors scoped under #esmai-* to avoid colliding with Bootstrap / kendo / inspinia. */
+  #esmai-toggle{
+    position:fixed; right:0; top:45%; z-index:20000;
+    width:42px; height:64px; border:0; border-radius:8px 0 0 8px;
+    background:#2f4050; color:#fff; font-weight:bold; letter-spacing:1px;
+    cursor:pointer; box-shadow:-2px 2px 8px rgba(0,0,0,.25);
+  }
+  #esmai-toggle:hover{ background:#1ab394; }
+  #esmai-panel{
+    position:fixed; top:0; right:-400px; width:380px; height:100%;
+    background:#fff; z-index:20001; box-shadow:-3px 0 14px rgba(0,0,0,.25);
+    display:flex; flex-direction:column; transition:right .25s ease; font-family:inherit;
+  }
+  #esmai-panel.esmai-open{ right:0; }
+  .esmai-header{
+    flex:0 0 auto; background:#2f4050; color:#fff; padding:12px 14px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .esmai-title{ font-size:15px; font-weight:bold; }
+  .esmai-close{ background:transparent; border:0; color:#fff; font-size:22px; line-height:1; cursor:pointer; }
+  .esmai-modes{
+    flex:0 0 auto; background:#f3f3f4; border-bottom:1px solid #e5e5e5;
+    padding:6px 4px; display:flex; flex-wrap:wrap;
+  }
+  .esmai-mode{
+    border:1px solid #ccc; background:#fff; color:#333; font-size:11px;
+    padding:3px 8px; margin:2px; border-radius:3px; cursor:pointer;
+  }
+  .esmai-mode:hover{ border-color:#1ab394; }
+  .esmai-mode.esmai-active{ background:#1ab394; border-color:#1ab394; color:#fff; }
+  .esmai-context{
+    flex:0 0 auto; background:#f3f3f4; border-bottom:1px solid #e5e5e5;
+    padding:6px 8px; display:flex; align-items:center;
+  }
+  .esmai-context-label{ font-size:11px; color:#666; margin-right:6px; white-space:nowrap; }
+  .esmai-context-select{
+    flex:1 1 auto; font-size:12px; border:1px solid #ccc; border-radius:3px; padding:3px; max-width:100%;
+  }
+  .esmai-body{ flex:1 1 auto; overflow-y:auto; padding:12px; background:#f3f3f4; }
+  .esmai-msg{ margin-bottom:10px; display:flex; }
+  .esmai-msg.esmai-user{ justify-content:flex-end; }
+  .esmai-bubble{
+    max-width:80%; padding:8px 11px; border-radius:10px; font-size:13px; line-height:1.45;
+    white-space:pre-wrap; word-wrap:break-word;
+  }
+  .esmai-assistant .esmai-bubble{ background:#fff; border:1px solid #e5e5e5; color:#333; }
+  .esmai-user .esmai-bubble{ background:#1ab394; color:#fff; }
+  .esmai-footer{
+    flex:0 0 auto; border-top:1px solid #e5e5e5; padding:8px; display:flex; background:#fff;
+  }
+  .esmai-input{
+    flex:1 1 auto; resize:none; border:1px solid #ccc; border-radius:4px; padding:6px 8px;
+    font-size:13px; max-height:96px; font-family:inherit;
+  }
+  .esmai-send{
+    flex:0 0 auto; border:0; border-radius:4px; background:#1ab394; color:#fff;
+    padding:0 14px; margin-left:6px; cursor:pointer; font-size:13px;
+  }
+  .esmai-send[disabled]{ opacity:.6; cursor:default; }
+</style>
+
+<script type="text/javascript">
+// Self-contained, jQuery-based (ES5). Namespaced (esmai*) to avoid global collisions.
+(function($){
+  if (!$) { return; }
+
+  // Allowlisted file lists from the server (Ai::Context). Safe to inline (no user input).
+  var ESMAI_DOCS = <%= esmai_docs.to_json.html_safe %>;
+  var ESMAI_CODE = <%= esmai_code.to_json.html_safe %>;
+
+  // Which file list each mode shows in the Context dropdown (null = no file context).
+  var CTX  = { chat: null, project: 'docs', code: 'code', agent: 'code', documentation: 'docs' };
+  var LIST = { docs: ESMAI_DOCS, code: ESMAI_CODE };
+
+  $(function(){
+    var $panel  = $('#esmai-panel'),
+        $body   = $('#esmai-body'),
+        $input  = $('#esmai-input'),
+        $send   = $('#esmai-send'),
+        $ctxRow = $('#esmai-context-row'),
+        $ctx    = $('#esmai-context'),
+        $proj   = $('#esmai-project');
+
+    if (!$panel.length) { return; }
+
+    var mode = 'chat';
+    var history = []; // client-side conversation memory (not persisted server-side)
+
+    function token(){ return $('meta[name="csrf-token"]').attr('content') || ''; }
+    function scrollBottom(){ $body.scrollTop($body[0].scrollHeight); }
+    function esc(s){ return $('<div/>').text(s == null ? '' : String(s)).html(); }
+
+    function addMessage(role, text){
+      var cls = (role === 'user') ? 'esmai-user' : 'esmai-assistant';
+      $body.append('<div class="esmai-msg ' + cls + '"><div class="esmai-bubble">' + esc(text) + '</div></div>');
+      scrollBottom();
+    }
+
+    function selectMode(m){
+      mode = m;
+      $('.esmai-mode').removeClass('esmai-active');
+      $('.esmai-mode[data-mode="' + m + '"]').addClass('esmai-active');
+      var kind = CTX[m];
+      if (kind) {
+        var files = LIST[kind] || [];
+        $ctx.empty().append('<option value="">(choose a file)</option>');
+        for (var i = 0; i < files.length; i++){
+          $ctx.append($('<option/>').attr('value', files[i]).text(files[i]));
+        }
+        $ctxRow.show();
+      } else {
+        $ctxRow.hide();
+      }
+    }
+
+    function openPanel(){
+      $panel.addClass('esmai-open').attr('aria-hidden', 'false');
+      setTimeout(function(){ $input.focus(); }, 250);
+    }
+    function closePanel(){
+      $panel.removeClass('esmai-open').attr('aria-hidden', 'true');
+    }
+
+    function sendMessage(){
+      var text = $.trim($input.val());
+      if (text === '') { return; }
+      var prior = history.slice(-20); // prior turns only; server re-caps
+      addMessage('user', text);
+      history.push({ role: 'user', content: text });
+      $input.val('');
+      $send.prop('disabled', true);
+
+      $.ajax({
+        url: '/ai_assistant/message',
+        type: 'POST',
+        dataType: 'json',
+        headers: { 'X-CSRF-Token': token() },
+        data: {
+          message: text,
+          history: JSON.stringify(prior),
+          mode: mode,
+          path: ($ctx.val() || ''),
+          project_id: ($proj.val() || '')
+        }
+      }).done(function(resp){
+        var c = (resp && resp.content) ? resp.content : '(no response)';
+        addMessage('assistant', c);
+        history.push({ role: 'assistant', content: c });
+      }).fail(function(xhr){
+        var msg = (xhr && xhr.responseJSON && xhr.responseJSON.content)
+                ? xhr.responseJSON.content
+                : 'Sorry, the assistant is unavailable right now.';
+        addMessage('assistant', msg);
+      }).always(function(){
+        $send.prop('disabled', false);
+        $input.focus();
+      });
+    }
+
+    $('#esmai-toggle').on('click', openPanel);
+    $('#esmai-close').on('click', closePanel);
+    $('.esmai-mode').on('click', function(){ selectMode($(this).data('mode')); });
+    $send.on('click', sendMessage);
+    $input.on('keydown', function(e){
+      if (e.which === 13 && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+    });
+    $(document).on('keydown', function(e){
+      if (e.which === 27 && $panel.hasClass('esmai-open')) { closePanel(); }
+    });
+
+    selectMode('chat');
+  });
+})(window.jQuery);
+</script>
+<% end %>

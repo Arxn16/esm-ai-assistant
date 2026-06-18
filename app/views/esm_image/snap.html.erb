@@ -1,0 +1,111 @@
+<% 
+  @url = "/esm_image/#{@document.id}/snap?field_id=#{params[:field_id]}&ssid=#{params[:ssid]}&p_id=#{params[:p_id]}&ref=#{params[:ref]}"
+%>
+<%= view :fitwidth %>
+<script type="text/javascript" src="/jpegcam/webcam.js"></script>	
+<script language="JavaScript">
+	function setup(){
+	
+		url='<%=@url.html_safe%>&snapcount='+($('#snapcount').val()-1);
+		webcam.set_api_url(url);
+	}
+	function attach(){
+		 $.ajax({
+                url: '/esm_image/<%=@document.id%>/attach_to_gallery?p_id=<%=params[:p_id]%>&field_id=<%=params[:field_id]%>&ssid=<%=params[:ssid]%>',
+                data: [],
+                dataType: 'script',
+                type: 'GET',
+                error: function (xhr, status, error) {
+					alert(error)
+                    // this.trigger('ajax:failure', [xhr, status, error]);
+                }
+            }).done(function(data){
+		    	//alert("The attachments have been added");
+				window.close();
+			});
+		
+		// window.close();
+		
+	}
+</script>
+<style>
+input{
+	font-size:1.5em;
+}
+</style>
+
+<input type="hidden" name="snapid" id="snapid" value="5">
+<input type="hidden" name="snapmodule" id="snapmodule" value="opt_note">
+
+<form method="post" action="" name="form1">    
+	<table><tbody><tr><td valign="top">
+	<div style="display:block;height:50px;">
+		<label style="font-size:1em;">Photo Snap Shot </label><br/>
+		To <%= params[:gallery]%>
+		<label style="font-size:1em;color:#0000FF;margin-left:20px;float:right">times no.
+		<input type="text" name="snapcount" id="snapcount" value="<%= 1 %>" size="2"></label>
+	</div>
+	<!-- First, include the JPEGCam JavaScript Library -->
+	
+	
+	<!-- Configure a few settings -->
+	<script language="JavaScript">
+		webcam.set_quality( 90 ); // JPEG quality (1 - 100)
+		webcam.set_shutter_sound( true ); // play shutter click sound
+		webcam.set_swf_url( '/jpegcam/webcam.swf' );
+		webcam.set_shutter_sound( true, '/jpegcam/shutter.mp3' );
+		webcam.set_stealth( true );
+		setup();
+	</script>
+	
+	<!-- Next, write the movie to the page at 320x240 -->
+	<script language="JavaScript">
+		document.write(webcam.get_html(960, 720) );
+	</script>
+	<!-- Some buttons for controlling things -->
+	<br/>
+	<br/>
+		<input type="button" value="Configure" onclick="webcam.configure()">
+		&nbsp;&nbsp;&nbsp;
+		<input type="button" value="Take Snapshot" onclick="snapcount.value=parseInt(snapcount.value)+1;setup(); webcam.snap();" >
+		&nbsp;&nbsp;&nbsp;
+		<!-- <input type="button" value="Finish" onclick="opener.detail_opt_note_form.module_opt_note_process.value='detail'; opener.detail_opt_note_form.submit();  window.close();"> -->
+		<input type=button value="Finish" onClick="attach()">
+	  <span id="result"></span>
+	
+	<!-- Code to handle the server response (see snap.php) -->
+	<script language="JavaScript">
+		webcam.set_hook( 'onComplete', 'my_completion_handler' );
+		
+		function my_completion_handler(msg) {
+			if (msg.match(/(http\:\/\/\S+)/)) {
+				var image_url = RegExp.$1;
+			   alert('ok');
+				// document.getElementById('upload_results').innerHTML = 
+				// '<h1>Snap Successful!</h1>' + 
+				// '<img src="'+image_url+'">';
+			}
+			 $('#result').html("Uploaded : "+new Date());
+			// else alert("PHP Error: " + msg);
+			//webcam.reset();
+		}
+	</script>
+	
+	</td><td width="50">&nbsp;</td><td valign="top">
+		<div id="upload_results"></div>
+	</td></tr></tbody></table>
+
+
+</form>
+
+
+<script type="text/javascript" charset="utf-8">
+	$(document).ready(function() {
+	  // Handler for .ready() called.
+	  $('body').keypress(function(){
+
+		if (event.keyCode==107) { webcam.snap(); }
+	  });
+	setup();
+	});
+</script>

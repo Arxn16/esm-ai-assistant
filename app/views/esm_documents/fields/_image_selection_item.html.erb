@@ -1,0 +1,21 @@
+<%
+	@attachments.each_with_index do |i,index|
+%>
+<div style="width:150px;float:left;margin:5px">
+<a href="<%=i.path%>?<%=i.id%>" onclick="return hs.expand(this)"><center><img src="<%=i.path%>?<%=i.id%>" name='img' id="img_<%=i%>" class="eachpicimgx" border='0'   height='90' align='absmiddle' ></center>
+</a>
+<div class='comment'>
+<div class="txt">
+<input type='text' id='img_comment_ui_select_<%=i.id%>' value='<%=i.title%>' style='width:100px' />
+<script>
+$('#img_comment_ui_select_<%=i.id%>').change(function(){
+    $('#img_comment_ui_<%=i.id%>').val($(this).val())
+$("#img_comment_ui_<%=i.id%>").kendoComboBox();
+$('#img_comment_<%=i.id%>').val($(this).val())
+
+})
+</script>
+</div>
+</div>
+</div>
+<% end %>

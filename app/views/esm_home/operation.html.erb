@@ -1,0 +1,16 @@
+<h1>Operation</h1>
+
+<%
+	# service = "#{@operation.service.package}"
+	
+	# s = Service.get(service)
+	
+%>
+<%# service %>
+<br/>
+<%# s.send @operation.name.to_sym %>
+<br/>
+
+
+<%=link_to('Edit',:action=>'edit_operation',:id=>@operation)%> |
+<%=link_to('Back',:action=>'service',:id=>@service)%>

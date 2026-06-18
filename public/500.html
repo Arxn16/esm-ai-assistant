@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" class="error_page">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Error Page - 500</title>
+		<!-- Bootstrap framework -->
+            <link rel="stylesheet" href="/gebo/bootstrap/css/bootstrap.min.css" />
+            <link rel="stylesheet" href="/gebo/bootstrap/css/bootstrap-responsive.min.css" />
+		<!-- main styles -->
+            <link rel="stylesheet" href="/gebo/css/style.css" />
+			
+            <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Jockey+One" />
+            
+	</head>
+	<body>
+
+		<div class="error_box">
+			<h1>We're sorry, but something went wrong.</h1>
+			<p>We've been notified about this issue and we'll take a look at it shortly.</p>
+			<a href="javascript:history.back()" class="back_link btn btn-small">Go back</a>
+			<br/>	<br/>	<br/>	<br/>	<br/>
+			<h4> Error Message </h4>
+			<pre><%= @msg %></pre>
+		</div>
+
+	</body>
+</html>

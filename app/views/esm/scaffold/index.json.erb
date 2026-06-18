@@ -1,0 +1,34 @@
+<%
+data = {:count=>@count,:records=>@records.collect{|i| 
+	a = {}
+	@config[:columns].each do |j|
+		unless @config[:fields][j.to_sym] 
+			a[j]=i[j]
+		else
+			if i and @config[:fields][j.to_sym][:show] and i[j] 
+			a[j]= eval "i.#{@config[:fields][j.to_sym][:show]}" 
+		else
+			a[j]=i[j]
+		end
+			
+		end
+	end
+	
+	a[:actions]=''
+	
+	# for i in @config[:list][:actions]
+		# {:type=>'member',:name=>'Permissions',:url=>"/roles/\#{id}/permissions"}
+		# if i[:type]==:member
+			# id = i.id
+			# a[:actions]+=button_to(i[:name],:url=>eval('1'),:method=>:get,:style=>'float:left')
+		# end
+	# end	
+	
+
+	a[:actions]=button_to('Show',"#{@pathname}/#{i.id}",:method=>:get,:style=>'float:left')+button_to('Edit',"#{@pathname}/#{i.id}/edit",:method=>:get,:style=>'float:left')+button_to('Delete',"#{@pathname}/#{i.id}",:method=>:delete,:confirm=>'Are you sure?',:style=>'float:left')
+	a
+}}
+%>
+<%= data.to_json.html_safe %>
+
+

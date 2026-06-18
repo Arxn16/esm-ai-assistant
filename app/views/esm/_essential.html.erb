@@ -1,0 +1,4 @@
+<% if @current_user and  @current_user.authorize? @context and @current_project %>
+<a class="ssw_trigger" style="right:0px" href="/esm_projects/<%=@current_project.id %>"><i class="icon-cog icon-white"></i></a>
+<% end %>
+		

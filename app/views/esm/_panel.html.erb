@@ -1,0 +1,30 @@
+
+
+<div id="form-panel">
+	
+</div>
+<div id="form" class="x-hide-display">
+<%= yield :content %>
+</div>
+
+
+<script type="text/javascript" charset="utf-8">
+	Ext.onReady(function(){
+
+	    Ext.QuickTips.init();
+
+	var simple = new Ext.Panel({
+	        labelWidth: 75, // label settings here cascade unless overridden
+	        // url:'<%=@pathname%>',
+	        frame:true,
+	        title: '<%=title%>',
+	        bodyStyle:'padding:5px 5px 0',
+	        width: <%=width%>,
+			height: <%=height%>,	
+			contentEl: 'form',
+			autoScroll: true
+        });
+
+	    simple.render('form-panel');
+	});
+</script>

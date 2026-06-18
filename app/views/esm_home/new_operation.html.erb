@@ -1,0 +1,8 @@
+<h1>New Operation</h1>
+<br/>
+<%= form_for(:operation) do |f| %>
+<%= hidden_field_tag :id, @service.id %>
+<%= render :partial=> 'operation', :locals=>{:f=>f} %>
+<br/>
+<%= f.submit 'Create' %> | <%= link_to 'Cancel', :action=>'service',:id=>@service%>
+<% end %>

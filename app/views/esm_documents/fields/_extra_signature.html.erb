@@ -1,0 +1,34 @@
+<%
+	p = {:width=>'100%',:height=>120}.merge(fparams)
+	
+	# p = fparams
+
+%>
+
+<div id="sigPad-<%=fid%>" class="sigPad" style="display:inline-block;vertical-align:text-top;border:0px solid;">
+<% unless @show %>
+<span class="clearButton" style="text-align:right;float:right"><a href="#clear">Clear</a></span>
+<% end %>
+<div class="sig sigWrapper" style="">
+<canvas class="pad k-textbox"  height="<%=p[:height]%>" style="width:<%=p[:width]%>;border:1px solid #aaa"></canvas>
+<input type="hidden" name="<%=name%>" class="output">
+</div>
+</div>
+<% unless @edit %>
+ <script src="/signature/jquery.signaturepad.min.js"></script>
+<% if @show %>
+<script>
+  $(document).ready(function() {
+    $('#sigPad-<%=fid%>').signaturePad({displayOnly:true}).regenerate(eval(<%=value.html_safe if value%>));
+  });
+</script>
+<% else %>
+ <script>
+   $(document).ready(function() {
+     $('#sigPad-<%=fid%>').signaturePad({drawOnly:true,validateFields:false}).regenerate(eval(<%=value.html_safe if value%>));
+   });
+ </script>
+
+<% end %>
+<% end %>
+

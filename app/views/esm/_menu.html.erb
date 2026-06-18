@@ -1,0 +1,23 @@
+<% @menus.each_with_index do |i,index| 
+
+	name = i[:name]
+	open = i[:open]
+	submenus = i[:actions]
+	
+%>
+<div class="accordion-group">
+	<div class="accordion-heading">
+		<a href="#collapse-<%= index %>" data-parent="#side_accordion" data-toggle="collapse" class="accordion-toggle">
+		<%= name %>
+		</a>
+		<div class="accordion-body collapse <%='in' if open %>" id="collapse-<%= index %>">
+			<div class="accordion-inner">
+				<ul class="nav nav-list">
+					<% submenus.each do |j| %>
+					<li style="height:2em;border:0px solid red;margin:0.5em"><%= link_to "#{j[:name]}" , "#{j[:link]}", :remote=>j[:remote],:class=>bt_class %></li>
+					<% end %>
+				</ul>
+			</div>
+	</div>
+</div>
+<% end %>

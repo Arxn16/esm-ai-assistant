@@ -1,0 +1,27 @@
+<div style="width:100%;border:0px solid">
+<h1 id="edit_document">Edit Document</h1>	
+<%= form_for(:document,:url=>{:action=>"edit",:id=>@document.id},:remote=>true) do |f| %>
+
+<%= render :partial=> 'document', :locals=>{:f=>f} %>
+<br/>
+<span style='float:left'>
+<%= f.submit 'Update' ,:class=>bt_class%> | <%= link_to 'Cancel', 'javascript:window.location.reload()'%> | <%= link_to 'Delete', {:action=>'delete',:id=>@document},:remote=>true,:confirm=>'Are you sure?' %> | 
+<%= link_to 'Rebuild Table', {:action=>'rebuild_table',:id=>@document},:remote=>true,:confirm=>'Are you sure?' %>
+</span>
+<% end %>
+
+</div>
+<div class="clear">
+	
+</div>
+
+<%# @document.fields[0].get_field_compression%>
+
+
+<%
+
+data = @document.fields[0].get_field_compression
+@document.fields[0].load_field_compression data
+%>
+
+<%# @document.fields[0].inspect %>

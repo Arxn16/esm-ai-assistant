@@ -1,0 +1,52 @@
+<% if params[:controller]=='esm_proxy' %>	
+<%# show_menu [{:name=>'Testf',:open=>true,:actions=>[{:name=>'Create',:link=>'',:remote=>true}]}] %>
+<%= yield :context_menu %>
+<% elsif  @current_project and @current_user and  @current_user.authorize? @context  %>		
+
+
+<%= render :partial=>'layouts/workspace' %>
+			
+								
+						
+<% elsif params[:controller]=='esm_home'  %>
+			<div class="accordion-group">
+				<div class="accordion-heading">
+					<a href="#collapseFive" data-parent="#side_accordion" data-toggle="collapse" class="accordion-toggle">
+						Switch Projects
+					</a>
+				</div>
+				<div class="accordion-body collapse in" id="collapseFive">
+					<div class="accordion-inner">
+						<ul class="nav nav-list">
+						<% if @context %>
+						<% @context.projects.each do |j| %>
+							<li><a href="<%=url_for :controller=>'esm_projects',:action=>'show',:id=>j %>" class="elements"><span><%=j.title%> (<%=j.name%>)</span></a></li>
+						<% end %>
+						
+						<% end %>
+				
+						</ul>
+					</div>
+				</div>
+			</div>
+</div>
+						<div class="accordion-group">
+							<div class="accordion-heading">
+								<a href="#collapseFive" data-parent="#side_accordion" data-toggle="collapse" class="accordion-toggle">
+									Switch Solutions
+								</a>
+							</div>
+							<div class="accordion-body collapse in" id="collapseFive">
+								<div class="accordion-inner">
+									<ul class="nav nav-list">
+									<% @current_user.my_solutions.each do |j| %>
+										<li><a href="<%=url_for :controller=>'esm_home',:action=>'esm_switch',:id=>j %>" class="elements"><span><%=j.title%> (<%=j.name%>)</span></a></li>
+									<% end %>
+							
+									</ul>
+								</div>
+							</div>
+						</div>
+			</div>
+				
+				<% end %>		

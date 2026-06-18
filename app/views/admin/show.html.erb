@@ -1,0 +1,45 @@
+<div id="workspace">
+<h1>Workspace</h1>
+<br/>
+<div class="field">
+	Table:
+	<%= link_to 'New Table',"/esm_home/table_new/#{@current_project.id}",:remote=>true %>
+	<br/>
+	<%# @current_project.get_schema.tables.collect{|i| link_to(i.name,"/esm_home/table_edit?id=#{i.id}",:remote=>true)}.join('&nbsp;').html_safe%>
+</div><br/>
+
+<div class="field">
+	Documents:
+	<%= link_to 'New Document',"/esm_home/document_new/#{@current_project.id}",:remote=>true %>
+	<br/>
+	<%# @current_project.documents.collect{|i| link_to(i.name,"/esm_document/show?id=#{i.id}",:remote=>true)}.join('&nbsp;').html_safe%>
+	
+</div><br/>
+
+<div class="field">
+	Reports:
+	<%= link_to 'New Report',"/esm_home/report_new/#{@current_project.id}",:remote=>true %>
+</div><br/>
+
+<div class="field">
+	Pages:
+	<%= link_to 'New Page',"/esm_home/report_new/#{@current_project.id}",:remote=>true %>
+</div><br/>
+	
+<div class="field">
+	Menues:
+	<%= link_to 'New Menu',"/esm_home/menu_new/#{@current_project.id}",:remote=>true %>
+</div><br/>
+	
+<div class="field">
+	Roles:
+	<%= link_to 'New Role',"/esm_home/role_new/#{@current_project.id}",:remote=>true %>
+</div><br/>
+	
+<div class="field">
+	Users:
+	<%= link_to 'New User',"/esm_home/user_new/#{@current_project.id}",:remote=>true %>
+</div><br/>
+	
+	
+</div>

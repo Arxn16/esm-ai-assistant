@@ -1,0 +1,126 @@
+<% 
+
+
+values = []
+values = value.split('|') if value
+func = "update_#{@prefix.gsub('-','_')}#{field.column_name}"
+
+    if field.lov_type
+	
+	
+	if field.lov_type == 'plain'
+	options = field.lov.split("\n").collect{|i| i.strip}.compact
+	keys = options
+   elsif field.lov_type == 'pair'
+	options = field.lov.split("\n").compact.collect{|i| i.split('|').reverse }
+	keys = options.collect{|i| i[1]}
+   end
+
+
+
+%>
+<script type="text/javascript" charset="utf-8">
+
+	function <%= func %>_func(){
+		options = <%=keys.to_json.html_safe%>;
+		<%
+			hash = {}
+			for op in options
+				hash[op[1]]=op[0].strip
+			end
+		
+		%>
+		values = <%=hash.to_json.html_safe%>;
+		t = new Array()
+	    
+		s = new Array()
+		for(var i in options)
+	    {
+		    if($("#<%=func%>_item_"+i).attr('checked')=='checked'){
+				s.push(options[i])
+				t.push(values[options[i]])
+			}
+		}
+		$('#<%=fid%>').val(s.join('|'));
+	
+		var tree = esm_helper.get('<%=@document.name%>');
+		if(tree){
+			tree.changeValue("<%=@prefix2%><%=field.id%>",this,s.join('|'),t.join(','))
+			tree.updateReport()
+		}
+		$('#<%=fid%>').val(s.join('|')).trigger('change');;
+		
+	}
+	
+	$( document ).ready(function() {
+	    <%= func %>_func()
+	});
+</script>
+<%
+	if params[:opt]=='print'
+		
+	options.each_with_index do |i,index|
+		k = 0 
+	   v = ''
+	   if field.lov_type == 'plain'
+		k = i 
+		v = i
+	   elsif field.lov_type == 'pair'
+		k = i[1]
+		v = i[0]
+	   end
+%>
+<value><%= v if values.index(k)%></value>
+<% end %>
+<% else %>
+<%= hidden_field_tag name, value,:id=>fid  ,:required=>(@field.mandatory=='1' and !@edit),:validationMessage=>"Please select one" %>
+<table><tr>
+<%
+cols = 1
+cols = fparams[:cols] if fparams[:cols]
+options.each_with_index do |i,index|
+   k = 0 
+   v = ''
+   if field.lov_type == 'plain'
+	k = i 
+	v = i
+   elsif field.lov_type == 'pair'
+	k = i[1]
+	v = i[0]
+   end	
+	
+%><td>
+<script>
+
+	
+	$(document).ready(function(){
+	if(typeof(<%="#{func}_item_#{index}"%>)=='undefined'){
+	$('#<%="#{func}_item_#{index}"%>').click(function(){
+
+		t = $(this);
+		v = $('#<%=fid%>').val();
+	
+		if(false&&v!=""&&v==t.val()&&false){
+			t.prop('checked', false);
+		}
+		<%="#{func}_func()"%>
+	})
+	var 	<%="#{func}_item_#{index}"%> = true; 
+	
+	}
+		
+	})
+	
+	
+</script>
+<label><%= radio_button_tag func, k, values.index(k),:id=>"#{func}_item_#{index}",:style=>'display:inline-block'  %> <%= v %>&nbsp;&nbsp;&nbsp;</label></td>
+<%='</tr><tr>'.html_safe if (index+1)%cols==0   %> 
+<% end %>
+</tr>
+</table>	
+<% end %>
+
+<% else %>
+<%= hidden_field_tag name, 'false' %>
+<%= check_box_tag name, 'true',value=='true',:style=>'margin:5px' ,:id=>fid %>
+<% end %>

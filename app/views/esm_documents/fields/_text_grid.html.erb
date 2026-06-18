@@ -1,0 +1,110 @@
+
+<%
+	if fparams[:grid]
+		grid = fparams[:grid]
+		if grid[:row]
+		rows = grid[:row]
+		cols = grid[:col]
+		end
+		
+		if grid[:rows]
+		rows = grid[:rows]
+		cols = grid[:cols]
+		end
+		
+    values = {}
+    values = eval(value) if value		
+%>
+<table border="1" cellspacing="5" cellpadding="5" style="width:100%;border:1px solid #ccc;">
+	
+	<tr ><th ></th>
+	<% if !cols.blank? %>
+	  <% for i in cols %>
+	    <th style="padding:5px;"><%= i %></th>
+	  <% end %>
+	<% else %>
+    no cols
+	<% end %>
+	</tr>
+	<% if !rows.blank? 
+		
+		cols_v = {}
+		
+		sum = 0 
+		%>
+	
+	  <% rows.each_with_index do |j,jindex|  %>
+		<tr>
+	    <th style="text-align:right;padding:5px;width:150px" ><%=j%></th>
+		<% if !cols.blank? %>
+		  <% cols.each_with_index do |i,iindex| 
+				v = ''
+				v= values[jindex.to_s][iindex] if values and  values[jindex.to_s]
+				
+						cols_v[iindex] = 0 unless cols_v[iindex]
+						cols_v[iindex] += v.to_i
+						sum+=v.to_i
+			%>
+		    <td align="center">
+			<% unless @show%>
+			
+			<% unless grid[:type]%>
+			<%= text_field_tag "#{name}[#{jindex}][]",v,:style=>"width:100%",:class=>tb_class %>
+			<% else %>
+			
+			<% case grid[:type]
+			   when 'select'
+					options = []
+					if field.lov_type == 'plain'
+					options = field.lov.split("\n").compact.collect{|i| i.strip}
+					elsif 
+					options = field.lov.split("\n").compact.collect{|i| i.split('|').reverse }
+					end
+			%>
+			<%#"grid_#{fid}_#{iindex}"%>
+			<%= select_tag "#{name}[#{jindex}][]",options_for_select(options,v),:class=>"grid_#{fid}_#{iindex}",:style=>"width:100%",:onchange=>"update_grid_#{field.id}(#{iindex})" %>
+			<% end %>
+			
+			<% end %>
+			</td>
+			<% else 
+		
+			%>
+			<value><%= v %></value>
+			<% end %>
+		  <% end %>
+		<% end %>
+		</tr>
+		
+	  <% end %>
+	<% else %>
+	  
+	<% end %>
+	<% if grid[:sum]%>
+	<tr>
+	<th style="text-align:right;padding:5px;width:150px" >Sum = <span id="grid_<%=fid%>_total" ><%=sum%></span></th>
+ 	<% cols.each_with_index do |i,iindex| %>
+	<td align="center"><span id="grid_<%=fid %>_<%=iindex %>" class="grid_<%=fid%>_sum"><%=cols_v[iindex]%></span></td>
+ 	<% end %>
+	</tr>
+	<% end %>
+</table>
+<% end %>
+<script>
+function update_grid_<%=field.id%>(i){
+	cols_sum = 0 
+	$( ".grid_<%=fid%>_"+i+">option:selected" ).each(function( index,obj ) {
+	  v = parseInt(obj.value);
+	  cols_sum += v;
+	});
+	$( "#grid_<%=fid%>_"+i ).html(cols_sum);
+	sum = 0 
+	$( ".grid_<%=fid%>_sum" ).each(function( index,obj ) {
+	  v = parseInt(obj.innerHTML);
+	  sum += v;
+	});
+	$( "#grid_<%=fid%>_total" ).html(sum);
+}
+i = 0 
+update_grid_<%=field.id%>(i);
+</script>

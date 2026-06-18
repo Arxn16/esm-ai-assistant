@@ -1,0 +1,148 @@
+
+<style type="text/css">
+
+        .icon-grid {
+            background-image:url(/extjs/examples/shared/icons/fam/grid.png) !important;
+        }
+        .add {
+            background-image:url(/extjs/examples/shared/icons/fam/add.gif) !important;
+        }
+        .option {
+            background-image:url(/extjs/examples/shared/icons/fam/plugin.gif) !important;
+        }
+        .remove {
+            background-image:url(/extjs/examples/shared/icons/fam/delete.gif) !important;
+        }
+        .save {
+            background-image:url(/extjs/examples/shared/icons/save.gif) !important;
+        }
+    </style>
+
+<div id="<%=@classname%>" style="height:100%;" >
+</div>
+<LINK REL=StyleSheet HREF="/extjs/resources/css/ext-all-gray.css" TYPE="text/css" MEDIA=screen>
+
+<script type="text/javascript" src="/extjs/ext-all.js"></script>
+<script type="text/javascript" src="/extjs/examples/ux/SlidingPager.js"></script>
+<script type="text/javascript" src="/extjs/examples/ux/grid/TransformGrid.js"></script>
+
+
+<script type="text/javascript">
+Ext.Loader.setConfig({
+    enabled: true
+});
+Ext.Loader.setPath('Ext.ux', '/extjs/examples/ux');
+
+Ext.require([
+    'Ext.grid.*',
+    'Ext.data.*',
+    'Ext.ux.RowExpander',
+    'Ext.selection.CheckboxModel'
+]);
+
+Ext.onReady(function(){
+	
+	
+	
+	
+	
+	Ext.define('Data',{
+        extend: 'Ext.data.Model',
+		fields: [
+		    {name:'Delete'},{name:'Edit'},{name:'Show'},{name:'actions'},<%= @config[:columns].collect{|i| "{name:'#{i}'}" }.join(',') %>
+	       ]
+    });
+
+
+
+   // create the Data Store
+    var store = Ext.create('Ext.data.Store', {
+        model: 'Data',
+        autoLoad: true,
+        proxy: {
+            // load using HTTP
+            type: 'ajax',
+            url: '<%="#{@pathname}.json"%>',
+            // the return will be XML, so lets set up a reader
+            reader: {
+                type: 'json',
+                // records will have an "Item" tag
+                root: 'records',
+                idProperty: 'id',
+                totalRecords: 'count'
+            }
+        }
+    });
+
+    // create the grid
+    var grid = Ext.create('Ext.grid.Panel', {
+		title:'<span style="font-size:1.5em"><%= @classname %></span>',
+        id:'<%=@classname.to_s.downcase%>',
+        store: store,
+ 
+		// inline toolbars
+		tbar: new Ext.Toolbar({
+		items: [
+			{iconCls:'add', text: 'New <%=@classname%>',handler:function(){ window.location='<%=@pathname%>/new';}},
+			{iconCls:'remove', text: 'Remove', handler:function(){ alert(grid.getSelectionModel().selectRecords());}},
+			'-',
+			{iconCls:'option',text: 'Options',
+			 menu: [{
+			   	text:'Import',
+			   	handler:function(){window.location='import';}
+			   	},{
+			   	text:'Export',
+			   	handler:function(){window.location='<%=@pathname%>.xml';}
+			   	},'-',{
+			   	text:'Reset',
+			   	handler:function(){window.location='<%=@pathname%>/destroy/0';}
+			   	}
+			   	]
+			},'->'	,{
+				iconCls:'icon-grid',
+				text: 'Reset',
+				handler:function(){
+					store.load();}
+				},'-',{
+				iconCls:'icon-grid', 
+				text: 'Today Records',
+				handler:function(){
+					store.load({params: {today: 1}});}
+				},'-','Search',{
+				text:'Search',
+				label:'Search',
+				id:'search',
+				xtype: 'textfield',
+				listeners: {
+				specialkey: function(){
+					store.load({
+				    		params: {q: document.getElementById('search').value}});
+					}
+				}
+				}
+		]}),
+		
+		columns:[
+			 <%= @config[:columns].collect{|i| "{header:'#{i.to_s.humanize}',dataIndex:'#{i}',sortable: true}" }.join(',') %>,
+			{header:'',dataIndex:'actions',width:150}
+		],	
+	
+		stripeRows: true,
+		// height: 100,
+		frame:false,
+		bbar: new Ext.PagingToolbar({
+		    pageSize: 50,
+		    store: store,
+		    displayInfo: true,
+		    plugins: new Ext.ux.SlidingPager()
+		}),
+
+        iconCls:'icon-grid',
+        renderTo:'<%=@classname%>'
+    });
+
+
+    grid.render();
+   
+});
+</script>

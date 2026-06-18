@@ -1,0 +1,52 @@
+<% 
+
+	home = '/'
+	home = @current_project.get_home_url request if @current_project
+
+%>
+
+
+	<%
+	   if @home
+		@current_project = @home.project
+		@project_instance = @current_project.get_instance 
+	   end
+	%>
+	
+	<li><a href='<%=home%>'><i class="icon-home icon-white"></i> <b>Home</b></a></li>
+	<% if @current_project %>
+	<% if true %>
+	<%
+		# application tools bar
+		
+		# menus = @current_project.menu_actions.root	
+		menus = []
+		if @project_instance
+			menus = @project_instance[:menus].collect{|i| MenuAction.find(i)} 
+		end
+
+		
+		menus.each do |i| 
+	%>
+	<% if @current_user and @current_user.allow? @current_role, i.acl %>
+	<% if i.menu_actions.published.size==0  %>
+	<li><a <%="href='#{i.url}' if i.url and i.url!=''".html_safe%>><i class="icon-book icon-white"></i> <b><%=i.name%> </b></a></li>
+	<%else %>
+	 <li class="dropdown">
+        <a data-toggle="dropdown" class="dropdown-toggle" <%#"href='#{i.url}' if i.url and i.url!=''" %> ><i class="icon-list-alt icon-white"></i> <b><%= i.name %></b> <b class="caret"></b></a>
+			<% if i.menu_actions.published.size>0 %>
+		     <ul class="dropdown-menu">
+				<%=i.menu_actions.published.collect{|j| "<li><a href='#{j.url}'><b>#{j.name}</b></a></li>" if @current_user.allow? @current_role, j.acl }.compact.join().html_safe %>
+			</ul>
+			<% end %>
+		</li>
+	<% end %>
+	<% end %>
+	
+	<% end %>
+	
+	<% end %>
+	
+	<% end %>
+	
+	
