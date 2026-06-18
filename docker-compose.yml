@@ -32,6 +32,9 @@ services:
     # command: bash -c "rm -f tmp/pids/server.pid && bundle exec thin start  --port 3000 --ssl"
     environment:
       OLLAMA_URL: http://ollama:11434
+      AI_CLOUD_URL: ${AI_CLOUD_URL:-https://openrouter.ai/api/v1}
+      AI_CLOUD_KEY: ${AI_CLOUD_KEY:-}
+      AI_CLOUD_MODEL: ${AI_CLOUD_MODEL:-}
     volumes:
       - .:/docker_app
     ports:

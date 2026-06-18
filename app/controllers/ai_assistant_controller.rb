@@ -28,8 +28,9 @@ class AiAssistantController < EsmController
     return render_reply('Please type a message.') if text == ''
     text = text[0, MAX_MESSAGE_CHARS]
 
-    mode = Ai::Modes.valid?(params[:mode]) ? params[:mode].to_s : Ai::Modes::DEFAULT
-    spec = Ai::Modes.get(mode)
+    mode   = Ai::Modes.valid?(params[:mode]) ? params[:mode].to_s : Ai::Modes::DEFAULT
+    spec   = Ai::Modes.get(mode)
+    engine = (params[:engine].to_s.strip.downcase == 'cloud') ? 'cloud' : 'ollama'
 
     messages = [{ :role => 'system', :content => spec[:system] }]
 
@@ -47,10 +48,11 @@ class AiAssistantController < EsmController
     options[:num_predict] = spec[:num_predict] if spec[:num_predict]
     opts = { :mode => mode }
     opts[:options] = options unless options.empty?
+    opts[:model]   = params[:model].to_s.strip[0, 120] unless params[:model].to_s.strip == ''
 
     # Telemetry (metadata only - no message/prompt contents, no PHI).
-    Rails.logger.info("[AI] mode=#{mode} project=#{params[:project_id]} user=#{@current_user.id}")
-    reply = Ai::Provider.for(server_provider).chat(messages, opts)
+    Rails.logger.info("[AI] mode=#{mode} engine=#{engine} project=#{params[:project_id]} user=#{@current_user.id}")
+    reply = Ai::Provider.for(engine).chat(messages, opts)
     render_reply(reply[:content].to_s)
 
   rescue Ai::Error => e
@@ -60,15 +62,19 @@ class AiAssistantController < EsmController
     render_reply('Sorry, the assistant is unavailable right now.', :internal_server_error)
   end
 
+  # Available model names for the chosen engine (for the UI dropdown). Auth-gated.
+  def models
+    return render(:json => { :models => [] }, :status => :unauthorized) unless @current_user
+    engine = (params[:engine].to_s.strip.downcase == 'cloud') ? 'cloud' : 'ollama'
+    render :json => { :engine => engine, :models => Array(Ai::Provider.for(engine).models) }
+  rescue => e
+    render :json => { :models => [] }
+  end
+
   private
 
   def render_reply(content, status = :ok)
     render :json => { :role => 'assistant', :content => content }, :status => status
-  end
-
-  # Provider is chosen server-side only (default ollama) - never trust the client.
-  def server_provider
-    ENV['AI_PROVIDER'] || 'ollama'
   end
 
   # Definitions-only metadata summary of the selected project = primary context for ALL
@@ -131,8 +137,9 @@ class AiAssistantController < EsmController
 
   def friendly_error(code)
     case code
-    when 'timeout'     then 'The assistant took too long to respond. Please try again.'
-    when 'unreachable' then 'The AI service is not reachable right now.'
+    when 'timeout'              then 'The assistant took too long to respond. Please try again.'
+    when 'unreachable'          then 'The AI service is not reachable right now.'
+    when 'cloud_not_configured' then 'Cloud AI is not set up yet - add an API key in .env, or use Local.'
     else 'Sorry, the assistant is unavailable right now.'
     end
   end

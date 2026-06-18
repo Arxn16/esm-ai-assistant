@@ -1,13 +1,12 @@
 # Ai::Provider - base contract + factory for swappable AI chat backends.
 #
-# Concrete adapters (Ollama now; OpenAI / Claude later) implement
+# Concrete adapters implement:
 #   #chat(messages, opts = {}) -> { :role => 'assistant', :content => String }
+#   #models                    -> [String, ...]   (available model ids, for the UI dropdown)
 # where `messages` is an Array of { :role => 'system'|'user'|'assistant', :content => String }.
 #
-# Provider selection is config-driven (ENV['AI_PROVIDER'], default 'ollama') so the
-# backend can be swapped without touching the controller or the widget.
-#
-# Lives under lib/ (on autoload_paths via lib/esm_essential.rb). Top-level `Ai`
+# Engine selection is config-driven; the client may only send a KEY (local/cloud) and a model
+# id from the live list - NEVER URLs or API keys (those stay server-side). Top-level `Ai::`
 # namespace is used on purpose to avoid colliding with the `Esm` ActiveRecord model.
 module Ai
   class Error < StandardError; end
@@ -15,20 +14,25 @@ module Ai
   class Provider
     DEFAULT = 'ollama'.freeze
 
-    # Subclasses must override. Returns { :role => 'assistant', :content => String }.
     def chat(messages, opts = {})
       raise NotImplementedError, "#{self.class} must implement #chat"
     end
 
-    # Factory: name (or ENV) -> adapter instance. Unknown names fall back to Ollama.
-    # The provider is ALWAYS chosen server-side; never trust a client-supplied value.
+    # Available model names for this provider (for the UI dropdown). Default: none.
+    def models
+      []
+    end
+
+    # Factory: engine/name -> adapter instance.
+    #   local  -> Ollama (on-prem)
+    #   cloud  -> OpenAI-compatible (OpenRouter by default; also Groq, etc. via AI_CLOUD_URL)
     def self.for(name = nil)
       key = (name || ENV['AI_PROVIDER'] || DEFAULT).to_s.strip.downcase
       case key
-      when 'ollama' then Ai::Ollama.new
-      # Future:
-      # when 'openai' then Ai::OpenAi.new
-      # when 'claude' then Ai::Claude.new
+      when 'ollama', 'local'
+        Ai::Ollama.new
+      when 'cloud', 'openrouter', 'groq', 'openai_compat'
+        Ai::OpenaiCompat.new
       else
         Ai::Ollama.new
       end

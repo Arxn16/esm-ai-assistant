@@ -6,3 +6,4 @@ config/database.yml
 /public/esm/*
 /public/assets/*
 /databases/*
+.env
