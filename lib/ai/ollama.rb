@@ -79,6 +79,21 @@ module Ai
       raise
     end
 
+    # Locally-pulled Ollama models (GET /api/tags) for the model dropdown.
+    def models
+      uri  = URI.parse("#{@base_url}/api/tags")
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl      = (uri.scheme == 'https')
+      http.open_timeout = OPEN_TIMEOUT
+      http.read_timeout = 10
+      res  = http.request(Net::HTTP::Get.new(uri.request_uri))
+      return [] unless res.is_a?(Net::HTTPSuccess)
+      data = JSON.parse(res.body)
+      Array(data['models']).map { |m| m['name'] }.compact
+    rescue
+      []
+    end
+
     private
 
     def normalize(messages)

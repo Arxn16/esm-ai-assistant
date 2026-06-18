@@ -45,6 +45,15 @@
       <button type="button" class="esmai-mode" data-mode="documentation">Documentation</button>
     </div>
 
+    <!-- Engine (Local/Cloud) + model selector -->
+    <div class="esmai-context" id="esmai-engine-row">
+      <span class="esmai-context-label">AI:</span>
+      <button type="button" class="esmai-eng esmai-active" data-engine="local">&#128274; Local</button>
+      <button type="button" class="esmai-eng" data-engine="cloud">&#9889; Cloud</button>
+      <select id="esmai-model" class="esmai-context-select" style="margin-left:6px"><option value="">(default)</option></select>
+    </div>
+    <div id="esmai-cloud-warn" style="display:none;background:#fff3cd;color:#8a6d3b;font-size:11px;padding:5px 8px;border-bottom:1px solid #e5e5e5">&#9888; Cloud: sends data to an external API &mdash; do NOT enter patient / real records.</div>
+
     <!-- Project selector (primary context for all modes; ACL-scoped) -->
     <% if esmai_projects.any? %>
     <div class="esmai-context" id="esmai-project-row">
@@ -109,6 +118,8 @@
   }
   .esmai-mode:hover{ border-color:#1ab394; }
   .esmai-mode.esmai-active{ background:#1ab394; border-color:#1ab394; color:#fff; }
+  .esmai-eng{ border:1px solid #ccc; background:#fff; color:#333; font-size:11px; padding:3px 8px; margin:0 2px; border-radius:3px; cursor:pointer; }
+  .esmai-eng.esmai-active{ background:#2f4050; border-color:#2f4050; color:#fff; }
   .esmai-context{
     flex:0 0 auto; background:#f3f3f4; border-bottom:1px solid #e5e5e5;
     padding:6px 8px; display:flex; align-items:center;
@@ -160,11 +171,14 @@
         $send   = $('#esmai-send'),
         $ctxRow = $('#esmai-context-row'),
         $ctx    = $('#esmai-context'),
-        $proj   = $('#esmai-project');
+        $proj   = $('#esmai-project'),
+        $model  = $('#esmai-model'),
+        $cloudWarn = $('#esmai-cloud-warn');
 
     if (!$panel.length) { return; }
 
     var mode = 'chat';
+    var engine = 'local';
     var history = []; // client-side conversation memory (not persisted server-side)
 
     function token(){ return $('meta[name="csrf-token"]').attr('content') || ''; }
@@ -194,6 +208,22 @@
       }
     }
 
+    function fetchModels(eng){
+      $.ajax({ url: '/ai_assistant/models', type: 'GET', dataType: 'json', data: { engine: eng } })
+        .done(function(resp){
+          var list = (resp && resp.models) ? resp.models : [];
+          $model.empty().append('<option value="">(default)</option>');
+          for (var i = 0; i < list.length; i++){ $model.append($('<option/>').attr('value', list[i]).text(list[i])); }
+        }).fail(function(){ $model.empty().append('<option value="">(default)</option>'); });
+    }
+    function selectEngine(eng){
+      engine = eng;
+      $('.esmai-eng').removeClass('esmai-active');
+      $('.esmai-eng[data-engine="' + eng + '"]').addClass('esmai-active');
+      if (eng === 'cloud') { $cloudWarn.show(); } else { $cloudWarn.hide(); }
+      fetchModels(eng);
+    }
+
     function openPanel(){
       $panel.addClass('esmai-open').attr('aria-hidden', 'false');
       setTimeout(function(){ $input.focus(); }, 250);
@@ -221,7 +251,9 @@
           history: JSON.stringify(prior),
           mode: mode,
           path: ($ctx.val() || ''),
-          project_id: ($proj.val() || '')
+          project_id: ($proj.val() || ''),
+          engine: engine,
+          model: ($model.val() || '')
         }
       }).done(function(resp){
         var c = (resp && resp.content) ? resp.content : '(no response)';
@@ -241,6 +273,7 @@
     $('#esmai-toggle').on('click', openPanel);
     $('#esmai-close').on('click', closePanel);
     $('.esmai-mode').on('click', function(){ selectMode($(this).data('mode')); });
+    $('.esmai-eng').on('click', function(){ selectEngine($(this).data('engine')); });
     $send.on('click', sendMessage);
     $input.on('keydown', function(e){
       if (e.which === 13 && !e.shiftKey) { e.preventDefault(); sendMessage(); }
@@ -250,6 +283,7 @@
     });
 
     selectMode('chat');
+    selectEngine('local');
   });
 })(window.jQuery);
 </script>

@@ -11,6 +11,7 @@ Esmx::Application.routes.draw do
          # Declared before the generic ':controller/:id' catch-alls below or the
          # POST would be hijacked to AiAssistantController#show (id='message').
          match 'ai_assistant/message'=>'ai_assistant#message' ,via: [:post]
+         match 'ai_assistant/models'=>'ai_assistant#models' ,via: [:get]
 
          match 'home/:action'=>'home', via: [:get, :post]
 
