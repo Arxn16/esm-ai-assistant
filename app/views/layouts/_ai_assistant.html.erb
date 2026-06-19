@@ -43,6 +43,7 @@
       <button type="button" class="esmai-mode" data-mode="code">Code</button>
       <button type="button" class="esmai-mode" data-mode="agent">Agent</button>
       <button type="button" class="esmai-mode" data-mode="documentation">Documentation</button>
+      <button type="button" class="esmai-mode" data-mode="esm_agent">&#128296; ESM Agent</button>
     </div>
 
     <!-- Engine (Local/Cloud) + model selector -->
@@ -173,7 +174,7 @@
   var ESMAI_CODE = <%= esmai_code.to_json.html_safe %>;
 
   // Which file list each mode shows in the Context dropdown (null = no file context).
-  var CTX  = { chat: null, project: 'docs', code: 'code', agent: 'code', documentation: 'docs' };
+  var CTX  = { chat: null, project: 'docs', code: 'code', agent: 'code', documentation: 'docs', esm_agent: null };
   var LIST = { docs: ESMAI_DOCS, code: ESMAI_CODE };
 
   $(function(){
@@ -267,6 +268,88 @@
       $panel.removeClass('esmai-open').attr('aria-hidden', 'true');
     }
 
+    // ESM Agent: NL -> Ai::Agent picks a tool -> read tools run; write tools come back as a proposal.
+    function sendAgent(text){
+      $.ajax({
+        url: '/ai_agent/ask', type: 'POST', dataType: 'json',
+        headers: { 'X-CSRF-Token': token() },
+        data: { message: text, engine: engine, model: ($model.val() || '') }
+      }).done(function(r){
+        if (r && r.ok && r.mode === 'proposal') { renderPlan(r.steps); return; }
+        var msg;
+        if (r && r.ok && r.mode === 'info') {
+          msg = r.message || '';
+        } else if (r && r.ok && r.mode === 'result') {
+          msg = '[plan: ' + (r.steps ? r.steps.length : 0) + ' step]\n' + JSON.stringify(r.results, null, 2);
+        } else {
+          msg = '[!] ' + ((r && r.error) || 'ไม่สำเร็จ');
+        }
+        addMessage('assistant', msg);
+        history.push({ role: 'assistant', content: msg }); saveHistory();
+      }).fail(function(){
+        addMessage('assistant', '[!] เชื่อมต่อ ESM Agent ไม่ได้');
+      }).always(function(){
+        $send.prop('disabled', false); $input.focus();
+      });
+    }
+
+    // A multi-step write plan: show all steps + one "Apply all". Apply -> POST /ai_agent/run_plan.
+    function renderPlan(steps){
+      steps = steps || [];
+      var $el = $('<div class="esmai-msg esmai-assistant"><div class="esmai-bubble"></div></div>');
+      var $b  = $el.find('.esmai-bubble');
+      var txt = '[แผน ' + steps.length + ' ขั้น]';
+      for (var i = 0; i < steps.length; i++){
+        txt += '\n' + (i + 1) + '. ' + steps[i].tool + ' ' + JSON.stringify(steps[i].args);
+      }
+      $b.text(txt);
+      var bs = { color: '#fff', background: '#2e7d32', border: 0, 'border-radius': '4px', padding: '4px 12px', margin: '6px 6px 0 0', cursor: 'pointer' };
+      var $apply  = $('<button type="button">Apply ทั้งหมด</button>').css(bs);
+      var $reject = $('<button type="button">Reject</button>').css({ color: '#5a6b80', background: '#eceff3', border: '1px solid #cdd6e0', 'border-radius': '4px', padding: '4px 12px', cursor: 'pointer' });
+      $b.append('<br/>').append($apply).append($reject);
+      $apply.on('click', function(){
+        $apply.prop('disabled', true); $reject.prop('disabled', true);
+        runPlan(steps, $b);
+      });
+      $reject.on('click', function(){ $apply.remove(); $reject.remove(); $b.append(' (ยกเลิก)'); });
+      $body.append($el); scrollBottom();
+    }
+    function runPlan(steps, $b){
+      $.ajax({
+        url: '/ai_agent/run_plan', type: 'POST', dataType: 'json',
+        headers: { 'X-CSRF-Token': token() },
+        data: { steps: JSON.stringify(steps) }
+      }).done(function(r){
+        if (r && r.ok) {
+          $b.append('<br/>OK สำเร็จ: ' + esc(JSON.stringify(r.results)));
+          var docs = collectDocIds(r.results);
+          if (docs.length) { appendUndo($b, docs); }
+        } else { $b.append('<br/>[!] ' + esc((r && r.error) || 'ไม่สำเร็จ')); }
+        scrollBottom();
+      }).fail(function(){ $b.append('<br/>[!] run_plan ไม่สำเร็จ'); });
+    }
+    // Document ids touched by a result set -> offer one-click Undo (version rollback).
+    function collectDocIds(results){
+      var ids = [], seen = {}, arr = results || [];
+      for (var i = 0; i < arr.length; i++){
+        var d = arr[i] && arr[i].document_id;
+        if (d && !seen[d]) { seen[d] = 1; ids.push(d); }
+      }
+      return ids;
+    }
+    function appendUndo($b, docIds){
+      var $u = $('<button type="button">↩ ย้อนกลับ</button>').css({ color: '#c0392b', background: '#fff', border: '1px solid #e0b4b4', 'border-radius': '4px', padding: '3px 12px', margin: '6px 0 0 0', cursor: 'pointer' });
+      $b.append('<br/>').append($u);
+      $u.on('click', function(){
+        $u.prop('disabled', true);
+        var steps = [];
+        for (var i = 0; i < docIds.length; i++){ steps.push({ tool: 'rollback_document', args: { document_id: docIds[i] } }); }
+        $.ajax({ url: '/ai_agent/run_plan', type: 'POST', dataType: 'json', headers: { 'X-CSRF-Token': token() }, data: { steps: JSON.stringify(steps) } })
+          .done(function(r){ $b.append('<br/>' + (r && r.ok ? '↩ ย้อนกลับแล้ว' : ('[!] ' + esc((r && r.error) || 'ย้อนไม่สำเร็จ')))); scrollBottom(); })
+          .fail(function(){ $b.append('<br/>[!] ย้อนกลับไม่สำเร็จ'); });
+      });
+    }
+
     function sendMessage(){
       var text = $.trim($input.val());
       if (text === '') { return; }
@@ -276,6 +359,9 @@
       saveHistory();
       $input.val('');
       $send.prop('disabled', true);
+
+      // ESM Agent mode: route to the tool registry (Ai::Agent) instead of the chat backend.
+      if (mode === 'esm_agent') { sendAgent(text); return; }
 
       $.ajax({
         url: '/ai_assistant/message',

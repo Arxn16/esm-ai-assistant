@@ -23,6 +23,13 @@ Esmx::Application.routes.draw do
          match 'ai_form_builder/versions' => 'ai_form_builder#versions' ,via: [:get]
          match 'ai_form_builder/rollback' => 'ai_form_builder#rollback' ,via: [:post]
 
+         # AI Agent (ESM-wide tool registry). Phase 1: read tools execute; writes return proposals.
+         match 'ai_agent/tools' => 'ai_agent#tools' ,via: [:get]
+         match 'ai_agent/run'     => 'ai_agent#run'     ,via: [:post]
+         match 'ai_agent/ask'     => 'ai_agent#ask'     ,via: [:post]
+         match 'ai_agent/execute'  => 'ai_agent#execute'  ,via: [:post]
+         match 'ai_agent/run_plan' => 'ai_agent#run_plan' ,via: [:post]
+
          match 'home/:action'=>'home', via: [:get, :post]
 
          resources :esms
