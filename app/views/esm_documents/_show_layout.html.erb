@@ -25,6 +25,16 @@
 	end
 
 %>
+<%# AI Form Copilot - shown ONLY on the data-entry form (create/edit), NOT on show/print.
+    show & print set @show=true (via the 'display' op) to render values instead of inputs, so we
+    gate on !@show. Also limited to forms a developer opted-in (ai_editable). Wrapped in
+    begin/rescue: a failure here must NEVER break record entry, show, or print. %>
+<% begin %>
+  <% if !@show && @document && @document.respond_to?(:ai_editable) && @document.ai_editable %>
+    <%= render :partial => '/esm_documents/ai_field_assistant.html', :locals => { :refresh_mode => 'reload' } %>
+  <% end %>
+<% rescue => _aifb_err %>
+<% end %>
 <%= render :partial=>'/esm_documents/render_containers.html',:locals=>{:hidden=>true}%>
 <div id="clear">
 </div>

@@ -44,6 +44,7 @@ module Ai
         :think    => false # qwen3: suppress <think> reasoning (ignored by older Ollama)
       }
       payload[:options] = options unless options.empty?
+      payload[:format]  = opts[:format] if opts[:format] # e.g. 'json' to force structured output
 
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl      = (uri.scheme == 'https')

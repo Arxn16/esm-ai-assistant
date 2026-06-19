@@ -1,0 +1,154 @@
+<%# AI Form Copilot panel - shown on the Edit Layout page. Doctor types a request, AI returns a
+    suggestion, doctor clicks Apply/Reject. All writes go through AiFormBuilderController (validated,
+    additive-only, versioned). Self-contained jQuery; reads the CSRF token from the page meta tag. %>
+<div id="aifb-panel" data-doc="<%= @document.id %>" data-refresh="<%= (local_assigns[:refresh_mode] || 'layout') %>"
+     style="border:1px solid #c5d4e6;border-radius:8px;background:#f4f8fd;padding:12px;margin:0 0 14px 0;max-width:730px;font-size:13px;color:#33475b">
+
+  <div style="font-weight:bold;font-size:14px;margin-bottom:8px;color:#1565c0">
+    &#129302; AI ผู้ช่วยเพิ่มฟิลด์ (Form Copilot)
+    <span style="font-weight:normal;color:#7a8aa0;font-size:12px">&mdash; พิมพ์สิ่งที่อยากเพิ่ม แล้วกด Apply</span>
+  </div>
+
+  <div style="display:flex;gap:6px">
+    <input id="aifb-input" type="text" autocomplete="off"
+           placeholder='เช่น: เพิ่มช่องประวัติการสูบบุหรี่ แบบข้อความยาว'
+           style="flex:1;padding:7px 9px;border:1px solid #c5d4e6;border-radius:5px;font-size:13px"/>
+    <button type="button" id="aifb-send"
+            style="padding:7px 16px;background:#1e88e5;color:#fff;border:1px solid #1565c0;border-radius:5px;cursor:pointer">ส่ง</button>
+  </div>
+
+  <div id="aifb-status" style="margin-top:8px;color:#7a8aa0;min-height:18px"></div>
+
+  <%# suggestion card %>
+  <div id="aifb-suggestion" style="display:none;margin-top:8px;background:#fff;border:1px solid #d0d9e3;border-radius:6px;padding:10px">
+    <div style="margin-bottom:8px">
+      <span style="color:#7a8aa0">Add field:</span>
+      <b id="aifb-col" style="color:#1565c0"></b>
+      <span id="aifb-type" style="background:#e8eef5;border-radius:4px;padding:1px 7px;margin-left:4px"></span>
+      <div style="color:#7a8aa0;margin-top:3px">label: <span id="aifb-label"></span></div>
+      <div id="aifb-opts" style="display:none;color:#7a8aa0;margin-top:3px"></div>
+    </div>
+    <button type="button" id="aifb-apply"
+            style="padding:6px 16px;background:#2e7d32;color:#fff;border:0;border-radius:5px;cursor:pointer">Apply</button>
+    <button type="button" id="aifb-reject"
+            style="padding:6px 16px;background:#eceff3;color:#5a6b80;border:1px solid #cdd6e0;border-radius:5px;cursor:pointer">Reject</button>
+  </div>
+
+  <div style="margin-top:8px">
+    <a href="#" id="aifb-ver-toggle" style="color:#1565c0;font-size:12px">ประวัติเวอร์ชัน &#9662;</a>
+    <div id="aifb-versions" style="display:none;margin-top:6px;background:#fff;border:1px solid #e2e8f0;border-radius:6px;padding:8px;max-height:180px;overflow:auto"></div>
+  </div>
+</div>
+
+<script type="text/javascript">
+(function(){
+  var $panel = $('#aifb-panel'); if(!$panel.length){ return; }
+  var docId  = $panel.data('doc');
+  var current = null; // last suggestion
+
+  // meta tag (standalone page) OR the form_for hidden field (runtime create/edit form).
+  function token(){
+    return $('meta[name="csrf-token"]').attr('content')
+        || $('input[name="authenticity_token"]').first().val()
+        || '';
+  }
+  function status(msg, color){ $('#aifb-status').css('color', color||'#7a8aa0').text(msg||''); }
+  function busy(b){ $('#aifb-send').prop('disabled', b).css('opacity', b?0.6:1); }
+
+  function showSuggestion(s){
+    current = s;
+    $('#aifb-col').text(s.column_name);
+    $('#aifb-type').text(s.ui_type);
+    $('#aifb-label').text(s.label);
+    if(s.options && s.options.length){ $('#aifb-opts').text('ตัวเลือก: ' + s.options.join(', ')).show(); }
+    else { $('#aifb-opts').hide().text(''); }
+    $('#aifb-suggestion').show();
+  }
+  function hideSuggestion(){ current = null; $('#aifb-suggestion').hide(); }
+
+  function send(){
+    var text = $.trim($('#aifb-input').val());
+    if(text === ''){ status('พิมพ์คำสั่งก่อน', '#c0392b'); return; }
+    hideSuggestion(); busy(true); status('กำลังคิด... (ครั้งแรกอาจช้า)');
+    $.ajax({
+      url:'/ai_form_builder/suggest', type:'POST', dataType:'json',
+      headers:{ 'X-CSRF-Token': token() },
+      data:{ document_id: docId, message: text }
+    }).done(function(r){
+      busy(false);
+      if(r && r.ok){ status(''); showSuggestion(r.suggestion); }
+      else { status((r && r.error) || 'ไม่สำเร็จ', '#c0392b'); }
+    }).fail(function(){ busy(false); status('เชื่อมต่อ AI ไม่ได้ ลองใหม่', '#c0392b'); });
+  }
+
+  function apply(){
+    if(!current){ return; }
+    busy(true); status('กำลังเพิ่มฟิลด์...');
+    var payload = { document_id: docId, column_name: current.column_name,
+                    field_type: current.field_type, label: current.label, prompt: current.prompt };
+    if(current.options && current.options.length){ payload.options = current.options; }
+    $.ajax({
+      url:'/ai_form_builder/apply', type:'POST', dataType:'json',
+      headers:{ 'X-CSRF-Token': token() },
+      data: payload
+    }).done(function(r){
+      busy(false);
+      if(r && r.ok){
+        status('✅ ' + r.message, '#2e7d32'); hideSuggestion(); $('#aifb-input').val('');
+        refreshLayout();
+      } else { status((r && r.error) || 'บันทึกไม่สำเร็จ', '#c0392b'); }
+    }).fail(function(){ busy(false); status('บันทึกไม่สำเร็จ', '#c0392b'); });
+  }
+
+  // Make the new field appear. On a data-entry form (data-refresh="reload") we DON'T auto-reload
+  // (would lose what the clinician typed) - we offer a manual reload link instead. On the dev
+  // builder we re-fetch the remote JS panel in place.
+  function refreshLayout(){
+    if($panel.data('refresh') === 'reload'){
+      $('#aifb-status').append(' <a href="#" class="aifb-reload" style="color:#1565c0">[โหลดหน้าใหม่เพื่อเห็นช่อง]</a>');
+      $panel.find('.aifb-reload').off('click').on('click', function(e){ e.preventDefault(); try{ window.location.reload(); }catch(_e){} });
+      return;
+    }
+    $.ajax({ url:'/esm_documents/'+docId+'/edit_layout', type:'GET', dataType:'script' })
+      .fail(function(){ try{ window.location.reload(); }catch(e){} });
+  }
+
+  function loadVersions(){
+    $.ajax({ url:'/ai_form_builder/versions', type:'GET', dataType:'json',
+             data:{ document_id: docId } })
+    .done(function(r){
+      var box = $('#aifb-versions'); box.empty();
+      if(!r || !r.ok || !r.versions.length){ box.html('<span style="color:#9aa7b8">ยังไม่มีเวอร์ชัน</span>'); return; }
+      $.each(r.versions, function(i, v){
+        var row = $('<div style="padding:4px 0;border-bottom:1px solid #f0f3f7"></div>');
+        row.append('<span style="color:#9aa7b8">#'+v.id+' ['+v.source+'] '+v.at+' &middot; '+(v.author||'')+'</span> ');
+        var btn = $('<a href="#" style="color:#1565c0;margin-left:6px">ย้อนกลับ</a>');
+        btn.on('click', function(e){ e.preventDefault(); rollback(v.id); });
+        row.append(btn);
+        box.append(row);
+      });
+    });
+  }
+
+  function rollback(vid){
+    if(!window.confirm('ย้อนฟอร์มกลับไปเวอร์ชัน #'+vid+' ? (คอลัมน์ในตารางคงไว้ ไม่มีข้อมูลหาย)')){ return; }
+    $.ajax({ url:'/ai_form_builder/rollback', type:'POST', dataType:'json',
+             headers:{ 'X-CSRF-Token': token() },
+             data:{ document_id: docId, version_id: vid } })
+    .done(function(r){
+      if(r && r.ok){ status('↩ ' + r.message, '#2e7d32'); refreshLayout(); }
+      else { status((r && r.error) || 'ย้อนไม่สำเร็จ', '#c0392b'); }
+    });
+  }
+
+  $('#aifb-send').on('click', send);
+  $('#aifb-input').on('keydown', function(e){ if(e.which === 13){ e.preventDefault(); send(); } });
+  $('#aifb-apply').on('click', apply);
+  $('#aifb-reject').on('click', function(){ hideSuggestion(); status('ยกเลิกแล้ว'); });
+  $('#aifb-ver-toggle').on('click', function(e){
+    e.preventDefault();
+    var b = $('#aifb-versions');
+    if(b.is(':visible')){ b.hide(); } else { b.show(); loadVersions(); }
+  });
+})();
+</script>

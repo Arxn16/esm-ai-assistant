@@ -15,6 +15,14 @@ Esmx::Application.routes.draw do
          match 'ai_assistant/logs'=>'ai_assistant#logs' ,via: [:get]
          match 'ai_assistant/limit'=>'ai_assistant#limit' ,via: [:get]
 
+         # AI Form Builder (clinician: chat -> suggestion -> Apply/Reject -> versioned add field).
+         # Declared before the generic ':controller/:id' catch-alls so POSTs are not hijacked.
+         match 'ai_form_builder/edit'     => 'ai_form_builder#edit'     ,via: [:get]
+         match 'ai_form_builder/suggest'  => 'ai_form_builder#suggest'  ,via: [:post]
+         match 'ai_form_builder/apply'    => 'ai_form_builder#apply'    ,via: [:post]
+         match 'ai_form_builder/versions' => 'ai_form_builder#versions' ,via: [:get]
+         match 'ai_form_builder/rollback' => 'ai_form_builder#rollback' ,via: [:post]
+
          match 'home/:action'=>'home', via: [:get, :post]
 
          resources :esms

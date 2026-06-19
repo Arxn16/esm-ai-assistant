@@ -11,6 +11,27 @@
 	    -webkit-border-radius: 5px;
 	    -khtml-border-radius: 5px;
 	    border-radius: 5px;
+	    background:#1e88e5;
+	    color:#ffffff;
+	    border:1px solid #1565c0;
+	    cursor:move;
+	}
+	.control-item:hover{
+	    background:#1565c0;
+	}
+	#sortable{
+	    background:#ffffff;
+	    border:1px solid #d0d9e3 !important;
+	    border-radius:6px;
+	    padding:10px !important;
+	    min-height:400px !important;
+	}
+	#side-menu{
+	    background:#e8eef5 !important;
+	    border-radius:6px;
+	}
+	body, #workspace, #layout, #main_content{
+	    background:#f4f7fb;
 	}
 </style>
 <% 
@@ -30,6 +51,8 @@ for i in Field.field_types
 end 
 
 %>
+
+<%= render :partial=>'/esm_documents/ai_field_assistant.html' %>
 
 <%= form_for :document, :url=>{:action=>'edit_layout',:id=>@document},:html=>{:id=>'document_form'},:remote=>true do |f| %>
 <div class=" left" style="border:0px solid;display:inline-block;float:left">

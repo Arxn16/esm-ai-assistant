@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>AI ปรับฟอร์ม - <%= @document.title %></title>
+  <%= csrf_meta_tags %>
+  <%= javascript_include_tag 'application' %>
+  <style>
+    body{font-family:'Segoe UI',Tahoma,sans-serif;background:#f4f7fb;margin:0;padding:20px;color:#33475b}
+    .wrap{max-width:760px;margin:0 auto}
+    h2{color:#1565c0;margin:0 0 4px}
+    .sub{color:#7a8aa0;margin-bottom:14px}
+    .flds{background:#fff;border:1px solid #d0d9e3;border-radius:8px;padding:12px;margin-top:14px;max-width:730px}
+    .fld{padding:6px 0;border-bottom:1px solid #f0f3f7}
+    .fld:last-child{border-bottom:0}
+    .ftype{color:#7a8aa0;font-size:12px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h2>&#129302; ปรับฟอร์มด้วย AI</h2>
+    <div class="sub">ฟอร์ม: <b><%= @document.title %></b> (<%= @document.name %>) &middot; พิมพ์สิ่งที่อยากเพิ่ม แล้วกด Apply</div>
+
+    <%= render :partial => '/esm_documents/ai_field_assistant.html', :locals => { :refresh_mode => 'reload' } %>
+
+    <div class="flds">
+      <div style="font-weight:bold;margin-bottom:6px">ฟิลด์ปัจจุบัน (<%= Array(@document.fields).size %>)</div>
+      <% Array(@document.fields).each do |f| %>
+        <div class="fld">
+          <%= (f.label.to_s != '' ? f.label : f.column_name) %>
+          <span class="ftype">&mdash; <%= f.column_name %> &middot; <%= f.field_type %></span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</body>
+</html>
